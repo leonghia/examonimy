@@ -2,3 +2,13 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+// DOM selectors
+
+// States and rules
+
+// Function expressions
+
+// Event listeners
+
+// On load
