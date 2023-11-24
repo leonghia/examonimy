@@ -1,0 +1,17 @@
+{
+  "name": "examonimyweb",
+  "version": "1.0.0",
+  "description": "Online examination built with ASP.NET.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tailwindcss -i ./input.css -o ./wwwroot/css/output.css --watch"
+  },
+  "author": "Nghia La",
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "tailwindcss": "^3.3.5"
+  }
+}
