@@ -2,6 +2,8 @@
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories.UserRepository;
+using ExamonimyWeb.Services.AuthService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -17,6 +19,7 @@ namespace ExamonimyWeb.Extensions
     {
         public static void Configure(this IServiceCollection services, IConfiguration configuration)
         {
+          
             services
                 .AddAuthentication(configureOptions =>
                 {
@@ -36,7 +39,14 @@ namespace ExamonimyWeb.Extensions
                     };
                 });
 
-            services.AddAuthorization();
+            services
+                .AddAuthorization()
+                .AddDbContext<ExamonimyContext>(optionsAction =>
+                {
+                    optionsAction.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                })
+                .AddAutoMapper(typeof(AutoMapperProfile));
+                
 
             services              
                 .AddControllersWithViews()
@@ -44,6 +54,7 @@ namespace ExamonimyWeb.Extensions
                 {
                     configure.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     configure.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    configure.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 })
                 .ConfigureApiBehaviorOptions(setupAction =>
                 {
@@ -68,17 +79,13 @@ namespace ExamonimyWeb.Extensions
                             ContentTypes = { "application/problem+json" }
                         };
                     };
-                });
 
-            services
-                .AddDbContext<ExamonimyContext>(optionsAction =>
-            {
-                optionsAction.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-            })
-                .AddAutoMapper(typeof(AutoMapperProfile));
+                    
+                });              
 
-            services
-                .AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+            services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }

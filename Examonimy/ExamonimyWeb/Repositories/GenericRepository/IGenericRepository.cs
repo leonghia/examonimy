@@ -2,8 +2,10 @@
 
 namespace ExamonimyWeb.Repositories.GenericRepository
 {
-    public interface IGenericRepository<T>
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<T?> GetAsync(Expression<Func<T, bool>> predicate, List<string>? includedProperties);
+        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, List<string>? includedProperties);
+        Task InsertAsync(TEntity entity);
+        Task SaveAsync();
     }
 }

@@ -7,5 +7,6 @@ namespace ExamonimyWeb.Services.AuthService
     {
         Task<bool> ValidateUserAsync(UserLoginDto userLoginDto);
         Task<string> CreateTokenAsync();
+        string HashPassword(string password, out string passwordSalt);
     }
 }

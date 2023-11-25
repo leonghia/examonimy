@@ -20,9 +20,9 @@ namespace ExamonimyWeb.Services.AuthService
 
         private bool CheckPassword(User user, string password)
         {
-            var passwordHashToCompare = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), Convert.FromHexString(user.PasswordSalt), _iterations, _hashAlgorithm, _keySize);
+            var passwordHashToCompare = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), Convert.FromHexString(user.PasswordSalt!), _iterations, _hashAlgorithm, _keySize);
 
-            return CryptographicOperations.FixedTimeEquals(passwordHashToCompare, Convert.FromHexString(user.PasswordHash));
+            return CryptographicOperations.FixedTimeEquals(passwordHashToCompare, Convert.FromHexString(user.PasswordHash!));
         }     
 
         public Task<string> CreateTokenAsync()
@@ -37,7 +37,7 @@ namespace ExamonimyWeb.Services.AuthService
             return user is not null && CheckPassword(user, userLoginDto.Password);
         }
         
-        private string HashPassword(string password, out string passwordSalt)
+        public string HashPassword(string password, out string passwordSalt)
         {
             var salt = RandomNumberGenerator.GetBytes(_keySize);
 
