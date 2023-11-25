@@ -18,11 +18,12 @@ namespace ExamonimyWeb.Entities
 
         [Required]
         [DataType(DataType.EmailAddress)]
+        [StringLength(320)]
         public required string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [StringLength(55, MinimumLength = 6)]
+        [StringLength(255)]
         public required string PasswordHash { get; set; }
 
         [Required]
@@ -31,6 +32,7 @@ namespace ExamonimyWeb.Entities
 
         [Required]
         [DataType(DataType.EmailAddress)]
+        [StringLength(320)]
         public required string NormalizedEmail { get; set; }
 
         [DataType(DataType.DateTime)]
