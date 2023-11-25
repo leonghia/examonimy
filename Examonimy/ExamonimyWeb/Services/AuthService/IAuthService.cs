@@ -1,6 +1,11 @@
-﻿namespace ExamonimyWeb.Services.AuthService
+﻿using ExamonimyWeb.DTOs.UserDTO;
+using ExamonimyWeb.Entities;
+
+namespace ExamonimyWeb.Services.AuthService
 {
     public interface IAuthService
     {
+        Task<bool> ValidateUserAsync(UserLoginDto userLoginDto);
+        Task<string> CreateTokenAsync();
     }
 }

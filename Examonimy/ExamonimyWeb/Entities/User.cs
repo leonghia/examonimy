@@ -22,9 +22,12 @@ namespace ExamonimyWeb.Entities
         public required string Email { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
         [StringLength(255)]
         public required string PasswordHash { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public required string PasswordSalt { get; set; }
 
         [Required]
         [StringLength(20, MinimumLength = 3)]

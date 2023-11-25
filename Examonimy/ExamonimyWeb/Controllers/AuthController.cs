@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ExamonimyWeb.DTOs.UserDTO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -15,6 +16,12 @@ namespace ExamonimyWeb.Controllers
         public IActionResult Register()
         {
             return View();
+        }
+
+        [HttpPost("api/register")]
+        public IActionResult Register([FromBody] UserRegisterDto userRegisterDto)
+        {
+            
         }
     }
 }
