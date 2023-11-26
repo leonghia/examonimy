@@ -1,12 +1,14 @@
 ﻿using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using System.Security.Claims;
 
 namespace ExamonimyWeb.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<bool> ValidateUserAsync(UserLoginDto userLoginDto);
-        Task<string> CreateTokenAsync();
-        string HashPassword(string password, out string passwordSalt);
+        Task<User?> ValidateUserAsync(UserLoginDto userLoginDto);
+        string CreateJwt();
+        string CreateRefreshToken();
+        Task<ClaimsIdentity> GetClaimsIdentityFromTokenAsync(string token);
     }
 }

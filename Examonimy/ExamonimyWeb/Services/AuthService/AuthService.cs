@@ -1,6 +1,9 @@
 ﻿using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Managers.UserManager;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,45 +11,90 @@ namespace ExamonimyWeb.Services.AuthService
 {
     public class AuthService : IAuthService
     {
-        private readonly IGenericRepository<User> _userRepository;
-        private const int _keySize = 64;
-        private const int _iterations = 3500;
-        private readonly HashAlgorithmName _hashAlgorithm = HashAlgorithmName.SHA512;
-
-        public AuthService(IGenericRepository<User> userRepository)
-        {
-            _userRepository = userRepository;
-        }
-
-        private bool CheckPassword(User user, string password)
-        {
-            var passwordHashToCompare = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), Convert.FromHexString(user.PasswordSalt!), _iterations, _hashAlgorithm, _keySize);
-
-            return CryptographicOperations.FixedTimeEquals(passwordHashToCompare, Convert.FromHexString(user.PasswordHash!));
-        }     
-
-        public Task<string> CreateTokenAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> ValidateUserAsync(UserLoginDto userLoginDto)
-        {
-            var user = await _userRepository.GetAsync(u => u.Email.Equals(userLoginDto.Email), null);
-
-            return user is not null && CheckPassword(user, userLoginDto.Password);
-        }
+        private readonly IUserManager _userManager;    
+        private readonly IConfiguration _jwtConfigurations;
         
-        public string HashPassword(string password, out string passwordSalt)
+        private User? _user;
+
+        public AuthService(IUserManager userManager, IConfiguration configuration)
         {
-            var salt = RandomNumberGenerator.GetBytes(_keySize);
+            _userManager = userManager;       
+            _jwtConfigurations = configuration.GetSection("JwtConfigurations");
+        }           
 
-            passwordSalt = Convert.ToHexString(salt);
-
-            var passwordHash = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, _iterations, _hashAlgorithm, _keySize);
-
-            return Convert.ToHexString(passwordHash);
-
+        public string CreateJwt()
+        {
+            var jwtSecurityToken = CreateJwtSecurityToken(_user!);
+            var jwt = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            return jwt;
         }
+
+        private JwtSecurityToken CreateJwtSecurityToken(User user)
+        {
+
+            return new JwtSecurityToken(
+                issuer: _jwtConfigurations["Issuer"],
+                claims: CreateClaims(user),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtConfigurations["Lifetime"])),
+                signingCredentials: CreateSigningCredentials()
+                );                         
+        }
+
+        private SigningCredentials CreateSigningCredentials()
+        {
+            var key = _jwtConfigurations["Key"];
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));
+
+            return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        }
+
+        private IEnumerable<Claim> CreateClaims(User user)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role!.Name)
+            };
+
+            return claims;
+        }
+
+        public async Task<User?> ValidateUserAsync(UserLoginDto userLoginDto)
+        {
+            _user = await _userManager.FindByEmailAsync(userLoginDto.Email);
+
+            if (_user is not null && _userManager.CheckPassword(_user, userLoginDto.Password))
+                return _user;
+            return null;
+        }
+
+        public string CreateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        public async Task<ClaimsIdentity> GetClaimsIdentityFromTokenAsync(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations["Issuer"]!)),
+                ValidateLifetime = false
+            };
+
+            var tokenValidationResult = await new JwtSecurityTokenHandler().ValidateTokenAsync(token, tokenValidationParameters);
+            if (!tokenValidationResult.IsValid)
+                throw tokenValidationResult.Exception;
+            return tokenValidationResult.ClaimsIdentity;
+            
+        }
+              
     }
 }

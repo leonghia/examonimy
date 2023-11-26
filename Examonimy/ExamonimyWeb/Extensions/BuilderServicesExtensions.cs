@@ -1,8 +1,8 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
-using ExamonimyWeb.Repositories.UserRepository;
 using ExamonimyWeb.Services.AuthService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +30,8 @@ namespace ExamonimyWeb.Extensions
                 {
                     configureOptions.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidIssuer = configuration["JwtSettings:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!)),
+                        ValidIssuer = configuration["JwtConfigurations:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtConfigurations:Key"]!)),
                         ValidateIssuer = true,
                         ValidateAudience = false,
                         ValidateLifetime = true,
@@ -84,7 +84,7 @@ namespace ExamonimyWeb.Extensions
                 });              
 
             services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
         }
     }

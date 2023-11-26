@@ -41,5 +41,10 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             await _context.SaveChangesAsync();
         }
+
+        public void Update(TEntity entity)
+        {
+            _dbSet.Update(entity);
+        }
     }
 }

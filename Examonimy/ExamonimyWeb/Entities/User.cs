@@ -46,5 +46,11 @@ namespace ExamonimyWeb.Entities
         [ForeignKey("Role")]
         public int? RoleId { get; set; }
         public Role? Role { get; set; }
+
+        [StringLength(256)]
+        public string? RefreshToken { get; set; }
+
+        [DataType(DataType.DateTime)]
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

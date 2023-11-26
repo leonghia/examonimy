@@ -11,7 +11,7 @@ namespace ExamonimyWeb.Profiles
             CreateMap<UserRegisterDto, User>()
                 .ForMember(dest => dest.NormalizedUsername, opt => opt.MapFrom(src => src.Username.ToUpperInvariant()))
                 .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpperInvariant()));
-            CreateMap<UserLoginDto, User>();
+            
         }
     }
 }

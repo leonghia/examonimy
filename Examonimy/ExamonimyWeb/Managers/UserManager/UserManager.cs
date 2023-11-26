@@ -1,0 +1,86 @@
+﻿using ExamonimyWeb.Entities;
+using ExamonimyWeb.Models;
+using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Services.AuthService;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace ExamonimyWeb.Managers.UserManager
+{
+    public class UserManager : IUserManager
+    {       
+        private readonly IGenericRepository<User> _userRepository;
+        private const int _keySize = 64;
+        private const int _iterations = 3500;
+        private readonly HashAlgorithmName _hashAlgorithm = HashAlgorithmName.SHA512;
+
+        public UserManager(IGenericRepository<User> userRepository)
+        {          
+            _userRepository = userRepository;
+        }
+
+        public bool CheckPassword(User user, string password)
+        {
+            var passwordHashToCompare = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), Convert.FromHexString(user.PasswordSalt!), _iterations, _hashAlgorithm, _keySize);
+
+            return CryptographicOperations.FixedTimeEquals(passwordHashToCompare, Convert.FromHexString(user.PasswordHash!));
+        }
+
+        public async Task<OperationResult> CreateAsync(User user, string password)
+        {
+            var operationResult = new OperationResult();
+
+            if (await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(user.NormalizedUsername), null) is not null)
+            {
+                operationResult.Succeeded = false;
+                operationResult.Errors ??= new List<OperationError>();
+                operationResult.Errors.Add(new OperationError { Code = "username", Description = "Username already exists. Please choose a different username." });
+                return operationResult;
+            }
+            if (await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
+            {
+                operationResult.Succeeded = false;
+                operationResult.Errors ??= new List<OperationError>();
+                operationResult.Errors.Add(new OperationError { Code = "email", Description = "Email already exists. Please choose a different email." });
+                return operationResult;
+            }
+
+
+            // Fill in necessary properties
+            user.PasswordHash = HashPassword(password, out string passwordSalt);
+            user.PasswordSalt = passwordSalt;
+            user.RoleId = 2;
+
+            await _userRepository.InsertAsync(user);
+            await _userRepository.SaveAsync();
+            return operationResult;
+        }
+
+        public async Task<User?> FindByEmailAsync(string email)
+        {
+            return await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(email.ToUpperInvariant()), new List<string> { "Role" });
+        }
+
+        public async Task<User?> FindByUsernameAsync(string username)
+        {
+            return await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(username.ToUpperInvariant()), new List<string> { "Role" });
+        }
+
+        public string HashPassword(string password, out string passwordSalt)
+        {
+            var salt = RandomNumberGenerator.GetBytes(_keySize);
+
+            passwordSalt = Convert.ToHexString(salt);
+
+            var passwordHash = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, _iterations, _hashAlgorithm, _keySize);
+
+            return Convert.ToHexString(passwordHash);
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            _userRepository.Update(user);
+            await _userRepository.SaveAsync();
+        }
+    }
+}

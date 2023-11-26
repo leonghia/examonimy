@@ -6,6 +6,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
     {
         Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, List<string>? includedProperties);
         Task InsertAsync(TEntity entity);
+        void Update(TEntity entity);
         Task SaveAsync();
     }
 }

@@ -6,6 +6,7 @@ namespace ExamonimyWeb.DTOs.UserDTO
     {
         [Required]
         [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         [StringLength(320)]
         public required string Email { get; set; }
 
