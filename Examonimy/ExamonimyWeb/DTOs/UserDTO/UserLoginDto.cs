@@ -1,18 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ExamonimyWeb.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExamonimyWeb.DTOs.UserDTO
 {
     public class UserLoginDto
     {
-        [Required]
+        [Required(ErrorMessage = $"Email {ErrorMessagesHelper.RequiredMessage}.")]
         [DataType(DataType.EmailAddress)]
-        [EmailAddress]
-        [StringLength(320)]
+        [EmailAddress(ErrorMessage = $"Email {ErrorMessagesHelper.ValidTypeMessage}.")]
+        [StringLength(320, ErrorMessage = "Email phải chứa không quá 320 ký tự.")]
         public required string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = $"Mật khẩu {ErrorMessagesHelper.RequiredMessage}.")]
         [DataType(DataType.Password)]
-        [StringLength(64, MinimumLength = 6)]
+        [StringLength(64, ErrorMessage = "Mật khẩu phải chứa từ 6 đến 64 ký tự.", MinimumLength = 6)]
         public required string Password { get; set; }
     }
 }

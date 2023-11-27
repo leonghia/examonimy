@@ -78,7 +78,7 @@ namespace ExamonimyWeb.Services.AuthService
             }
         }
 
-        public async Task<ClaimsIdentity> GetClaimsIdentityFromTokenAsync(string token)
+        public async Task<ClaimsIdentity> GetClaimsIdentityFromExpiredTokenAsync(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {

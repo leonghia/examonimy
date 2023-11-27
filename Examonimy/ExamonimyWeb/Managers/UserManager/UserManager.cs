@@ -1,7 +1,6 @@
 ﻿using ExamonimyWeb.Entities;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
-using ExamonimyWeb.Services.AuthService;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -34,14 +33,14 @@ namespace ExamonimyWeb.Managers.UserManager
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
-                operationResult.Errors.Add(new OperationError { Code = "username", Description = "Username already exists. Please choose a different username." });
+                operationResult.Errors.Add(new OperationError { Code = "username", Description = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác." });
                 return operationResult;
             }
             if (await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
-                operationResult.Errors.Add(new OperationError { Code = "email", Description = "Email already exists. Please choose a different email." });
+                operationResult.Errors.Add(new OperationError { Code = "email", Description = "Email đã tồn tại. Vui lòng chọn email khác." });
                 return operationResult;
             }
 
@@ -81,6 +80,11 @@ namespace ExamonimyWeb.Managers.UserManager
         {
             _userRepository.Update(user);
             await _userRepository.SaveAsync();
+        }
+
+        public string GetRole(User user)
+        {
+            return user.Role!.Name;
         }
     }
 }

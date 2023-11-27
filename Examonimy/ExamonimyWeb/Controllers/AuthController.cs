@@ -81,7 +81,7 @@ namespace ExamonimyWeb.Controllers
             {
                 var problemDetails = new CustomProblemDetails(HttpContext.Request.Path, "https://datatracker.ietf.org/doc/html/rfc7235#section-3.1", StatusCodes.Status401Unauthorized, "login");
 
-                problemDetails.Extensions.TryAdd("errors", new { credentials = "Invalid username or password." });
+                problemDetails.Extensions.TryAdd("errors", new { credentials = "Email hoặc mật khẩu không chính xác." });
 
                 return Unauthorized(problemDetails);
             }
@@ -105,7 +105,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var claimsIdentity = await _authService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken);
+            var claimsIdentity = await _authService.GetClaimsIdentityFromExpiredTokenAsync(refreshRequest.AccessToken);
             var username = claimsIdentity.Name;
 
             if (username is null)

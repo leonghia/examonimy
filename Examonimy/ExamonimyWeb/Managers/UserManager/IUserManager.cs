@@ -11,6 +11,6 @@ namespace ExamonimyWeb.Managers.UserManager
         bool CheckPassword(User user, string password);
         string HashPassword(string password, out string passwordSalt);
         Task UpdateAsync(User user);
-        
+        string GetRole(User user);
     }
 }
