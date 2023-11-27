@@ -78,14 +78,14 @@ namespace ExamonimyWeb.Services.AuthService
             }
         }
 
-        public async Task<ClaimsIdentity> GetClaimsIdentityFromExpiredTokenAsync(string token)
+        public async Task<ClaimsIdentity> GetClaimsIdentityFromTokenAsync(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations["Issuer"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations["Key"]!)),
                 ValidateLifetime = false
             };
 

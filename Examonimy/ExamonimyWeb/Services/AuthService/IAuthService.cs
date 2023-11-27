@@ -9,6 +9,6 @@ namespace ExamonimyWeb.Services.AuthService
         Task<User?> ValidateUserAsync(UserLoginDto userLoginDto);
         string CreateJwt();
         string CreateRefreshToken();
-        Task<ClaimsIdentity> GetClaimsIdentityFromExpiredTokenAsync(string token);
+        Task<ClaimsIdentity> GetClaimsIdentityFromTokenAsync(string token);
     }
 }

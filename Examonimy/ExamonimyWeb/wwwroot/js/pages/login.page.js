@@ -1,9 +1,11 @@
 ﻿// Imports
-import { BASE_URL } from "../config.js";
+import { BASE_API_URL, BASE_URL } from "../config.js";
 import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton, spinnerMarkupForButton } from "../helpers/markup.helper.js";
 import { UserLogin } from "../models/user-login.model.js";
 import { StatusCodes } from "../enums/status-codes.enum.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
+import { AuthenticatedResponse } from "../models/authenticated-response.model.js";
+import { getTokenFromCookie, saveTokenInCookie } from "../helpers/token.helper.js";
 // DOM selectors
 const htmlElement = document.documentElement;
 const loginForm = document.querySelector("#login-form");
@@ -22,7 +24,7 @@ loginButton.addEventListener("click", async () => {
         emailInput.value,
         passwordInput.value
     );
-    const response = await fetch(`${BASE_URL}/auth/login`, {
+    const response = await fetch(`${BASE_API_URL}/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -35,8 +37,7 @@ loginButton.addEventListener("click", async () => {
 
     if (response.status === StatusCodes.Status422UnprocessableEntity) {
         const responseBody = await response.json();
-        showErrorMessagesForInputsFromResponse(responseBody);
-       
+        showErrorMessagesForInputsFromResponse(responseBody);     
     } else if (response.status === StatusCodes.Status401Unauthorized) {
         const responseBody = await response.json();     
         const problemDetails = new ProblemDetails();
@@ -54,7 +55,13 @@ loginButton.addEventListener("click", async () => {
         `);
     }
 
-
+    if (response.ok) {
+        const responseBody = await response.json();
+        const authenticatedResponse = new AuthenticatedResponse();
+        Object.assign(authenticatedResponse, responseBody);
+        saveTokenInCookie("token", authenticatedResponse.token);
+        window.location.href = BASE_URL;
+    }
 
 });
 

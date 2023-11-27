@@ -26,7 +26,7 @@ namespace ExamonimyWeb.Controllers
             _jwtConfigurations = configuration.GetSection("JwtConfigurations");
         }
 
-        [HttpGet("login")]
+        [HttpGet("login", Name = "GetLoginView")]
         public IActionResult Login()
         {
             return View();
@@ -105,7 +105,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var claimsIdentity = await _authService.GetClaimsIdentityFromExpiredTokenAsync(refreshRequest.AccessToken);
+            var claimsIdentity = await _authService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken);
             var username = claimsIdentity.Name;
 
             if (username is null)
