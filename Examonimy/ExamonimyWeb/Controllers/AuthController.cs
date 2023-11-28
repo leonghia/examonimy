@@ -4,7 +4,9 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Services.AuthService;
+using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Dynamic;
 
@@ -16,14 +18,32 @@ namespace ExamonimyWeb.Controllers
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
         private readonly IUserManager _userManager;
+        private readonly ITokenService _tokenService;
         private readonly IConfiguration _jwtConfigurations;
+        private readonly string _tokenName;
+        private readonly string _refreshTokenName;
+        private readonly CookieOptions _cookieOptionsForToken = new()
+        {
+            MaxAge = new TimeSpan(0, 15, 0),
+            Path = "/",
+            HttpOnly = true
+        };
+        private readonly CookieOptions _cookieOptionsForRefreshToken = new()
+        {
+            MaxAge = new TimeSpan(7, 0, 0, 0),
+            Path = "/api/auth/refresh",
+            HttpOnly = false
+        };
 
-        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration)
+        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService)
         {
             _authService = authService;
             _mapper = mapper;
             _userManager = userManager;
+            _tokenService = tokenService;
             _jwtConfigurations = configuration.GetSection("JwtConfigurations");
+            _tokenName = _jwtConfigurations["TokenName"]!;
+            _refreshTokenName = _jwtConfigurations["RefreshTokenName"]!;
         }
 
         [HttpGet("login", Name = "GetLoginView")]
@@ -86,15 +106,19 @@ namespace ExamonimyWeb.Controllers
                 return Unauthorized(problemDetails);
             }
 
-            var jwt = _authService.CreateJwt();
-            var refreshToken = _authService.CreateRefreshToken();
+            var jwt = _tokenService.CreateToken();
+            var refreshToken = _tokenService.CreateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtConfigurations["RefreshTokenLifetime"]));
 
             await _userManager.UpdateAsync(user);
 
-            return Ok(new AuthenticatedResponse { Token = jwt, RefreshToken = refreshToken });
+            // Set cookies for client
+            Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForToken);
+            Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshToken);
+
+            return Ok();
         }
 
         [HttpPost("api/auth/refresh")]
@@ -105,47 +129,51 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var claimsIdentity = await _authService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken);
+            var claimsIdentity = await _tokenService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken, false);
             var username = claimsIdentity.Name;
 
             if (username is null)
-                return BadRequest();
+                return Unauthorized();
 
             var user = await _userManager.FindByUsernameAsync(username);
 
             if (user is null)
             {
-                return NotFound();
+                return Unauthorized();
             }
 
             if (!user.RefreshToken!.Equals(refreshRequest.RefreshToken) || user.RefreshTokenExpiryTime <= DateTime.UtcNow) 
             {
-                return Conflict();
+                return Unauthorized();
             }
 
-            var newAccessToken = _authService.CreateJwt();
-            var newRefreshToken = _authService.CreateRefreshToken();
+            var newAccessToken = _tokenService.CreateToken();
+            var newRefreshToken = _tokenService.CreateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
 
-            return Ok(new AuthenticatedResponse { RefreshToken = newRefreshToken, Token = newAccessToken });
+            // Update cookies for client
+            Response.Cookies.Append(_tokenName, newAccessToken, _cookieOptionsForToken);
+            Response.Cookies.Append(_tokenName, newRefreshToken, _cookieOptionsForRefreshToken);
+
+            return Ok();
         }
 
         [Authorize]
         [HttpPost("api/auth/revoke")]
         public async Task<IActionResult> Revoke()
         {
-            var username = User.Identity!.Name;
+            var username = HttpContext.User.Identity!.Name;
 
             var user = await _userManager.FindByUsernameAsync(username!);
 
             if (user is null)
-                return BadRequest();
+                return NotFound();
 
             user.RefreshToken = null;
 
-            await _userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user);           
 
             return NoContent();
         }

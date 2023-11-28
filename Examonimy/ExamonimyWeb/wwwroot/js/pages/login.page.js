@@ -53,16 +53,10 @@ loginButton.addEventListener("click", async () => {
   </div>
 </div>
         `);
-    }
+    }   
 
-    if (response.ok) {
-        const responseBody = await response.json();
-        const authenticatedResponse = new AuthenticatedResponse();
-        Object.assign(authenticatedResponse, responseBody);
-        saveTokenInCookie("token", authenticatedResponse.token);
-        window.location.href = BASE_URL;
-    }
-
+    if (response.ok)
+        document.location.href = BASE_URL;
 });
 
 loginForm.addEventListener("click", event => {

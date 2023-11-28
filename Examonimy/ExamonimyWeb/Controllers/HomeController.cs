@@ -1,10 +1,12 @@
-﻿using ExamonimyWeb.Helpers;
+﻿using AutoMapper;
+using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -13,30 +15,28 @@ namespace ExamonimyWeb.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUserManager _userManager;
         private readonly IAuthService _authService;
+        private readonly IMapper _mapper;
 
-        public HomeController(ILogger<HomeController> logger, IUserManager userManager, IAuthService authService)
+        public HomeController(ILogger<HomeController> logger, IUserManager userManager, IAuthService authService, IMapper mapper)
         {
             _logger = logger;
             _userManager = userManager;
             _authService = authService;
+            _mapper = mapper;
         }
 
-        [AllowAnonymous]
+        [Authorize]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var token = HttpContext.Request.Cookies["token"];
-            if (token is null)
-                return RedirectToRoute("GetLoginView");
-            var claimsIdentity = await _authService.GetClaimsIdentityFromTokenAsync(token);
-            if (claimsIdentity is null)
-                return RedirectToRoute("GetLoginView");
-            var username = claimsIdentity.Name;
+            var username = HttpContext.User.Identity!.Name;           
             var user = await _userManager.FindByUsernameAsync(username!);
             if (user is null)
-                return RedirectToRoute("GetLoginView");
+                return Forbid();
             var role = _userManager.GetRole(user);
-            return View(role);
-        }     
+            var userGetDto = _mapper.Map<UserGetDto>(user);
+            return View(role, userGetDto);
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -4,6 +4,7 @@ using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
+using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -24,7 +25,7 @@ namespace ExamonimyWeb.Extensions
                 .AddAuthentication(configureOptions =>
                 {
                     configureOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    configureOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    configureOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;                   
                 })
                 .AddJwtBearer(configureOptions =>
                 {
@@ -36,6 +37,15 @@ namespace ExamonimyWeb.Extensions
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true
+                    };
+
+                    configureOptions.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies[configuration["JwtConfigurations:TokenName"]!];
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -86,6 +96,7 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ITokenService, JwtTokenService>();
         }
     }
 }
