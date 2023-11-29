@@ -15,6 +15,7 @@ namespace ExamonimyWeb.Attributes
             if (context.HttpContext.User.Identity is null || !context.HttpContext.User.Identity.IsAuthenticated)
             {
                 context.Result = new RedirectToRouteResult("GetLoginView", null);
+                return;
             }
 
             var user = context.HttpContext.User;
@@ -22,6 +23,7 @@ namespace ExamonimyWeb.Attributes
             if (Roles is not null && !user.IsInRole(Roles))
             {
                 context.Result = new ForbidResult();
+                return;
             }
         }
     }

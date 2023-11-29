@@ -1,6 +1,6 @@
 ﻿// Imports
 import { UserRegister } from "../models/user-register.model.js";
-import { BASE_URL } from "../config.js";
+import { BASE_API_URL } from "../config.js";
 import { showSpinnerForButton, spinnerMarkupForButton, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, hideErrorMessageWhenInput } from "../helpers/markup.helper.js";
 // DOM selectors
 const registerForm = document.querySelector("#register-form");
@@ -14,7 +14,7 @@ const registerButtonText = document.querySelector("#register-btn-text");
 
 // Function expressions
 const register = async (userRegister = new UserRegister()) => {
-    const response = await fetch(`${BASE_URL}/auth/register`, {
+    const response = await fetch(`${BASE_API_URL}/auth/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -43,4 +43,9 @@ registerButton.addEventListener("click", async () => {
 });
 
 registerForm.addEventListener("click", hideErrorMessageWhenInput);
+
 // On load
+(() => {
+    document.documentElement.classList.remove("bg-gray-100");
+    document.documentElement.classList.add("bg-white");   
+})();

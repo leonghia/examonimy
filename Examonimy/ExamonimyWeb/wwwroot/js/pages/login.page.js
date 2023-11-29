@@ -66,7 +66,3 @@ loginForm.addEventListener("click", event => {
 });
 
 // Onload
-(() => {
-    htmlElement.classList.remove("bg-white");
-    htmlElement.classList.add("bg-gray-50");
-})();

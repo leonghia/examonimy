@@ -49,3 +49,11 @@ export const hideErrorMessageWhenInput = (event = new Event()) => {
         return;
     errorMessageElement.remove();
 }
+
+export const highlightSidebarLink = (className = "") => {
+    const sidebarLinkElements = Array.from(document.querySelectorAll(className));
+    sidebarLinkElements.forEach(e => {
+        e.classList.remove(..."text-gray-400 hover:text-white hover:bg-gray-800".split(" "));
+        e.classList.add(..."bg-gray-800 text-white".split(" "));
+    });  
+}
