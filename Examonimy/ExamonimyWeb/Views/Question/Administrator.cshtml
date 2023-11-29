@@ -5,11 +5,7 @@
     ViewData["Title"] = "Question Bank";
     Layout = "_AdminSidebar";
 }
-<div class="md:flex md:items-center md:justify-between mb-8">
-    <div class="min-w-0 flex-1">
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:tracking-tight">Ngân hàng câu hỏi</h2>
-    </div>
-</div>
+@await Html.PartialAsync("_PageHeadingPartial", "Ngân hàng câu hỏi")
 <div class="flex items-center justify-between">
     <form class="basis-1/2">
         <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>

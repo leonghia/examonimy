@@ -2,11 +2,11 @@
 using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Managers.UserManager;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamonimyWeb.Controllers
 {
+    [Route("")]
     public class QuestionController : Controller
     {
         private readonly IUserManager _userManager;
@@ -19,7 +19,7 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator")]
-        [HttpGet]
+        [HttpGet("question")]
         public async Task<IActionResult> Index()
         {
             var username = HttpContext.User.Identity!.Name;
@@ -30,10 +30,14 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator")]
-        [HttpGet]
-        public IActionResult Create()
+        [HttpGet("question/add")]
+        public async Task<IActionResult> Create()
         {
-
+            var username = HttpContext.User.Identity!.Name;
+            var user = await _userManager.FindByUsernameAsync(username!);
+            var role = _userManager.GetRole(user!);
+            var userGetDto = _mapper.Map<UserGetDto>(user);
+            return View(userGetDto);
         }
     }
 }
