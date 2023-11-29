@@ -22,18 +22,32 @@ namespace ExamonimyWeb.Controllers
         private readonly IConfiguration _jwtConfigurations;
         private readonly string _tokenName;
         private readonly string _refreshTokenName;
-        private readonly CookieOptions _cookieOptionsForToken = new()
-        {
+        private readonly CookieOptions _cookieOptionsForTokenWithMaxAge = new()
+        {         
             MaxAge = new TimeSpan(0, 15, 0),
             Path = "/",
             HttpOnly = true
         };
-        private readonly CookieOptions _cookieOptionsForRefreshToken = new()
+
+        private readonly CookieOptions _cookieOptionsForTokenWithoutMaxAge = new()
+        {          
+            Path = "/",
+            HttpOnly = true
+        };
+
+        private readonly CookieOptions _cookieOptionsForRefreshTokenWithMaxAge = new()
         {
             MaxAge = new TimeSpan(7, 0, 0, 0),
             Path = "/api/auth/refresh",
-            HttpOnly = false
+            HttpOnly = true
         };
+
+        private readonly CookieOptions _cookieOptionsForRefreshTokenWithoutMaxAge = new()
+        {          
+            Path = "/api/auth/refresh",
+            HttpOnly = true
+        };
+
 
         public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService)
         {
@@ -106,19 +120,27 @@ namespace ExamonimyWeb.Controllers
                 return Unauthorized(problemDetails);
             }
 
-            var jwt = _tokenService.CreateToken();
+            var jwt = _tokenService.CreateToken(user);
             var refreshToken = _tokenService.CreateRefreshToken();
 
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtConfigurations["RefreshTokenLifetime"]));
+            if (userLoginDto.RememberMe)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtConfigurations["RefreshTokenLifetime"]));
 
-            await _userManager.UpdateAsync(user);
+                await _userManager.UpdateAsync(user);
 
-            // Set cookies for client
-            Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForToken);
-            Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshToken);
+                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForTokenWithMaxAge);
+                Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithMaxAge);
+            }
+            else
+            {
+                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForTokenWithoutMaxAge);
+                Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithoutMaxAge);
+            }
 
-            return Ok();
+            
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost("api/auth/refresh")]
@@ -126,38 +148,39 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json", "application/problem+json")]
         public async Task<IActionResult> Refresh([FromBody] RefreshRequest refreshRequest)
         {
-            if (!ModelState.IsValid)
-                return ValidationProblem(ModelState);
+            throw new NotImplementedException();
+            //if (!ModelState.IsValid)
+            //    return ValidationProblem(ModelState);
 
-            var claimsIdentity = await _tokenService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken, false);
-            var username = claimsIdentity.Name;
+            //var claimsIdentity = await _tokenService.GetClaimsIdentityFromTokenAsync(refreshRequest.AccessToken, false);
+            //var username = claimsIdentity.Name;
 
-            if (username is null)
-                return Unauthorized();
+            //if (username is null)
+            //    return Unauthorized();
 
-            var user = await _userManager.FindByUsernameAsync(username);
+            //var user = await _userManager.FindByUsernameAsync(username);
 
-            if (user is null)
-            {
-                return Unauthorized();
-            }
+            //if (user is null)
+            //{
+            //    return Unauthorized();
+            //}
 
-            if (!user.RefreshToken!.Equals(refreshRequest.RefreshToken) || user.RefreshTokenExpiryTime <= DateTime.UtcNow) 
-            {
-                return Unauthorized();
-            }
+            //if (!user.RefreshToken!.Equals(refreshRequest.RefreshToken) || user.RefreshTokenExpiryTime <= DateTime.UtcNow) 
+            //{
+            //    return Unauthorized();
+            //}
 
-            var newAccessToken = _tokenService.CreateToken();
-            var newRefreshToken = _tokenService.CreateRefreshToken();
+            //var newAccessToken = _tokenService.CreateToken(user);
+            //var newRefreshToken = _tokenService.CreateRefreshToken();
 
-            user.RefreshToken = newRefreshToken;
-            await _userManager.UpdateAsync(user);
+            //user.RefreshToken = newRefreshToken;
+            //await _userManager.UpdateAsync(user);
 
-            // Update cookies for client
-            Response.Cookies.Append(_tokenName, newAccessToken, _cookieOptionsForToken);
-            Response.Cookies.Append(_tokenName, newRefreshToken, _cookieOptionsForRefreshToken);
+            //// Update cookies for client
+            //Response.Cookies.Append(_tokenName, newAccessToken, _cookieOptionsForToken);
+            //Response.Cookies.Append(_tokenName, newRefreshToken, _cookieOptionsForRefreshToken);
 
-            return Ok();
+            //return Ok();
         }
 
         [Authorize]

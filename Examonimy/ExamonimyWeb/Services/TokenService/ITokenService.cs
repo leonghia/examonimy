@@ -6,7 +6,7 @@ namespace ExamonimyWeb.Services.TokenService
 {
     public interface ITokenService
     {
-        string CreateToken();
+        string CreateToken(User user);
         SigningCredentials CreateSigningCredentials();
         IEnumerable<Claim> CreateClaims(User user);
         string CreateRefreshToken();

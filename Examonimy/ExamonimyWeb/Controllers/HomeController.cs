@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
+using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Services.AuthService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Security.Claims;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -25,7 +24,7 @@ namespace ExamonimyWeb.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
+        [CustomAuthorize]
         [HttpGet]
         public async Task<IActionResult> Index()
         {

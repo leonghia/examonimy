@@ -15,5 +15,8 @@ namespace ExamonimyWeb.DTOs.UserDTO
         [DataType(DataType.Password)]
         [StringLength(64, ErrorMessage = "Mật khẩu phải chứa từ 6 đến 64 ký tự.", MinimumLength = 6)]
         public required string Password { get; set; }
+
+        [Required]
+        public required bool RememberMe { get; set; } = false;
     }
 }

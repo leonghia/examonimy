@@ -1,11 +1,9 @@
 ﻿// Imports
-import { BASE_API_URL, BASE_URL } from "../config.js";
+import { BASE_API_URL } from "../config.js";
 import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton, spinnerMarkupForButton } from "../helpers/markup.helper.js";
 import { UserLogin } from "../models/user-login.model.js";
 import { StatusCodes } from "../enums/status-codes.enum.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
-import { AuthenticatedResponse } from "../models/authenticated-response.model.js";
-import { getTokenFromCookie, saveTokenInCookie } from "../helpers/token.helper.js";
 // DOM selectors
 const htmlElement = document.documentElement;
 const loginForm = document.querySelector("#login-form");
@@ -13,6 +11,7 @@ const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const loginButton = document.querySelector("#login-btn");
 const loginButtonText = document.querySelector("#login-btn-text");
+const rememberMeCheckbox = document.querySelector("#remember-me");
 // States and rules
 
 // Function expressions
@@ -22,8 +21,10 @@ loginButton.addEventListener("click", async () => {
     showSpinnerForButton(loginButtonText, loginButton, spinnerMarkupForButton);
     const userLogin = new UserLogin(
         emailInput.value,
-        passwordInput.value
+        passwordInput.value,
+        rememberMeCheckbox.checked
     );
+    console.log(userLogin);
     const response = await fetch(`${BASE_API_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -53,10 +54,10 @@ loginButton.addEventListener("click", async () => {
   </div>
 </div>
         `);
-    }   
+    }  
 
-    if (response.ok)
-        document.location.href = BASE_URL;
+    if (response.redirected)
+        document.location.href = response.url;
 });
 
 loginForm.addEventListener("click", event => {

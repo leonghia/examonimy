@@ -10,8 +10,7 @@ namespace ExamonimyWeb.Services.TokenService
     public class JwtTokenService : ITokenService
     {
      
-        private readonly IConfiguration _jwtConfigurations;
-        private User? _user;
+        private readonly IConfiguration _jwtConfigurations;      
 
         public JwtTokenService(IConfiguration configuration)
         {        
@@ -47,9 +46,9 @@ namespace ExamonimyWeb.Services.TokenService
             return new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
-        public string CreateToken()
+        public string CreateToken(User user)
         {
-            var jwtSecurityToken = CreateJwtSecurityToken(_user!);
+            var jwtSecurityToken = CreateJwtSecurityToken(user);
             var jwt = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             return jwt;
         }
