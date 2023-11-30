@@ -5,6 +5,7 @@
 
 # Library folders
 lib/
+tinymce/
 
 # User-specific files
 *.rsuser
