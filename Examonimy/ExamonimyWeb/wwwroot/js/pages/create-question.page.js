@@ -1,5 +1,5 @@
 ﻿// Imports
-
+import { QuestionTypeRenderers } from "../enums/question-type-renderers.enum.js";
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
 const courseElements = Array.from(document.querySelectorAll(".course"));
@@ -33,15 +33,16 @@ const selectDropdownItem = (event = new Event()) => {
     dropdownItemCheckmark.classList.remove("text-white");
     dropdownItemCheckmark.classList.add("text-violet-600");
     toggleDropdown(dropdown);
-    const dropdownButton = dropdownContainer.querySelector(".dropdown-btn");
-    dropdownButton.classList.remove("text-gray-500");
-    dropdownButton.classList.add("text-gray-900");
+    const questionType = clicked.dataset.type;
+    const renderer = QuestionTypeRenderers[questionType];
+    renderer();
 }
 
 const toggleDropdown = (dropdown = new HTMLElement()) => {
     dropdown.classList.toggle("opacity-0");
     dropdown.classList.toggle("pointer-events-none");
 }
+
 // Event listeners
 courseContainer.addEventListener("click", event => {
     const clicked = event.target.closest(".course");
@@ -68,3 +69,11 @@ questionLevelDropdown.addEventListener("click", selectDropdownItem);
     document.documentElement.classList.remove("bg-gray-100");
     document.documentElement.classList.add("bg-white");
 })();
+
+tinymce.init({
+    selector: "#question-content",
+    height: 300,
+    menubar: false,
+    plugins: ["lists", "link", "image", "codesample"],
+    toolbar: "styles | bold italic underline | forecolor | bullist numlist | image codesample link "
+});
