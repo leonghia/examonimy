@@ -26,7 +26,7 @@ namespace ExamonimyWeb.Controllers
             var user = await _userManager.FindByUsernameAsync(username!);
             var role = _userManager.GetRole(user!);
             var userGetDto = _mapper.Map<UserGetDto>(user);
-            return View(role, userGetDto);
+            return View("Bank", userGetDto);
         }
 
         [CustomAuthorize(Roles = "Administrator")]

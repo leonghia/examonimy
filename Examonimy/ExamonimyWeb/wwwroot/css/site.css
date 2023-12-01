@@ -1,0 +1,15 @@
+.tox .tox-tbtn__select-label {
+    font-weight: 400;
+}
+
+.tox-tinymce {
+    border: none;
+}
+
+.tox .tox-statusbar__text-container {
+    display: none;
+}
+
+.tox .tox-statusbar {
+    border-top: none;
+}

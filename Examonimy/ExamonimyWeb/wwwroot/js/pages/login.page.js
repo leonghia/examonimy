@@ -2,7 +2,7 @@
 import { BASE_API_URL } from "../config.js";
 import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton, spinnerMarkupForButton } from "../helpers/markup.helper.js";
 import { UserLogin } from "../models/user-login.model.js";
-import { StatusCodes } from "../enums/status-codes.enum.js";
+import { StatusCodes } from "../helpers/status-code.helper.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 // DOM selectors
 const htmlElement = document.documentElement;
