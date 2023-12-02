@@ -3,6 +3,7 @@ using ExamonimyWeb.Attributes;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models.DTOs.UserDTO;
+using ExamonimyWeb.Repositories.GenericRepository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamonimyWeb.Controllers
@@ -12,7 +13,7 @@ namespace ExamonimyWeb.Controllers
         private readonly IUserManager _userManager;
         private readonly IMapper _mapper;
 
-        public ExamController(IUserManager userManager, IMapper mapper)
+        public ExamController(IUserManager userManager, IMapper mapper, IGenericRepository<Exam> examRepository) : base(mapper, examRepository)
         {
             _userManager = userManager;
             _mapper = mapper;

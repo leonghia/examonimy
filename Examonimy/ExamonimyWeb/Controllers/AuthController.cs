@@ -3,10 +3,10 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Models.DTOs.UserDTO;
+using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Dynamic;
 
@@ -49,7 +49,7 @@ namespace ExamonimyWeb.Controllers
         };
 
 
-        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService)
+        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService, IGenericRepository<User> userRepository) : base(mapper, userRepository)
         {
             _authService = authService;
             _mapper = mapper;

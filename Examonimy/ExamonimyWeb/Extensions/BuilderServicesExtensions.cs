@@ -96,6 +96,7 @@ namespace ExamonimyWeb.Extensions
                 });              
 
             services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+            services.AddScoped<IGenericRepository<Course>, GenericRepository<Course>>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();

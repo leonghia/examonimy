@@ -1,4 +1,6 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
+using ExamonimyWeb.Extensions;
+using ExamonimyWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -30,7 +32,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
 
             return await query.FirstOrDefaultAsync<TEntity>();
 
-        }
+        }       
 
         public async Task InsertAsync(TEntity entity)
         {
@@ -45,6 +47,28 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         public void Update(TEntity entity)
         {
             _dbSet.Update(entity);
+        }
+
+        public async Task<PagedList<TEntity>> GetAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filter, List<string>? includedProperties)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (filter is not null)
+            {
+                query = query.Where<TEntity>(filter);
+            }
+
+            if (includedProperties is not null)
+            {
+                foreach (var includedProperty in includedProperties)
+                {
+                    query = query.Include(includedProperty);
+                }
+            }
+
+            requestParams ??= new RequestParams();
+
+            return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
         }
     }
 }

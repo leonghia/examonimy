@@ -9,8 +9,6 @@ namespace ExamonimyWeb.Models.DTOs.CourseDTO
 
         public required string Name { get; set; }
 
-        public required string CourseCode { get; set; }
-
-        public ICollection<ExamGetDto>? Exams { get; set; }
+        public required string CourseCode { get; set; }     
     }
 }
