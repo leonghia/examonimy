@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
+using ExamonimyWeb.Models.DTOs.UserDTO;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authorization;

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using ExamonimyWeb.DTOs.CourseDTO;
-using ExamonimyWeb.DTOs.ExamDTO;
-using ExamonimyWeb.DTOs.RoleDTO;
-using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Models.DTOs.CourseDTO;
+using ExamonimyWeb.Models.DTOs.ExamDTO;
+using ExamonimyWeb.Models.DTOs.RoleDTO;
+using ExamonimyWeb.Models.DTOs.UserDTO;
 
 namespace ExamonimyWeb.Profiles
 {

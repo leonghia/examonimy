@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231202080711_CreateExamsTable")]
+    partial class CreateExamsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,158 +46,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CourseCode = "LBEP",
-                            Name = "Xây dựng logic và lập trình cơ bản"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CourseCode = "AJS",
-                            Name = "Angular"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CourseCode = "DDD",
-                            Name = "Thiết kế & Phát triển cơ sở dữ liệu (NCC module)"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CourseCode = "HCJS",
-                            Name = "HTML5, CSS, Javascript"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CourseCode = "DMS",
-                            Name = "Quản lý cơ sở dữ liệu với SQL Server"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CourseCode = "JP1",
-                            Name = "Lập trình Java I"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CourseCode = "JP2",
-                            Name = "Lập trình Java II"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CourseCode = "APC#",
-                            Name = "Lập trình C#"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CourseCode = "PDLF",
-                            Name = "Lập trình PHP với framework Laravel"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CourseCode = "PIIT",
-                            Name = "Các vấn đề chuyên môn về CNTT (NCC)"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CourseCode = "ISA",
-                            Name = "Phân tích hệ thống thông tin"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CourseCode = "MLJ",
-                            Name = "Ngôn ngữ markup và JSON"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CourseCode = "ENJS",
-                            Name = "Những điều cơ bản của NodeJS"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CourseCode = "WDA",
-                            Name = "Lập trình Web với ASP.NET MVC"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CourseCode = "NSC",
-                            Name = "An ninh mạng và mật mã (NCC)"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CourseCode = "DMAWS",
-                            Name = "Phát triển Microsoft Azure và Web services"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CourseCode = "EJA",
-                            Name = "Lĩnh vực việc làm mới nổi-SMAC"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CourseCode = "AD",
-                            Name = "Phát triển Agile (NCC)"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CourseCode = "WCD",
-                            Name = "Lập trình Web với Java"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CourseCode = "IASF",
-                            Name = "Tích hợp ứng dụng sử dụng Spring Framework"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CourseCode = "EAD",
-                            Name = "Phát triển ứng dụng doanh nghiệp bằng Java EE"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CourseCode = "CSW",
-                            Name = "Tạo dịch vụ cho Web"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CourseCode = "IDP",
-                            Name = "Giới thiệu về lập trình Dart"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CourseCode = "ADFD",
-                            Name = "Phát triển ứng dụng bằng Flutter và Dart"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CourseCode = "CP",
-                            Name = "Dự án máy tính"
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>

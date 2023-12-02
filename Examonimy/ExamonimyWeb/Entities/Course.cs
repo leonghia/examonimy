@@ -12,9 +12,7 @@ namespace ExamonimyWeb.Entities
         public required string Name { get; set; }
 
         [Required]
-        [StringLength(20, MinimumLength = 1)]
+        [StringLength(16, MinimumLength = 1)]
         public required string CourseCode { get; set; }
-
-        public ICollection<Exam>? Exams { get; set; }
     }
 }

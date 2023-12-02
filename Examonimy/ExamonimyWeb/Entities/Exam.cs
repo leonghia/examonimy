@@ -27,7 +27,7 @@ namespace ExamonimyWeb.Entities
 
         [Required]
         [Range(0, int.MaxValue)]
-        public required int TimeAllowed { get; set; }
+        public required int TimeAllowedInMinutes { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]

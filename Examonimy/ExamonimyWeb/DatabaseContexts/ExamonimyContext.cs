@@ -14,8 +14,11 @@ namespace ExamonimyWeb.DatabaseContexts
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Role>(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
+        public required DbSet<Course> Courses { get; init; }
+        public required DbSet<Exam> Exams { get; init; }
     }
 }

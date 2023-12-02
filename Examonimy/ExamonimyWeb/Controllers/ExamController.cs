@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
-using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
+using ExamonimyWeb.Models.DTOs.UserDTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamonimyWeb.Controllers

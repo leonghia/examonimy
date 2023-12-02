@@ -1,19 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExamonimyWeb.DTOs.ExamDTO
+namespace ExamonimyWeb.Models.DTOs.ExamDTO
 {
     public class ExamCreateDto
-    {     
+    {
 
         [Required]
         [StringLength(256)]
         public required string Name { get; set; }
 
-        [Required]       
-        public required int CourseId { get; set; }       
+        [Required]
+        public required int CourseId { get; set; }
 
-        [Required]     
-        public required int AuthorId { get; set; }     
+        [Required]
+        public required int AuthorId { get; set; }
 
         [Required]
         [Range(0, int.MaxValue)]
