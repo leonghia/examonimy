@@ -8,7 +8,6 @@ const renderSingleChoiceQuestionForCreation = (questionOptionContainer = new HTM
     tinymce.remove("#option-d");
     clearQuestionOptionContainer(questionOptionContainer);
     questionOptionContainer.insertAdjacentHTML("beforeend", `
-    ${new SectionHeadingComponent("Nhập phương án", "Vui lòng đánh dấu vào ô đáp án cho câu hỏi mà bạn đã tạo.").render(true)}
 <fieldset>
   <legend class="sr-only">Plan</legend>
   <div class="space-y-5">
@@ -72,7 +71,6 @@ const renderMultipleChoiceQuestionForCreation = (questionOptionContainer = new H
     tinymce.remove("#option-d");
     clearQuestionOptionContainer(questionOptionContainer);
     questionOptionContainer.insertAdjacentHTML("beforeend", `
-    ${new SectionHeadingComponent("Nhập phương án", "Vui lòng đánh dấu vào ô đáp án cho câu hỏi mà bạn đã tạo.").render(true) }
 <fieldset>
   <legend class="sr-only">Plan</legend>
   <div class="space-y-5">
@@ -144,7 +142,6 @@ const renderEssayQuestionForCreation = (questionOptionContainer = new HTMLElemen
 const renderTrueFalseQuestionForCreation = (questionOptionContainer = new HTMLElement()) => {
     clearQuestionOptionContainer(questionOptionContainer);
     questionOptionContainer.insertAdjacentHTML("beforeend", `
-    ${new SectionHeadingComponent("Nhập đáp án", "Vui lòng chọn đáp án cho câu hỏi mà bạn đã tạo.").render(true)}
 <fieldset>
   <legend class="sr-only">Plan</legend>
   <div class="space-y-5">
@@ -183,7 +180,6 @@ const renderFillInBlankQuestionForCreation = (questionOptionContainer = new HTML
     tinymce.remove("#blank-2");
     clearQuestionOptionContainer(questionOptionContainer);
     questionOptionContainer.insertAdjacentHTML("beforeend", `
-    ${new SectionHeadingComponent("Nhập đáp án", "Vui lòng viết đáp án cho câu hỏi mà bạn đã tạo.").render(true)}
         <div class="mt-6 mb-10">
             <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium">Đáp án cho chỗ trống 1</label>
             <div class="mt-2">
