@@ -142,44 +142,84 @@ nextButton.addEventListener("click", async () => {
 });
 
 stepContainer.addEventListener("click", event => {
+    // First of all, we need to reset the background color to white (in case it has been changed to gray)
+    document.documentElement.classList.remove("bg-gray-100");
+    document.documentElement.classList.add("bg-white");
+
     const clicked = event.target.closest(".step-btn");
     if (!clicked)
         return;
-    const currentStep = clicked.closest(".step");
-    const previousStep = currentStep.previousElementSibling;
-    if (!previousStep)
-        return;
-    // mark current step
-    const currentStepOrder = currentStep.dataset.order;
-    const currentStepName = currentStep.querySelector(".step-name").textContent;  
-    currentStep.innerHTML = `
-      <div class="absolute inset-0 flex items-center" aria-hidden="true">
-        <div class="h-0.5 w-full bg-gray-200"></div>
-      </div>
-      <a href="#" class="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white" aria-current="step">
-        <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
-        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
-      </a>
-    `;
+    const clickedStep = clicked.closest(".step");
+    const previousStep = clickedStep.previousElementSibling;
+    const nextStep = clickedStep.nextElementSibling;
+
+    // hide next segment (if there is)
+    if (nextStep) {
+        const stepOrder = nextStep.dataset.order;
+        const nextSegmentContainer = document.querySelector(`#segment-${stepOrder}`);
+        nextSegmentContainer.classList.add("hidden");
+    }
+
+    const currentStepOrder = clickedStep.dataset.order;
+    // change the state of the clicked step (if it is not completed yet)
+    if (!clickedStep.getAttribute("data-completed")) {       
+        const currentStepName = clickedStep.querySelector(".step-name").textContent;
+        if (Number(currentStepOrder) === 4) {
+            // If this is the final step (the 4th step), we mark it as completed immediately
+            clickedStep.innerHTML = `
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-green-500"></div>
+            </div>
+            <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600">
+                <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
+            </button>
+            `;
+            // We also want to change the background color to bg-gray-100
+            document.documentElement.classList.remove("bg-white");
+            document.documentElement.classList.add("bg-gray-100");
+
+        } else {
+            // Else we mark it as current step          
+            clickedStep.innerHTML = `
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-gray-200"></div>
+              </div>
+              <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white" aria-current="step">
+                <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
+                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
+              </button>
+            `;
+        }
+    }
+    
     // mark previous step as completed
-    const previousStepOrder = previousStep.dataset.order;
-    const previousStepName = previousStep.querySelector(".step-name").textContent;
-    previousStep.innerHTML = `
+    if (previousStep) {
+        const previousStepOrder = previousStep.dataset.order;
+        if (!previousStep.getAttribute("data-completed")) {
+            previousStep.setAttribute("data-completed", "true");          
+            const previousStepName = previousStep.querySelector(".step-name").textContent;
+            previousStep.innerHTML = `
       <div class="absolute inset-0 flex items-center" aria-hidden="true">
         <div class="h-0.5 w-full bg-green-500"></div>
       </div>
-      <a href="#" class="relative flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600">
+      <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600">
         <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
         </svg>
         <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${previousStepName}</span>
-      </a>
+      </button>
     `;
-
-    // hide previous step
-    const previousSegmentContainer = document.querySelector(`#segment-${previousStepOrder}`);
-    previousSegmentContainer.classList.add("hidden");
-    // show current step
+        }     
+        // hide previous segment
+        const previousSegmentContainer = document.querySelector(`#segment-${previousStepOrder}`);
+        previousSegmentContainer.classList.add("hidden");
+    }
+    
+    
+    // show current segment
     const currentSegmentContainer = document.querySelector(`#segment-${currentStepOrder}`);
     currentSegmentContainer.classList.remove("hidden");
 });
