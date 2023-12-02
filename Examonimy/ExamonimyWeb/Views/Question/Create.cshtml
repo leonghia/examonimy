@@ -6,10 +6,54 @@
     Layout = "_AdminSidebar";
 }
 @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
-@await Html.PartialAsync("_SectionHeadingPartial", "Lựa chọn môn học")
+<nav aria-label="Progress" class="mb-8">
+    <ol role="list" class="flex items-center justify-center">
+        <li class="relative pr-8 sm:pr-96">
+            <!-- Current Step -->
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-gray-200"></div>
+            </div>
+            <a href="#" class="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white" aria-current="step">
+                <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
+                <span class="absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">Chọn môn học</span>
+            </a>
+        </li>
+        <li class="relative pr-8 sm:pr-96">
+            <!-- Upcoming Step -->
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-gray-200"></div>
+            </div>
+            <a href="#" class="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                <span class="absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">Nhập câu hỏi</span>
+            </a>
+        </li>
+        <li class="relative pr-8 sm:pr-96">
+            <!-- Upcoming Step -->
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-gray-200"></div>
+            </div>
+            <a href="#" class="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                <span class="absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">Nhập đáp án</span>
+            </a>
+        </li>
+        <li class="relative">
+            <!-- Upcoming Step -->
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="h-0.5 w-full bg-gray-200"></div>
+            </div>
+            <a href="#" class="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                <span class="absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">Xem trước</span>
+            </a>
+        </li>
+    </ol>
+</nav>
+
 <fieldset>
 
-    <div id="course-container" class="mt-6 mb-10 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
+    <div id="course-container" class="my-10 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
         <label class="course relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
             <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
@@ -82,19 +126,19 @@
                     <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
                     <select id="tabs" name="tabs" class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option selected>Chỉnh sửa</option>
-                        <option>Xem trước</option>                       
+                        <option>Xem trước</option>
                     </select>
                 </div>
                 <div class="hidden sm:block">
                     <nav id="tab-container" class="flex space-x-4" aria-label="Tabs">
-                        <!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->                       
+                        <!-- Current: "bg-indigo-100 text-indigo-700", Default: "text-gray-500 hover:text-gray-700" -->
                         <button type="button" class="tab bg-indigo-100 text-indigo-700 rounded-md px-3 py-2 text-sm font-medium" data-tab="editor">Chỉnh sửa</button>
                         <button type="button" class="tab text-gray-500 hover:text-gray-700 rounded-md px-3 py-2 text-sm font-medium" data-tab="preview">Xem trước</button>
                     </nav>
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4 flex items-center gap-x-10">
             <div class="basis-72">
                 <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
