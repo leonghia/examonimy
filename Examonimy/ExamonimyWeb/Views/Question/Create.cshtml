@@ -33,7 +33,7 @@
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
             </div>
-            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+            <button type="button" id="step-btn-3" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
                 <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">3. Nhập đáp án</span>
             </button>
@@ -43,7 +43,7 @@
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
             </div>
-            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+            <button type="button" id="step-btn-4" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
                 <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">4. Xem trước</span>
             </button>
@@ -52,9 +52,9 @@
 </nav>
 
 <!-- Segment 1 -->
-<div id="segment-1" class="segment-container mt-20">
-    <div id="course-container" class="grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">     
-                 
+<div id="segment-1" class="segment mt-20">
+    @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho câu hỏi bạn muốn tạo."))
+    <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
     </div>
     <div id="pagination-container" class="mt-10 flex items-center justify-center col-span-2 hidden">
         <div class="flex items-center justify-between w-full text-gray-600 dark:text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-600 max-w-[128px] mx-2">
@@ -76,9 +76,10 @@
 </div>
 
 <!-- Segment 2 -->
-<div id="segment-2" class="segment-container mt-20 flex justify-center hidden">
+<div id="segment-2" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">
-        <div class="flex items-center gap-x-10">
+        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập câu hỏi", "Vui lòng nhập các thông tin như dạng câu hỏi, mức độ, nội dung câu hỏi và các phương án trả lời."))
+        <div class="mt-8 flex items-center gap-x-10">
             <div class="basis-72">
                 <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
                 <div class="relative mt-2 dropdown-container">
@@ -107,7 +108,7 @@
 
                           Highlighted: "bg-violet-600 text-white", Not Highlighted: "text-gray-900"
                         -->
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="singleChoice" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="0" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm đơn</span>
 
@@ -122,7 +123,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="multipleChoice" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="1" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm nhiều</span>
 
@@ -137,7 +138,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="essay" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="2" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Tự luận</span>
 
@@ -152,7 +153,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="trueFalse" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="3" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Đúng - Sai</span>
 
@@ -167,7 +168,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="fillInBlank" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="4" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Điền vào chỗ trống</span>
 
@@ -280,24 +281,91 @@
             </div>
         </div>
         <div class="mt-10" id="question-editor-container">
-            <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium">Nội dung câu hỏi</label>
-            <div class="mt-2">
-                <textarea id="question-content-editor"></textarea>
-            </div>
-        </div>    
-    </div>   
+            <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium mb-4">Nội dung câu hỏi</label>
+            <textarea id="question-content-editor"></textarea>          
+            <div id="option-editor-container" class="mt-8"></div>
+        </div>          
+    </div>
 </div>
 
 <!-- Segment 3 -->
-<div id="segment-3" class="segment-container mt-20 flex justify-center hidden">
+<div id="segment-3" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">
-        <div id="question-option-container"></div>
+        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập đáp án", "Vui lòng nhập đáp án cho câu hỏi mà bạn đang tạo."))   
+        <div class="mt-6" id="answer-editor-container"></div>
     </div>
 </div>
 
 <!-- Segment 4 -->
-<div id="segment-4" class="segment-container mt-20 flex justify-center-hidden">
-    <div class="w-1/2"></div>
+<div id="segment-4" class="segment mt-20 flex justify-center hidden">
+    <div class="w-1/2">      
+        <div id="question-preview-container" class="p-6 bg-white rounded-lg">
+            <div class="mb-6">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
+                <p class="mt-4 text-sm font-normal text-violet-600">Lập trình hướng đối tượng</p>
+            </div>
+            <div class="mb-6">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
+                <p class="mt-4 text-sm font-normal text-violet-600">Trắc nghiệm đơn</p>
+            </div>
+            <div class="mb-6">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
+                <p class="mt-4 text-sm font-normal text-violet-600">Vận dụng cao</p>
+            </div>
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
+            <p class="mt-4 text-sm font-normal text-gray-700">
+                Hãy cho biết thể tích dung dịch HCl 0,05M đã phản ứng vừa đủ với dung dịch
+                NaOH trong thí nghiệm trên?
+            </p>         
+            <fieldset class="mt-4 mb-6">
+                <legend class="sr-only">Phương án</legend>
+                <div class="space-y-5">
+                    <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                            <input id="small" aria-describedby="small-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                            <label for="small" class="font-medium text-gray-900 mr-1">A.</label>
+                            <span id="small-description" class="text-gray-700">4 GB RAM / 2 CPUS / 80 GB SSD Storage</span>
+                        </div>
+                    </div>
+                    <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                            <input id="medium" aria-describedby="medium-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                            <label for="medium" class="font-medium text-gray-900 mr-1">B.</label>
+                            <span id="medium-description" class="text-gray-700">8 GB RAM / 4 CPUS / 160 GB SSD Storage</span>
+                        </div>
+                    </div>
+                    <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                            <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                            <label for="large" class="font-medium text-gray-900 mr-1">C.</label>
+                            <span id="large-description" class="text-gray-700">16 GB RAM / 8 CPUS / 320 GB SSD Storage</span>
+                        </div>
+                    </div>
+                    <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                            <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                            <label for="large" class="font-medium text-gray-900 mr-1">D.</label>
+                            <span id="large-description" class="text-gray-700">32 GB RAM / 16 CPUS / 640 GB SSD Storage</span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
+            <div class="mt-4 flex items-center text-sm font-medium" aria-current="step">
+                <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+                    <span class="text-white">C</span>
+                </span>              
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>

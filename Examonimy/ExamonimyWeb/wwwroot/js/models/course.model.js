@@ -1,4 +1,4 @@
-﻿export class CourseGet {
+﻿export class Course {
     id = 0;
     name = "";
     courseCode = "";

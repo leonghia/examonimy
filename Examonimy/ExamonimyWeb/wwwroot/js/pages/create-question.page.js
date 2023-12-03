@@ -1,28 +1,95 @@
 ﻿// Imports
 import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
-import { QuestionTypeRenderers } from "../helpers/question.helper.js";
 import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
-import { CourseGet } from "../models/course-get.model.js";
+import { Course } from "../models/course.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
+import { QuestionTypes } from "../helpers/question.helper.js";
+import { Question } from "../models/question.model.js";
+
+
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
 const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
 const questionLevelDropdown = document.querySelector("#question-level-dropdown");
 const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
-const questionEditorContainer = document.querySelector("#question-editor-container");
-const questionOptionContainer = document.querySelector("#question-option-container");
 const paginationContainer = document.querySelector("#pagination-container");
 const paginationInfoElement = document.querySelector("#pagination-info");
 const previousButton = document.querySelector("#prev-btn");
 const nextButton = document.querySelector("#next-btn");
 const stepContainer = document.querySelector("#step-container");
+const segments = Array.from(document.querySelectorAll(".segment"));
+const stepButton3 = document.querySelector("#step-btn-3");
+const stepButton4 = document.querySelector("#step-btn-4");
+const questionPreviewContainer = document.querySelector("#question-preview-container");
+const optionEditorContainer = document.querySelector("#option-editor-container");
+
+
 // States and rule
-let courses = [new CourseGet()];
+let courses = [new Course()];
 const coursesRequestParams = new RequestParams(12, 1);
 let paginationMetadata = new PaginationMetadata();
+let questionToCreate;
+
 // Function expressions
+const renderOptionEditor = (optionEditorContainer = new HTMLElement()) => {
+    tinymce.remove("#option-a");
+    tinymce.remove("#option-b");
+    tinymce.remove("#option-c");
+    tinymce.remove("#option-d");
+    clearOptionEditorContainer(optionEditorContainer);
+    optionEditorContainer.insertAdjacentHTML("beforeend", `
+<fieldset>
+  <legend class="sr-only">Plan</legend>
+  <div class="space-y-5">
+    <div class="relative flex items-start">    
+      <div class="text-sm leading-6 grow">
+        <label for="small" class="font-medium text-gray-700">1. Phương án A</label>
+        <div class="mt-2">
+            <textarea id="option-a"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="relative flex items-start">   
+      <div class="text-sm leading-6 grow">
+        <label for="medium" class="font-medium text-gray-700">2. Phương án B</label>
+        <div class="mt-2">
+            <textarea id="option-b"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="relative flex items-start">   
+      <div class="text-sm leading-6 grow">
+        <label for="large" class="font-medium text-gray-700">3. Phương án C</label>
+        <div class="mt-2">
+            <textarea id="option-c"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="relative flex items-start">   
+      <div class="text-sm leading-6 grow">
+        <label for="large" class="font-medium text-gray-700">4. Phương án D</label>
+        <div class="mt-2">
+            <textarea id="option-d"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+    `);
+    tinymce.init(getTinyMCEOption("#option-a", 200));
+    tinymce.init(getTinyMCEOption("#option-b", 200));
+    tinymce.init(getTinyMCEOption("#option-c", 200));
+    tinymce.init(getTinyMCEOption("#option-d", 200));
+}
+
+const clearOptionEditorContainer = (optionEditorContainer = new HTMLElement()) => {
+    if (optionEditorContainer.firstChild) {
+        optionEditorContainer.innerHTML = "";
+    }
+}
+
 const getCourses = async (pageSize, pageNumber) => {
     paginationContainer.classList.add("hidden");
     const response = await fetch(`${BASE_API_URL}/course?pageSize=${pageSize}&pageNumber=${pageNumber}`, {
@@ -32,13 +99,13 @@ const getCourses = async (pageSize, pageNumber) => {
         }
     });
 
-    const data = await response.json();   
+    const data = await response.json();
     Object.assign(paginationMetadata, JSON.parse(response.headers.get(PAGINATION_METADATA_HEADER)));
     paginationInfoElement.textContent = `${paginationMetadata.CurrentPage} trên ${paginationMetadata.TotalPages}`;
     return data;
 }
 
-const populateCourses = (courses = [new CourseGet()]) => {
+const populateCourses = (courses = [new Course()]) => {
     courseContainer.innerHTML = "";
     courses.forEach(course => {
         courseContainer.insertAdjacentHTML("beforeend", `
@@ -67,13 +134,13 @@ const populateCourses = (courses = [new CourseGet()]) => {
     paginationContainer.classList.remove("hidden");
 }
 
-const selectDropdownItem = (event = new Event()) => {
+const selectQuestionType = (event = new Event()) => {
     const clicked = event.target.closest(".dropdown-item");
     if (!clicked)
         return;
     const dropdownItemName = clicked.querySelector(".dropdown-item-name");
     const dropdownContainer = clicked.closest(".dropdown-container");
-    dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;  
+    dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;
     const dropdown = clicked.closest(".dropdown");
     const dropdownItems = Array.from(dropdown.querySelectorAll(".dropdown-item"));
     dropdownItems.forEach(dropdownItem => {
@@ -93,9 +160,15 @@ const selectDropdownItem = (event = new Event()) => {
     const questionTypeDropdown = clicked.closest("#question-type-dropdown");
     if (!questionTypeDropdown)
         return;
-    const questionType = clicked.dataset.type;
-    const renderer = QuestionTypeRenderers[questionType];
-    renderer(questionOptionContainer);
+    const questionType = Number(clicked.dataset.type);
+    if (questionType === QuestionTypes.singleChoice || questionType === QuestionTypes.multipleChoice) {
+        renderOptionEditor(optionEditorContainer);
+    } else {
+        clearOptionEditorContainer(optionEditorContainer);
+    }
+
+    
+    
 }
 
 const toggleDropdown = (dropdown = new HTMLElement()) => {
@@ -119,11 +192,11 @@ courseContainer.addEventListener("click", event => {
 
 questionTypeDropdownButton.addEventListener("click", () => toggleDropdown(questionTypeDropdown));
 
-questionTypeDropdown.addEventListener("click", selectDropdownItem);
+questionTypeDropdown.addEventListener("click", selectQuestionType);
 
 questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(questionLevelDropdown));
 
-questionLevelDropdown.addEventListener("click", selectDropdownItem);
+questionLevelDropdown.addEventListener("click", selectQuestionType);
 
 previousButton.addEventListener("click", async () => {
     if (paginationMetadata.CurrentPage === 1)
@@ -142,7 +215,7 @@ nextButton.addEventListener("click", async () => {
 });
 
 stepContainer.addEventListener("click", event => {
-    // First of all, we need to reset the background color to white (in case it has been changed to gray)
+    // First of all, we need to reset the background color to white (in case it had been changed to gray)
     document.documentElement.classList.remove("bg-gray-100");
     document.documentElement.classList.add("bg-white");
 
@@ -151,18 +224,11 @@ stepContainer.addEventListener("click", event => {
         return;
     const clickedStep = clicked.closest(".step");
     const previousStep = clickedStep.previousElementSibling;
-    const nextStep = clickedStep.nextElementSibling;
 
-    // hide next segment (if there is)
-    if (nextStep) {
-        const stepOrder = nextStep.dataset.order;
-        const nextSegmentContainer = document.querySelector(`#segment-${stepOrder}`);
-        nextSegmentContainer.classList.add("hidden");
-    }
+    const currentStepOrder = Number(clickedStep.dataset.order);
 
-    const currentStepOrder = clickedStep.dataset.order;
-    // change the state of the clicked step (if it is not completed yet)
-    if (!clickedStep.getAttribute("data-completed")) {       
+    // Change the state of the clicked step (if it is not completed yet)
+    if (!clickedStep.getAttribute("data-completed")) {
         const currentStepName = clickedStep.querySelector(".step-name").textContent;
         if (Number(currentStepOrder) === 4) {
             // If this is the final step (the 4th step), we mark it as completed immediately
@@ -194,14 +260,12 @@ stepContainer.addEventListener("click", event => {
             `;
         }
     }
-    
-    // mark previous step as completed
-    if (previousStep) {
-        const previousStepOrder = previousStep.dataset.order;
-        if (!previousStep.getAttribute("data-completed")) {
-            previousStep.setAttribute("data-completed", "true");          
-            const previousStepName = previousStep.querySelector(".step-name").textContent;
-            previousStep.innerHTML = `
+
+    // Mark previous step as completed
+    if (previousStep && !previousStep.getAttribute("data-completed")) {
+        previousStep.setAttribute("data-completed", "true");
+        const previousStepName = previousStep.querySelector(".step-name").textContent;
+        previousStep.innerHTML = `
       <div class="absolute inset-0 flex items-center" aria-hidden="true">
         <div class="h-0.5 w-full bg-green-500"></div>
       </div>
@@ -212,16 +276,30 @@ stepContainer.addEventListener("click", event => {
         <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${previousStepName}</span>
       </button>
     `;
-        }     
-        // hide previous segment
-        const previousSegmentContainer = document.querySelector(`#segment-${previousStepOrder}`);
-        previousSegmentContainer.classList.add("hidden");
+
     }
-    
-    
-    // show current segment
+
+    // Hide all other segments
+    segments.forEach(segment => {
+        if (Number(segment.id.split("-")[1]) !== currentStepOrder)
+            segment.classList.add("hidden");
+    });
+
+    // Show current segment
     const currentSegmentContainer = document.querySelector(`#segment-${currentStepOrder}`);
     currentSegmentContainer.classList.remove("hidden");
+});
+
+stepButton3.addEventListener("click", () => {
+
+})
+
+stepButton4.addEventListener("click", () => {
+    // We create the preview if it has not been created yet
+    if (questionPreviewContainer.firstElementChild)
+        return;
+
+
 });
 
 // On load
