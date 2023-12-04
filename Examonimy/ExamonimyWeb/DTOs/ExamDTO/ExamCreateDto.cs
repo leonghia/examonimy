@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExamonimyWeb.Models.DTOs.ExamDTO
+namespace ExamonimyWeb.DTOs.ExamDTO
 {
     public class ExamCreateDto
     {

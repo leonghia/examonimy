@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231204034222_CreateTablesForQuestions")]
+    partial class CreateTablesForQuestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,8 +307,9 @@ namespace ExamonimyWeb.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("CorrectAnswer")
-                        .HasColumnType("tinyint");
+                    b.Property<string>("CorrectAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
 
                     b.HasKey("QuestionId");
 
@@ -365,28 +369,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("QuestionLevels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Nhận biết"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Thông hiểu"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Vận dụng"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Vận dụng cao"
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.QuestionType", b =>
@@ -405,33 +387,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("QuestionTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Trắc nghiệm một đáp án đúng"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Trắc nghiệm nhiều đáp án đúng"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Đúng - Sai"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Trả lời ngắn"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Điền vào chỗ trống"
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Role", b =>

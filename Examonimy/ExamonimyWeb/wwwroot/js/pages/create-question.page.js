@@ -4,9 +4,8 @@ import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
-import { QuestionTypes } from "../helpers/question.helper.js";
-import { Question } from "../models/question.model.js";
-
+import { QuestionTypes, QuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
+import { QuestionCreateDto } from "../dtos/question-create.dto.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -30,7 +29,8 @@ const optionEditorContainer = document.querySelector("#option-editor-container")
 let courses = [new Course()];
 const coursesRequestParams = new RequestParams(12, 1);
 let paginationMetadata = new PaginationMetadata();
-let questionToCreate;
+let courseId = 0;
+let questionCreateDto = new QuestionCreateDto();
 
 // Function expressions
 const renderOptionEditor = (optionEditorContainer = new HTMLElement()) => {
@@ -110,7 +110,7 @@ const populateCourses = (courses = [new Course()]) => {
     courses.forEach(course => {
         courseContainer.insertAdjacentHTML("beforeend", `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label class="course relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
+        <label data-id="${course.id}" class="course relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
             <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
@@ -167,8 +167,11 @@ const selectQuestionType = (event = new Event()) => {
         clearOptionEditorContainer(optionEditorContainer);
     }
 
-    
-    
+    // construct the questionCreateDto based on its question type
+    questionCreateDto = QuestionCreateDtoConstructorMappings[questionType];
+
+    // set the course id of questionCreateDto as the course id state
+    questionCreateDto.courseId = courseId;
 }
 
 const toggleDropdown = (dropdown = new HTMLElement()) => {
@@ -176,8 +179,7 @@ const toggleDropdown = (dropdown = new HTMLElement()) => {
     dropdown.classList.toggle("pointer-events-none");
 }
 
-// Event listeners
-courseContainer.addEventListener("click", event => {
+const selectCourse = (event = new Event()) => {
     const clicked = event.target.closest(".course");
     if (!clicked)
         return;
@@ -188,7 +190,17 @@ courseContainer.addEventListener("click", event => {
     });
     clicked.classList.add(..."border border-violet-600 ring-1 ring-violet-600".split(" "));
     clicked.querySelector(".checkbox").classList.remove("invisible");
-});
+
+    // update course id state
+    courseId = Number(clicked.dataset.id);
+}
+
+const selectQuestionLevel = () => {
+
+}
+
+// Event listeners
+courseContainer.addEventListener("click", selectCourse);
 
 questionTypeDropdownButton.addEventListener("click", () => toggleDropdown(questionTypeDropdown));
 
@@ -196,7 +208,7 @@ questionTypeDropdown.addEventListener("click", selectQuestionType);
 
 questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(questionLevelDropdown));
 
-questionLevelDropdown.addEventListener("click", selectQuestionType);
+questionLevelDropdown.addEventListener("click", selectQuestionLevel);
 
 previousButton.addEventListener("click", async () => {
     if (paginationMetadata.CurrentPage === 1)

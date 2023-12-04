@@ -1,4 +1,5 @@
-﻿@*
+﻿@using ExamonimyWeb.ViewModels;
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -108,9 +109,9 @@
 
                           Highlighted: "bg-violet-600 text-white", Not Highlighted: "text-gray-900"
                         -->
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="0" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="1" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
-                            <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm đơn</span>
+                            <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm một đáp án đúng</span>
 
                             <!--
                               Checkmark, only display for selected option.
@@ -123,9 +124,9 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="1" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="2" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
-                            <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm nhiều</span>
+                            <span class="dropdown-item-name font-normal block truncate">Trắc nghiệm nhiều đáp án đúng</span>
 
                             <!--
                               Checkmark, only display for selected option.
@@ -138,9 +139,9 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="2" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="3" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
-                            <span class="dropdown-item-name font-normal block truncate">Tự luận</span>
+                            <span class="dropdown-item-name font-normal block truncate">Trả lời ngắn</span>
 
                             <!--
                               Checkmark, only display for selected option.
@@ -153,7 +154,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="3" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="4" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Đúng - Sai</span>
 
@@ -168,7 +169,7 @@
                                 </svg>
                             </span>
                         </li>
-                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-type="4" role="option">
+                        <li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="5" role="option">
                             <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
                             <span class="dropdown-item-name font-normal block truncate">Điền vào chỗ trống</span>
 

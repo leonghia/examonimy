@@ -1,4 +1,4 @@
-﻿namespace ExamonimyWeb.Models.DTOs.RoleDTO
+﻿namespace ExamonimyWeb.DTOs.RoleDTO
 {
     public class RoleGetDto
     {

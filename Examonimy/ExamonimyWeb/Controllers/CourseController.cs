@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Models;
-using ExamonimyWeb.Models.DTOs.CourseDTO;
 using ExamonimyWeb.Repositories.GenericRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

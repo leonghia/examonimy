@@ -1,7 +1,7 @@
-﻿using ExamonimyWeb.Models.DTOs.CourseDTO;
-using ExamonimyWeb.Models.DTOs.UserDTO;
+﻿using ExamonimyWeb.DTOs.CourseDTO;
+using ExamonimyWeb.DTOs.UserDTO;
 
-namespace ExamonimyWeb.Models.DTOs.ExamDTO
+namespace ExamonimyWeb.DTOs.ExamDTO
 {
     public class ExamGetDto
     {

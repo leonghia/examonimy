@@ -1,5 +1,5 @@
-﻿using ExamonimyWeb.Entities;
-using ExamonimyWeb.Models.DTOs.UserDTO;
+﻿using ExamonimyWeb.DTOs.UserDTO;
+using ExamonimyWeb.Entities;
 using System.Security.Claims;
 
 namespace ExamonimyWeb.Services.AuthService

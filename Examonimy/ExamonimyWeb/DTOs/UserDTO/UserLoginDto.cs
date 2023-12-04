@@ -1,7 +1,7 @@
 ﻿using ExamonimyWeb.Helpers;
 using System.ComponentModel.DataAnnotations;
 
-namespace ExamonimyWeb.Models.DTOs.UserDTO
+namespace ExamonimyWeb.DTOs.UserDTO
 {
     public class UserLoginDto
     {

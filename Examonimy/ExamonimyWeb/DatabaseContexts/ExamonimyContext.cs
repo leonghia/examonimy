@@ -15,10 +15,21 @@ namespace ExamonimyWeb.DatabaseContexts
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Role>(new RoleConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
+            modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
+            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
         public required DbSet<Course> Courses { get; init; }
         public required DbSet<Exam> Exams { get; init; }
+        public required DbSet<QuestionType> QuestionTypes { get; init; }
+        public required DbSet<QuestionLevel> QuestionLevels { get; init; }
+        public required DbSet<Question> Questions { get; init; }
+        public required DbSet<MultipleChoiceQuestionWithOneCorrectAnswer> MultipleChoiceQuestionsWithOneCorrectAnswer { get; init; }
+        public required DbSet<MultipleChoiceQuestionWithMultipleCorrectAnswers> MultipleChoiceQuestionsWithMultipleCorrectAnswers { get; init; }
+        public required DbSet<TrueFalseQuestion> TrueFalseQuestions { get; init; }
+        public required DbSet<ShortAnswerQuestion> ShortAnswerQuestions { get; init; }
+        public required DbSet<FillInBlankQuestion> FillInBlankQuestions { get; init; }
+
     }
 }

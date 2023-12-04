@@ -1,4 +1,4 @@
-namespace ExamonimyWeb.Models
+namespace ExamonimyWeb.ViewModels
 {
     public class ErrorViewModel
     {

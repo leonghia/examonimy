@@ -1,7 +1,7 @@
-﻿using ExamonimyWeb.Entities;
-using ExamonimyWeb.Models.DTOs.RoleDTO;
+﻿using ExamonimyWeb.DTOs.RoleDTO;
+using ExamonimyWeb.Entities;
 
-namespace ExamonimyWeb.Models.DTOs.UserDTO
+namespace ExamonimyWeb.DTOs.UserDTO
 {
     public class UserGetDto
     {

@@ -1,6 +1,6 @@
-﻿using ExamonimyWeb.Entities;
+﻿using ExamonimyWeb.DTOs.UserDTO;
+using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Models.DTOs.UserDTO;
 
 namespace ExamonimyWeb.Services.AuthService
 {
