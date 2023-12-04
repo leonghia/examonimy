@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
+using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
@@ -19,6 +20,8 @@ namespace ExamonimyWeb.Profiles
             CreateMap<Course, CourseGetDto>();
             CreateMap<Exam, ExamGetDto>();
             CreateMap<ExamCreateDto, Exam>();
+            CreateMap<QuestionType, QuestionTypeGetDto>();
+            CreateMap<QuestionLevel, QuestionLevelGetDto>();
         }
     }
 }

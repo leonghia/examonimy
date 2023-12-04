@@ -6,6 +6,9 @@ import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
 import { QuestionTypes, QuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
 import { QuestionCreateDto } from "../dtos/question-create.dto.js";
+import { QuestionType } from "../models/question-type.model.js";
+import { QuestionLevel } from "../models/question-level.model.js";
+import { toggleDropdown, selectDropdownItem } from "../helpers/markup.helper.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -19,27 +22,38 @@ const previousButton = document.querySelector("#prev-btn");
 const nextButton = document.querySelector("#next-btn");
 const stepContainer = document.querySelector("#step-container");
 const segments = Array.from(document.querySelectorAll(".segment"));
-const stepButton3 = document.querySelector("#step-btn-3");
-const stepButton4 = document.querySelector("#step-btn-4");
-const questionPreviewContainer = document.querySelector("#question-preview-container");
 const optionEditorContainer = document.querySelector("#option-editor-container");
-
-
+const answerEditors = Array.from(document.querySelectorAll(".answer-editor"));
+const answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer = document.querySelector('.answer-editor[data-question-type-id="1"]');
+const answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers = document.querySelector('.answer-editor[data-question-type-id="2"]');
+const answerEditorForTrueFalseQuestion = document.querySelector('.answer-editor[data-question-type-id="3"]');
+const answerEditorForShortAnswerQuestion = document.querySelector('.answer-editor[data-question-type-id="4"]');
+const answerEditorForFillInBlankQuestion = document.querySelector('.answer-editor[data-question-type-id="5"]');
 // States and rule
-let courses = [new Course()];
 const coursesRequestParams = new RequestParams(12, 1);
 let paginationMetadata = new PaginationMetadata();
 let courseId = 0;
 let questionCreateDto = new QuestionCreateDto();
 
 // Function expressions
-const renderOptionEditor = (optionEditorContainer = new HTMLElement()) => {
+const showAnswerEditor = (questionTypeId = 1) => {
+    // hide answer editors of other question types   
+    // show the answer editor of the spectify question type
+    answerEditors.forEach(answerEditor => {
+        if (Number(answerEditor.dataset.questionTypeId) === questionTypeId)
+            answerEditor.classList.remove("hidden");
+        else
+            answerEditor.classList.add("hidden");
+    });
+}
+
+const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new HTMLElement()) => {
     tinymce.remove("#option-a");
     tinymce.remove("#option-b");
     tinymce.remove("#option-c");
     tinymce.remove("#option-d");
-    clearOptionEditorContainer(optionEditorContainer);
-    optionEditorContainer.insertAdjacentHTML("beforeend", `
+    clearChoiceEditorContainer(choiceEditorContainer);
+    choiceEditorContainer.insertAdjacentHTML("beforeend", `
 <fieldset>
   <legend class="sr-only">Plan</legend>
   <div class="space-y-5">
@@ -84,13 +98,13 @@ const renderOptionEditor = (optionEditorContainer = new HTMLElement()) => {
     tinymce.init(getTinyMCEOption("#option-d", 200));
 }
 
-const clearOptionEditorContainer = (optionEditorContainer = new HTMLElement()) => {
-    if (optionEditorContainer.firstChild) {
-        optionEditorContainer.innerHTML = "";
+const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) => {
+    if (choiceEditorContainer.firstChild) {
+        choiceEditorContainer.innerHTML = "";
     }
 }
 
-const getCourses = async (pageSize, pageNumber) => {
+const fetchCourses = async (pageSize, pageNumber) => {
     paginationContainer.classList.add("hidden");
     const response = await fetch(`${BASE_API_URL}/course?pageSize=${pageSize}&pageNumber=${pageNumber}`, {
         method: "GET",
@@ -100,9 +114,11 @@ const getCourses = async (pageSize, pageNumber) => {
     });
 
     const data = await response.json();
+    const courses = [new Course()];
     Object.assign(paginationMetadata, JSON.parse(response.headers.get(PAGINATION_METADATA_HEADER)));
     paginationInfoElement.textContent = `${paginationMetadata.CurrentPage} trên ${paginationMetadata.TotalPages}`;
-    return data;
+    Object.assign(courses, data);
+    return courses;
 }
 
 const populateCourses = (courses = [new Course()]) => {
@@ -138,46 +154,35 @@ const selectQuestionType = (event = new Event()) => {
     const clicked = event.target.closest(".dropdown-item");
     if (!clicked)
         return;
-    const dropdownItemName = clicked.querySelector(".dropdown-item-name");
-    const dropdownContainer = clicked.closest(".dropdown-container");
-    dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;
-    const dropdown = clicked.closest(".dropdown");
-    const dropdownItems = Array.from(dropdown.querySelectorAll(".dropdown-item"));
-    dropdownItems.forEach(dropdownItem => {
-        const itemName = dropdownItem.querySelector(".dropdown-item-name");
-        itemName.classList.remove("font-semibold");
-        itemName.classList.add("font-normal");
-        const itemCheckmark = dropdownItem.querySelector(".dropdown-item-checkmark");
-        itemCheckmark.classList.remove("text-violet-600");
-        itemCheckmark.classList.add("text-white");
-    });
-    dropdownItemName.classList.remove("font-normal");
-    dropdownItemName.classList.add("font-semibold");
-    const dropdownItemCheckmark = clicked.querySelector(".dropdown-item-checkmark");
-    dropdownItemCheckmark.classList.remove("text-white");
-    dropdownItemCheckmark.classList.add("text-violet-600");
-    toggleDropdown(dropdown);
-    const questionTypeDropdown = clicked.closest("#question-type-dropdown");
-    if (!questionTypeDropdown)
-        return;
-    const questionType = Number(clicked.dataset.type);
-    if (questionType === QuestionTypes.singleChoice || questionType === QuestionTypes.multipleChoice) {
-        renderOptionEditor(optionEditorContainer);
+    selectDropdownItem(clicked);
+
+    // render the option editor
+    const questionTypeId = Number(clicked.dataset.questionTypeId);
+    if (questionTypeId === QuestionTypes.MultipleChoiceWithOneCorrectAnswer || questionTypeId === QuestionTypes.MultipleChoiceWithMultipleCorrectAnswers) {
+        renderChoiceEditorForMultipleChoiceQuestion(optionEditorContainer);
     } else {
-        clearOptionEditorContainer(optionEditorContainer);
+        clearChoiceEditorContainer(optionEditorContainer);
     }
 
+    // show the answer editor
+    showAnswerEditor(questionTypeId);
+
     // construct the questionCreateDto based on its question type
-    questionCreateDto = QuestionCreateDtoConstructorMappings[questionType];
+    questionCreateDto = QuestionCreateDtoConstructorMappings[questionTypeId];
 
     // set the course id of questionCreateDto as the course id state
     questionCreateDto.courseId = courseId;
 }
 
-const toggleDropdown = (dropdown = new HTMLElement()) => {
-    dropdown.classList.toggle("opacity-0");
-    dropdown.classList.toggle("pointer-events-none");
+const selectQuestionLevel = (event = new Event()) => {
+    const clicked = event.target.closest(".dropdown-item");
+    if (!clicked)
+        return;
+    selectDropdownItem(clicked);
+    // update the question level id of questionCreateDto state
+    questionCreateDto.questionLevelId = Number(clicked.dataset.questionLevelId);
 }
+
 
 const selectCourse = (event = new Event()) => {
     const clicked = event.target.closest(".course");
@@ -195,8 +200,64 @@ const selectCourse = (event = new Event()) => {
     courseId = Number(clicked.dataset.id);
 }
 
-const selectQuestionLevel = () => {
+const fetchQuestionTypes = async () => {
+    const response = await fetch(`${BASE_API_URL}/question/type`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
 
+    const data = await response.json();
+    const questionTypes = [new QuestionType()];
+    Object.assign(questionTypes, data);
+    return questionTypes;
+}
+
+const fetchQuestionLevels = async () => {
+    const response = await fetch(`${BASE_API_URL}/question/level`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    const data = await response.json();
+    const questionLevels = [new QuestionLevel()];
+    Object.assign(questionLevels, data);
+    return questionLevels;
+}
+
+const populateQuestionTypes = (dropdown = new HTMLElement(), questionTypes = [new QuestionType()]) => {
+    dropdown.innerHTML = "";
+    questionTypes.forEach(questionType => {
+        dropdown.insertAdjacentHTML("beforeend", `
+<li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-type-id="${questionType.id}">
+    <span class="dropdown-item-name font-normal block truncate">${questionType.name}</span>
+    <span class="dropdown-item-checkmark text-white absolute inset-y-0 right-0 flex items-center pr-4">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+        </svg>
+    </span>
+</li>
+        `);
+    });
+}
+
+const populateQuestionLevels = (dropdown = new HTMLElement(), questionLevels = [new QuestionLevel()]) => {
+    dropdown.innerHTML = "";
+    questionLevels.forEach(questionLevel => {
+        dropdown.insertAdjacentHTML("beforeend", `
+<li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-level-id="${questionLevel.id}">  
+    <span class="dropdown-item-name font-normal block truncate">${questionLevel.name}</span>   
+    <span class="text-white absolute inset-y-0 right-0 flex items-center pr-4 dropdown-item-checkmark">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+        </svg>
+    </span>
+</li>
+        `);
+    });
 }
 
 // Event listeners
@@ -214,7 +275,7 @@ previousButton.addEventListener("click", async () => {
     if (paginationMetadata.CurrentPage === 1)
         return;
     coursesRequestParams.pageNumber--;
-    courses = await getCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
+    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
     populateCourses(courses);
 });
 
@@ -222,7 +283,7 @@ nextButton.addEventListener("click", async () => {
     if (paginationMetadata.CurrentPage === paginationMetadata.TotalPages)
         return;
     coursesRequestParams.pageNumber++;
-    courses = await getCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
+    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
     populateCourses(courses);
 });
 
@@ -302,17 +363,70 @@ stepContainer.addEventListener("click", event => {
     currentSegmentContainer.classList.remove("hidden");
 });
 
-stepButton3.addEventListener("click", () => {
-
-})
-
-stepButton4.addEventListener("click", () => {
-    // We create the preview if it has not been created yet
-    if (questionPreviewContainer.firstElementChild)
+answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.addEventListener("click", event => {
+    const clicked = event.target.closest("label");
+    if (!clicked)
         return;
+    // unhighlight all other choices
+    const choices = Array.from(answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.querySelectorAll("label"));
+    choices.forEach(choice => {
+        choice.classList.remove(..."bg-green-600 text-white hover:bg-green-700".split(" "));
+        choice.classList.add(..."bg-gray-100 text-gray-900 hover:bg-gray-200".split(" "));
+    });
 
+    // highlight clicked choice
+    clicked.classList.remove(..."bg-gray-100 text-gray-900 hover:bg-gray-200".split(" "));
+    clicked.classList.add(..."bg-green-600 text-white hover:bg-green-700".split(" "));
 
+    // update correct answer for questionCreateDto state
+    questionCreateDto.correctAnswer = Number(clicked.dataset.answer);
 });
+
+answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers.addEventListener("click", event => {
+    const clicked = event.target.closest("label");
+    if (!clicked)
+        return;
+    // toggle the clicked choice
+    clicked.classList.toggle("bg-green-600");
+    clicked.classList.toggle("text-white");
+    clicked.classList.toggle("hover:bg-green-700");
+    clicked.classList.toggle("bg-gray-100");
+    clicked.classList.toggle("text-gray-900");
+    clicked.classList.toggle("hover:bg-gray-200");
+    clicked.dataset.selected = clicked.dataset.selected === "false" ? "true" : "false";
+
+    // construct the correct answers for questionCreateDto
+    const correctAnswers = [];
+    const choices = Array.from(answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers.querySelectorAll("label"));
+    choices.forEach(choice => {
+        if (choice.dataset.selected === "true")
+            correctAnswers.push(choice.dataset.answer);
+    });
+
+    // update the correct answers for questionCreateDto
+    questionCreateDto.correctAnswers = correctAnswers.join("|");
+});
+
+answerEditorForTrueFalseQuestion.addEventListener("click", event => {
+    const clicked = event.target.closest("label");
+    if (!clicked)
+        return;
+    // unhighlight all other choices
+    const choices = Array.from(answerEditorForTrueFalseQuestion.querySelectorAll("label"));
+    choices.forEach(choice => {
+        choice.classList.remove(..."bg-green-600 text-white hover:bg-green-700".split(" "));
+        choice.classList.add(..."bg-gray-100 text-gray-900 hover:bg-gray-200".split(" "));
+    });
+
+    // highlight clicked choice
+    clicked.classList.remove(..."bg-gray-100 text-gray-900 hover:bg-gray-200".split(" "));
+    clicked.classList.add(..."bg-green-600 text-white hover:bg-green-700".split(" "));
+
+    // update correct answer for questionCreateDto state
+    questionCreateDto.correctAnswer = clicked.dataset.answer === "true";
+    console.log(questionCreateDto);
+});
+
 
 // On load
 (() => {
@@ -321,8 +435,13 @@ stepButton4.addEventListener("click", () => {
 })();
 
 (async () => {
-    courses = await getCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
+    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
     populateCourses(courses);
+    const questionTypes = await fetchQuestionTypes();
+    populateQuestionTypes(questionTypeDropdown, questionTypes);
+    const questionLevels = await fetchQuestionLevels();
+    populateQuestionLevels(questionLevelDropdown, questionLevels);
 })();
 
 tinymce.init(getTinyMCEOption("#question-content-editor", 300));
+tinymce.init(getTinyMCEOption("#answer-editor-for-short-answer-question", 300));

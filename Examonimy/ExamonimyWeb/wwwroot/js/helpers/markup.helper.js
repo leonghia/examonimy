@@ -57,3 +57,30 @@ export const highlightSidebarLink = (className = "") => {
         e.classList.add(..."bg-gray-800 text-white".split(" "));
     });  
 }
+
+export const toggleDropdown = (dropdown = new HTMLElement()) => {
+    dropdown.classList.toggle("opacity-0");
+    dropdown.classList.toggle("pointer-events-none");
+}
+
+export const selectDropdownItem = (clicked = new HTMLElement()) => {
+    const dropdownItemName = clicked.querySelector(".dropdown-item-name");
+    const dropdownContainer = clicked.closest(".dropdown-container");
+    dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;
+    const dropdown = clicked.closest(".dropdown");
+    const dropdownItems = Array.from(dropdown.querySelectorAll(".dropdown-item"));
+    dropdownItems.forEach(dropdownItem => {
+        const itemName = dropdownItem.querySelector(".dropdown-item-name");
+        itemName.classList.remove("font-semibold");
+        itemName.classList.add("font-normal");
+        const itemCheckmark = dropdownItem.querySelector(".dropdown-item-checkmark");
+        itemCheckmark.classList.remove("text-violet-600");
+        itemCheckmark.classList.add("text-white");
+    });
+    dropdownItemName.classList.remove("font-normal");
+    dropdownItemName.classList.add("font-semibold");
+    const dropdownItemCheckmark = clicked.querySelector(".dropdown-item-checkmark");
+    dropdownItemCheckmark.classList.remove("text-white");
+    dropdownItemCheckmark.classList.add("text-violet-600");
+    toggleDropdown(dropdown);
+}
