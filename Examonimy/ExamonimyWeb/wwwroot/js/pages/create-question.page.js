@@ -36,6 +36,8 @@ const questionTypePreview = document.querySelector("#question-type-preview");
 const questionLevelPreview = document.querySelector("#question-level-preview");
 const questionContentPreview = document.querySelector("#question-content-preview");
 const answerPreview = document.querySelector("#answer-preview");
+const buttonContainer = document.querySelector("#button-container");
+
 
 // States and rule
 const coursesRequestParams = new RequestParams(12, 1);
@@ -51,7 +53,7 @@ const populatePreviewInfo = (question = new Question()) => {
     questionLevelPreview.textContent = question.questionLevel.name;
     if (question.questionType.id === QuestionTypeIDs.FillInBlank)
         return;
-    questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();   
+    questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();  
 }
 
 const renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer = (questionCreateDto = new MultipleChoiceQuestionWithOneCorrectAnswerCreateDto()) => {
@@ -254,7 +256,6 @@ const renderPreviewForFillInBlankQuestion = (questionCreateDto = new FillInBlank
 
     // Update the correctAnswers state for questionCreateDto
     questionCreateDto.correctAnswers = correctAnswers.join("|");
-    console.log(questionCreateDto);
 }
 
 const showAnswerEditor = (questionTypeId = 1) => {
@@ -653,12 +654,21 @@ answerEditorForTrueFalseQuestion.addEventListener("click", event => {
     console.log(questionCreateDto);
 });
 
-step3.addEventListener("click", () => {
-    // We check if the question type is fill in blank
+step3.addEventListener("click", () => {  
+    // Update the question content for questionCreateDto
+    const content = tinymce.get("question-content-editor").getContent();
+    questionCreateDto.questionContent = content;
+    if (questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer || questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers) {
+        questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
+        questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
+        questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
+        questionCreateDto.choiceD = tinymce.get("choice-d").getContent();
+    }
+
+    // We only proceed if this is a fill in blank question
     if (questionCreateDto.questionTypeId !== 5)
         return;
     // We render the answer editor based on the numbers of blank from tinymce editor
-    const content = tinymce.get("question-content-editor").getContent({ format: "text" });
     const numbersOfBlank = (content.match(/__/g) || []).length;
 
     const textareas = Array.from(blankAnswerEditor.querySelectorAll("textarea"));
@@ -667,7 +677,7 @@ step3.addEventListener("click", () => {
 
     blankAnswerEditor.innerHTML = "";
 
-    for (let i = 0; i < numbersOfBlank; i++) {       
+    for (let i = 0; i < numbersOfBlank; i++) {
         blankAnswerEditor.insertAdjacentHTML("beforeend", `
 <div class="relative flex items-start">
     <div class="text-sm leading-6 grow">
@@ -704,6 +714,8 @@ step4.addEventListener("click", () => {
         default:
             break;
     }
+    console.log(questionCreateDto);
+    buttonContainer.classList.remove("hidden");
 });
 
 // On load

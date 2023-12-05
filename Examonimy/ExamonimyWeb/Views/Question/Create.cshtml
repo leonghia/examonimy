@@ -6,311 +6,317 @@
     ViewData["Title"] = "Create new question";
     Layout = "_AdminSidebar";
 }
-@await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
+<div>
+    @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
 
-<!-- Stepper -->
-<nav aria-label="Progress" class="">
-    <ol id="step-container" role="list" class="flex items-center justify-center">
-        <li class="step relative pr-8 sm:pr-96" data-order="1" id="step-1">
-            <!-- Current Step -->
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-gray-200"></div>
-            </div>
-            <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white">
-                <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">1. Chọn môn học</span>
-            </button>
-        </li>
-        <li class="step relative pr-8 sm:pr-96" data-order="2" id="step-2">
-            <!-- Upcoming Step -->
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-gray-200"></div>
-            </div>
-            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">2. Nhập câu hỏi</span>
-            </button>
-        </li>
-        <li class="step relative pr-8 sm:pr-96" data-order="3" id="step-3">
-            <!-- Upcoming Step -->
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-gray-200"></div>
-            </div>
-            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">3. Nhập đáp án</span>
-            </button>
-        </li>
-        <li class="step relative" data-order="4" id="step-4">
-            <!-- Upcoming Step -->
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-gray-200"></div>
-            </div>
-            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">4. Xem trước</span>
-            </button>
-        </li>
-    </ol>
-</nav>
-
-<!-- Segment 1 (Select course) -->
-<div id="segment-1" class="segment mt-20">
-    @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho câu hỏi bạn muốn tạo."))
-    <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
-    </div>
-    <div id="pagination-container" class="mt-10 flex items-center justify-center col-span-2 hidden">
-        <div class="flex items-center justify-between w-full text-gray-600 dark:text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-600 max-w-[128px] mx-2">
-            <button id="prev-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-s-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
-                <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
-                </svg>
-                <span class="sr-only">Previous page</span>
-            </button>
-            <span id="pagination-info" class="flex-shrink-0 mx-1 text-sm font-medium space-x-0.5 rtl:space-x-reverse"></span>
-            <button id="next-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-e-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
-                <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
-                </svg>
-                <span class="sr-only">Next page</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Segment 2 (Enter question details) -->
-<div id="segment-2" class="segment mt-20 flex justify-center hidden">
-    <div class="w-1/2">
-        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập câu hỏi", "Vui lòng nhập các thông tin như dạng câu hỏi, mức độ, nội dung câu hỏi và các phương án trả lời."))
-        <div class="mt-8 flex items-center gap-x-10">
-            <div class="basis-72">
-                <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
-                <div class="relative mt-2 dropdown-container">
-                    <button type="button" id="question-type-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
-                        <span class="selected-item block truncate">Chọn dạng câu hỏi</span>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-2">
-                            <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                            </svg>
-                        </span>
+    <div class="">
+        <!-- Stepper -->
+        <nav aria-label="Progress" class="mb-20">
+            <ol id="step-container" role="list" class="flex items-center justify-center">
+                <li class="step relative pr-8 sm:pr-96" data-order="1" id="step-1">
+                    <!-- Current Step -->
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white">
+                        <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
+                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">1. Chọn môn học</span>
                     </button>
-
-                    <!--
-                      Select popover, show/hide based on select state.
-
-                      Entering: ""
-                        From: ""
-                        To: ""
-                      Leaving: "transition ease-in duration-100"
-                        From: "opacity-100"
-                        To: "opacity-0"
-                    -->
-                    <ul id="question-type-dropdown" class="dropdown cursor-pointer opacity-0 pointer-events-none absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
-                                             
-                    </ul>
-                </div>
-            </div>
-            <div class="basis-64">
-                <label id="question-level-label" class="block text-sm leading-6 text-gray-700 font-medium">Mức độ</label>
-                <div class="relative mt-2 dropdown-container">
-                    <button type="button" id="question-level-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
-                        <span class="selected-item block truncate">Chọn mức độ câu hỏi</span>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-2">
-                            <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                            </svg>
-                        </span>
+                </li>
+                <li class="step relative pr-8 sm:pr-96" data-order="2" id="step-2">
+                    <!-- Upcoming Step -->
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">2. Nhập câu hỏi</span>
                     </button>
+                </li>
+                <li class="step relative pr-8 sm:pr-96" data-order="3" id="step-3">
+                    <!-- Upcoming Step -->
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">3. Nhập đáp án</span>
+                    </button>
+                </li>
+                <li class="step relative" data-order="4" id="step-4">
+                    <!-- Upcoming Step -->
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">4. Xem trước</span>
+                    </button>
+                </li>
+            </ol>
+        </nav>
 
-                    <!--
-                      Select popover, show/hide based on select state.
-
-                      Entering: ""
-                        From: ""
-                        To: ""
-                      Leaving: "transition ease-in duration-100"
-                        From: "opacity-100"
-                        To: "opacity-0"
-                    -->
-                    <ul id="question-level-dropdown" class="dropdown cursor-pointer pointer-events-none opacity-0 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md shadow-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
-                        
-                    </ul>
+        <!-- Segment 1 (Select course) -->
+        <div id="segment-1" class="segment">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho câu hỏi bạn muốn tạo."))
+            <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+            </div>
+            <div id="pagination-container" class="mt-10 flex items-center justify-center col-span-2 hidden">
+                <div class="flex items-center justify-between w-full text-gray-600 dark:text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-600 max-w-[128px] mx-2">
+                    <button id="prev-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-s-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
+                        <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                        </svg>
+                        <span class="sr-only">Previous page</span>
+                    </button>
+                    <span id="pagination-info" class="flex-shrink-0 mx-1 text-sm font-medium space-x-0.5 rtl:space-x-reverse"></span>
+                    <button id="next-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-e-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
+                        <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="sr-only">Next page</span>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="mt-10" id="question-editor-container">
-            <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium mb-4">Nội dung câu hỏi</label>
-            <textarea id="question-content-editor"></textarea>          
-            <div id="option-editor-container" class="mt-8"></div>
-        </div>          
+
+        <!-- Segment 2 (Enter question details) -->
+        <div id="segment-2" class="segment flex justify-center hidden">
+            <div class="w-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập câu hỏi", "Vui lòng nhập các thông tin như dạng câu hỏi, mức độ, nội dung câu hỏi và các phương án trả lời."))
+                <div class="mt-8 flex items-center gap-x-10">
+                    <div class="basis-72">
+                        <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
+                        <div class="relative mt-2 dropdown-container">
+                            <button type="button" id="question-type-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                                <span class="selected-item block truncate">Chọn dạng câu hỏi</span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!--
+                              Select popover, show/hide based on select state.
+
+                              Entering: ""
+                                From: ""
+                                To: ""
+                              Leaving: "transition ease-in duration-100"
+                                From: "opacity-100"
+                                To: "opacity-0"
+                            -->
+                            <ul id="question-type-dropdown" class="dropdown cursor-pointer opacity-0 pointer-events-none absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="basis-64">
+                        <label id="question-level-label" class="block text-sm leading-6 text-gray-700 font-medium">Mức độ</label>
+                        <div class="relative mt-2 dropdown-container">
+                            <button type="button" id="question-level-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                                <span class="selected-item block truncate">Chọn mức độ câu hỏi</span>
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!--
+                              Select popover, show/hide based on select state.
+
+                              Entering: ""
+                                From: ""
+                                To: ""
+                              Leaving: "transition ease-in duration-100"
+                                From: "opacity-100"
+                                To: "opacity-0"
+                            -->
+                            <ul id="question-level-dropdown" class="dropdown cursor-pointer pointer-events-none opacity-0 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md shadow-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10" id="question-editor-container">
+                    <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium mb-4">Nội dung câu hỏi</label>
+                    <textarea id="question-content-editor"></textarea>
+                    <div id="option-editor-container" class="mt-8"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segment 3 (Enter answers) -->
+        <div id="segment-3" class="segment flex justify-center hidden">
+            <div class="w-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập đáp án", "Vui lòng nhập đáp án cho câu hỏi mà bạn đang tạo."))
+                <div class="mt-6" id="answer-editor-container">
+                    <div data-question-type-id="1" class="answer-editor hidden">
+                        <fieldset class="mt-2">
+                            <legend class="sr-only">Choose a memory option</legend>
+                            <div class="flex gap-4">
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="0" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>A</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="1" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>B</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="2" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>C</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="3" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>D</span>
+                                </label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div data-question-type-id="2" class="answer-editor hidden">
+                        <fieldset class="mt-2">
+                            <legend class="sr-only">Choose a memory option</legend>
+                            <div class="flex gap-4">
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="0" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>A</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="1" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>B</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="2" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>C</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="3" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>D</span>
+                                </label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div data-question-type-id="3" class="answer-editor hidden">
+                        <fieldset class="mt-2">
+                            <legend class="sr-only">Choose a memory option</legend>
+                            <div class="flex gap-4">
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="true" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>Đ</span>
+                                </label>
+                                <!--
+                                  In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
+                                  Active: "ring-2 ring-indigo-600 ring-offset-2"
+                                  Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                                -->
+                                <label data-answer="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                    <span>S</span>
+                                </label>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div data-question-type-id="4" class="answer-editor hidden">
+                        <div class="mt-2">
+                            <textarea id="answer-editor-for-short-answer-question"></textarea>
+                        </div>
+                    </div>
+                    <div data-question-type-id="5" class="answer-editor hidden">
+                        <fieldset>
+                            <legend class="sr-only">Đáp án cho các chỗ trống</legend>
+                            <div id="blank-answer-editor" class="space-y-5">
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segment 4 (Preview) -->
+        <div id="segment-4" class="segment flex justify-center hidden">
+            <div class="w-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại các thông tin cần thiết trước khi hoàn tất."))
+                <div id="question-preview-container" class="mt-6 p-6 bg-white rounded-lg">
+
+                    <!-- Course info preview -->
+                    <div class="mb-6">
+                        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
+                        <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
+                    </div>
+
+                    <!-- Question type preview -->
+                    <div class="mb-6">
+                        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
+                        <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
+                    </div>
+
+                    <!-- Question level preview -->
+                    <div class="mb-6">
+                        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
+                        <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
+                    </div>
+
+                    <!-- Question content preview -->
+                    <div class="mb-6">
+                        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
+                        <div id="question-content-preview" class="prose max-w-none mt-4 text-gray-700">
+                        </div>
+                    </div>
+
+                    <!-- Answer preview -->
+                    <div class="mb-6">
+                        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
+                        <div id="answer-preview" class="prose max-w-none mt-4 flex items-center gap-x-3 text-sm font-medium">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<!-- Segment 3 (Enter answers) -->
-<div id="segment-3" class="segment mt-20 flex justify-center hidden">
-    <div class="w-1/2">
-        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập đáp án", "Vui lòng nhập đáp án cho câu hỏi mà bạn đang tạo."))   
-        <div class="mt-6" id="answer-editor-container">
-            <div data-question-type-id="1" class="answer-editor hidden">
-                <fieldset class="mt-2">
-                    <legend class="sr-only">Choose a memory option</legend>
-                    <div class="flex gap-4">
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="0" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">                         
-                            <span>A</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="1" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">                         
-                            <span>B</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="2" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">                        
-                            <span>C</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="3" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">                         
-                            <span>D</span>
-                        </label>
-                    </div>
-                </fieldset>
-            </div>
-            <div data-question-type-id="2" class="answer-editor hidden">
-                <fieldset class="mt-2">
-                    <legend class="sr-only">Choose a memory option</legend>
-                    <div class="flex gap-4">
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="0" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>A</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="1" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>B</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="2" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>C</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="3" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>D</span>
-                        </label>
-                    </div>
-                </fieldset>
-            </div>
-            <div data-question-type-id="3" class="answer-editor hidden">
-                <fieldset class="mt-2">
-                    <legend class="sr-only">Choose a memory option</legend>
-                    <div class="flex gap-4">
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="true" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>Đ</span>
-                        </label>
-                        <!--
-                          In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
-                          Active: "ring-2 ring-indigo-600 ring-offset-2"
-                          Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
-                        -->
-                        <label data-answer="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
-                            <span>S</span>
-                        </label>                     
-                    </div>
-                </fieldset>
-            </div>
-            <div data-question-type-id="4" class="answer-editor hidden">
-                <div class="mt-2">
-                    <textarea id="answer-editor-for-short-answer-question"></textarea>
-                </div>              
-            </div>
-            <div data-question-type-id="5" class="answer-editor hidden">
-                <fieldset>
-                    <legend class="sr-only">Đáp án cho các chỗ trống</legend>
-                    <div id="blank-answer-editor" class="space-y-5">
-                                            
-                    </div>
-                </fieldset>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Segment 4 (Preview) -->
-<div id="segment-4" class="segment mt-20 flex justify-center hidden">
-    <div class="w-1/2">      
-        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại các thông tin cần thiết trước khi hoàn tất."))
-        <div id="question-preview-container" class="mt-6 p-6 bg-white rounded-lg">
-
-            <!-- Course info preview -->
-            <div class="mb-6">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
-                <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
-            </div>
-
-            <!-- Question type preview -->
-            <div class="mb-6">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
-                <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
-            </div>
-
-            <!-- Question level preview -->
-            <div class="mb-6">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
-                <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
-            </div>
-
-            <!-- Question content preview -->
-            <div class="mb-6">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
-                <div id="question-content-preview" class="prose max-w-none mt-4 text-gray-700">
-
-                </div>               
-            </div>
-
-            <!-- Answer preview -->
-            <div class="mb-6">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
-                <div id="answer-preview" class="prose max-w-none mt-4 flex items-center gap-x-3 text-sm font-medium">
-                    
-                </div>             
-            </div>
-                   
-        </div>
-    </div>
+<!-- Create button and cancel button -->
+<div id="button-container" class="flex items-center gap-x-5 justify-end hidden">
+    <a href="/question" class="font-semibold text-violet-700 hover:text-violet-600">Huỷ</a>
+    <button type="button" class="rounded-md bg-violet-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Tạo câu hỏi</button>
 </div>
 
 <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>

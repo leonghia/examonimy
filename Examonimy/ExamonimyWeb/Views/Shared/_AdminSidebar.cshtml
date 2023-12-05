@@ -13,7 +13,7 @@
   <body class="h-full">
   ```
 -->
-<div>
+<div class="h-fit">
     <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
     <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
         <!--
@@ -261,7 +261,7 @@
         </div>
     </div>
 
-    <div class="lg:pl-72">
+    <div class="lg:pl-72 h-full">
         <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 px-4 sm:gap-x-6 sm:px-6 lg:px-8">
             <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden">
                 <span class="sr-only">Open sidebar</span>
@@ -319,8 +319,8 @@
             </div>
         </div>
 
-        <main class="py-10">
-            <div class="px-4 sm:px-6 lg:px-24">
+        <main class="py-10 h-[calc(100%-4rem)]">
+            <div class="px-4 sm:px-6 lg:px-24 h-full flex flex-col justify-between gap-y-20">
                 <!-- Your content -->
                 @RenderBody()
             </div>

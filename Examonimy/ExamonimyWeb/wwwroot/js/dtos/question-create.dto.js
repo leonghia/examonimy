@@ -3,7 +3,6 @@
     questionTypeId = 0;
     questionLevelId = 0;
     questionContent = "";
-    authorId = 0;
 }
 
 export class MultipleChoiceQuestionCreateDto extends QuestionCreateDto {
