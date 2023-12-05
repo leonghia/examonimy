@@ -49,6 +49,8 @@ const populatePreviewInfo = (question = new Question()) => {
     coursePreview.textContent = question.course.name;
     questionTypePreview.textContent = question.questionType.name;
     questionLevelPreview.textContent = question.questionLevel.name;
+    if (question.questionType.id === QuestionTypeIDs.FillInBlank)
+        return;
     questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();   
 }
 
@@ -214,7 +216,45 @@ const renderPreviewForShortAnswerQuestion = (questionCreateDto = new ShortAnswer
 }
 
 const renderPreviewForFillInBlankQuestion = (questionCreateDto = new FillInBlankQuestionCreateDto()) => {
+    // Render the question content with styled blanks
+    let i = 0;
+    const content = tinymce.get("question-content-editor").getContent().replaceAll("__", () => {
+        return `
+<span class="mx-1 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
+    <span class="text-white font-semibold text-xs">${++i}</span>
+</span>
+<span class="mr-2 inline-flex w-20 border-b-2 border-gray-300"></span>
+        `;
+    });
+    questionContentPreview.innerHTML = content;
+    answerPreview.innerHTML = `
+<fieldset class="">
+    <legend class="sr-only">Đáp án</legend>
+    <div class="space-y-5" id="blank-answer-container">
+                 
+    </div>
+</fieldset>
+    `;
 
+    // Render the answer preview
+    i = 0;
+    var correctAnswers = Array.from(blankAnswerEditor.querySelectorAll("textarea")).map(textarea => textarea.id).map(id => tinymce.get(id).getContent());
+    correctAnswers.forEach(answer => {
+        answerPreview.querySelector("#blank-answer-container").insertAdjacentHTML("beforeend", `
+        <div class="relative flex items-start">
+            <div class="leading-6 flex">
+                <span class="mr-2 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+                   <span class="text-white font-semibold text-xs">${++i}</span>
+                </span>
+                <div class="prose-p:m-0">${answer}</div>
+            </div>
+        </div>
+        `);
+    });
+
+    // Update the correctAnswers state for questionCreateDto
+    questionCreateDto.correctAnswers = correctAnswers.join("|");
+    console.log(questionCreateDto);
 }
 
 const showAnswerEditor = (questionTypeId = 1) => {
@@ -638,7 +678,7 @@ step3.addEventListener("click", () => {
     </div>
 </div>
         `);
-        tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 200));
+        tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 150));
     }
 });
 
