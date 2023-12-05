@@ -6,19 +6,18 @@
     authorId = 0;
 }
 
-export class MultipleChoiceQuestionWithOneCorrectAnswerDto extends QuestionCreateDto {
+export class MultipleChoiceQuestionCreateDto extends QuestionCreateDto {
     choiceA = "";
     choiceB = "";
     choiceC = "";
     choiceD = "";
+}
+
+export class MultipleChoiceQuestionWithOneCorrectAnswerCreateDto extends MultipleChoiceQuestionCreateDto {   
     correctAnswer = 0;
 }
 
-export class MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto extends QuestionCreateDto {
-    choiceA = "";
-    choiceB = "";
-    choiceC = "";
-    choiceD = "";
+export class MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto extends MultipleChoiceQuestionCreateDto {
     correctAnswers = "";
 }
 

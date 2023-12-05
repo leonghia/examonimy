@@ -1,6 +1,6 @@
-﻿import { MultipleChoiceQuestionWithOneCorrectAnswerDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../dtos/question-create.dto.js";
+﻿import { MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../dtos/question-create.dto.js";
 
-export const QuestionTypes = {
+export const QuestionTypeIDs = {
     MultipleChoiceWithOneCorrectAnswer: 1,
     MultipleChoiceWithMultipleCorrectAnswers: 2,
     TrueFalse: 3,
@@ -8,15 +8,15 @@ export const QuestionTypes = {
     FillInBlank: 5
 }
 
-export const QuestionLevels = {
+export const QuestionLevelIDs = {
     Perception: 1,
     Understand: 2,
     Apply: 3,
     Analyze: 4
 }
 
-export const QuestionCreateDtoConstructorMappings = {
-    1: new MultipleChoiceQuestionWithOneCorrectAnswerDto(),
+export const QuestionTypeIdQuestionCreateDtoConstructorMappings = {
+    1: new MultipleChoiceQuestionWithOneCorrectAnswerCreateDto(),
     2: new MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto(),
     3: new TrueFalseQuestionCreateDto(),
     4: new ShortAnswerQuestionCreateDto(),

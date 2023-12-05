@@ -4,11 +4,12 @@ import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
-import { QuestionTypes, QuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
-import { QuestionCreateDto } from "../dtos/question-create.dto.js";
+import { QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
 import { QuestionType } from "../models/question-type.model.js";
 import { QuestionLevel } from "../models/question-level.model.js";
 import { toggleDropdown, selectDropdownItem } from "../helpers/markup.helper.js";
+import { Question } from "../models/question.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -27,17 +28,100 @@ const answerEditors = Array.from(document.querySelectorAll(".answer-editor"));
 const answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer = document.querySelector('.answer-editor[data-question-type-id="1"]');
 const answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers = document.querySelector('.answer-editor[data-question-type-id="2"]');
 const answerEditorForTrueFalseQuestion = document.querySelector('.answer-editor[data-question-type-id="3"]');
-const answerEditorForShortAnswerQuestion = document.querySelector('.answer-editor[data-question-type-id="4"]');
-const answerEditorForFillInBlankQuestion = document.querySelector('.answer-editor[data-question-type-id="5"]');
 const blankAnswerEditor = document.querySelector("#blank-answer-editor");
 const step3 = document.querySelector("#step-3");
+const step4 = document.querySelector("#step-4");
+const coursePreview = document.querySelector("#course-preview");
+const questionTypePreview = document.querySelector("#question-type-preview");
+const questionLevelPreview = document.querySelector("#question-level-preview");
+const questionContentPreview = document.querySelector("#question-content-preview");
+const answerPreview = document.querySelector("#answer-preview");
+
 // States and rule
 const coursesRequestParams = new RequestParams(12, 1);
 let paginationMetadata = new PaginationMetadata();
-let courseId = 0;
+let question = new Question();
 let questionCreateDto = new QuestionCreateDto();
 
+
 // Function expressions
+const populatePreviewInfo = (question = new Question()) => {
+    coursePreview.textContent = question.course.name;
+    questionTypePreview.textContent = question.questionType.name;
+    questionLevelPreview.textContent = question.questionLevel.name;
+    questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();   
+}
+
+const renderChoicePreviewForMultipleChoiceQuestion = (questionCreateDto = new MultipleChoiceQuestionCreateDto()) => {
+    questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
+    questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
+    questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
+    questionCreateDto.choiceD = tinymce.get("choice-d").getContent();
+    questionContentPreview.insertAdjacentHTML("beforeend", `
+<fieldset class="mt-4">
+    <legend class="sr-only">Phương án</legend>
+    <div class="space-y-5">
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input id="small" aria-describedby="small-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label for="small" class="font-medium text-gray-900 mr-1">A.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceA}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input id="medium" aria-describedby="medium-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label for="medium" class="font-medium text-gray-900 mr-1">B.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceB}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label for="large" class="font-medium text-gray-900 mr-1">C.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceC}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label for="large" class="font-medium text-gray-900 mr-1">D.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceD}</div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+    `);
+}
+
+const renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer = (questionCreateDto = new MultipleChoiceQuestionWithOneCorrectAnswerCreateDto()) => {
+    renderChoicePreviewForMultipleChoiceQuestion(questionCreateDto);
+}
+
+const renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers = (questionCreateDto = new MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto()) => {
+    renderChoicePreviewForMultipleChoiceQuestion(questionCreateDto);
+}
+
+const renderPreviewForTrueFalseQuestion = (questionCreateDto = new TrueFalseQuestionCreateDto()) => {
+
+}
+
+const renderPreviewForShortAnswerQuestion = (questionCreateDto = new ShortAnswerQuestionCreateDto()) => {
+
+}
+
+const renderPreviewForFillInBlankQuestion = (questionCreateDto = new FillInBlankQuestionCreateDto()) => {
+
+}
+
 const showAnswerEditor = (questionTypeId = 1) => {
     // hide answer editors of other question types   
     // show the answer editor of the spectify question type
@@ -50,10 +134,10 @@ const showAnswerEditor = (questionTypeId = 1) => {
 }
 
 const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new HTMLElement()) => {
-    tinymce.remove("#option-a");
-    tinymce.remove("#option-b");
-    tinymce.remove("#option-c");
-    tinymce.remove("#option-d");
+    tinymce.remove("#choice-a");
+    tinymce.remove("#choice-b");
+    tinymce.remove("#choice-c");
+    tinymce.remove("#choice-d");
     clearChoiceEditorContainer(choiceEditorContainer);
     choiceEditorContainer.insertAdjacentHTML("beforeend", `
 <fieldset>
@@ -63,7 +147,7 @@ const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new
       <div class="text-sm leading-6 grow">
         <label for="small" class="font-medium text-gray-700">1. Phương án A</label>
         <div class="mt-2">
-            <textarea id="option-a"></textarea>
+            <textarea id="choice-a"></textarea>
         </div>
       </div>
     </div>
@@ -71,7 +155,7 @@ const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new
       <div class="text-sm leading-6 grow">
         <label for="medium" class="font-medium text-gray-700">2. Phương án B</label>
         <div class="mt-2">
-            <textarea id="option-b"></textarea>
+            <textarea id="choice-b"></textarea>
         </div>
       </div>
     </div>
@@ -79,7 +163,7 @@ const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new
       <div class="text-sm leading-6 grow">
         <label for="large" class="font-medium text-gray-700">3. Phương án C</label>
         <div class="mt-2">
-            <textarea id="option-c"></textarea>
+            <textarea id="choice-c"></textarea>
         </div>
       </div>
     </div>
@@ -87,17 +171,17 @@ const renderChoiceEditorForMultipleChoiceQuestion = (choiceEditorContainer = new
       <div class="text-sm leading-6 grow">
         <label for="large" class="font-medium text-gray-700">4. Phương án D</label>
         <div class="mt-2">
-            <textarea id="option-d"></textarea>
+            <textarea id="choice-d"></textarea>
         </div>
       </div>
     </div>
   </div>
 </fieldset>
     `);
-    tinymce.init(getTinyMCEOption("#option-a", 200));
-    tinymce.init(getTinyMCEOption("#option-b", 200));
-    tinymce.init(getTinyMCEOption("#option-c", 200));
-    tinymce.init(getTinyMCEOption("#option-d", 200));
+    tinymce.init(getTinyMCEOption("#choice-a", 200));
+    tinymce.init(getTinyMCEOption("#choice-b", 200));
+    tinymce.init(getTinyMCEOption("#choice-c", 200));
+    tinymce.init(getTinyMCEOption("#choice-d", 200));
 }
 
 const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) => {
@@ -132,7 +216,7 @@ const populateCourses = (courses = [new Course()]) => {
             <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
-                    <span class="block text-sm font-medium text-violet-800">${course.name}</span>
+                    <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
                     <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có câu hỏi nào được tạo</span>
                     <span class="mt-6 text-sm font-medium text-gray-900">0 câu hỏi</span>
                 </span>
@@ -160,7 +244,7 @@ const selectQuestionType = (event = new Event()) => {
 
     // render the option editor
     const questionTypeId = Number(clicked.dataset.questionTypeId);
-    if (questionTypeId === QuestionTypes.MultipleChoiceWithOneCorrectAnswer || questionTypeId === QuestionTypes.MultipleChoiceWithMultipleCorrectAnswers) {
+    if (questionTypeId === QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer || questionTypeId === QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers) {
         renderChoiceEditorForMultipleChoiceQuestion(optionEditorContainer);
     } else {
         clearChoiceEditorContainer(optionEditorContainer);
@@ -170,13 +254,14 @@ const selectQuestionType = (event = new Event()) => {
     showAnswerEditor(questionTypeId);
 
     // construct the questionCreateDto based on its question type
-    questionCreateDto = QuestionCreateDtoConstructorMappings[questionTypeId];
+    questionCreateDto = QuestionTypeIdQuestionCreateDtoConstructorMappings[questionTypeId];
 
     // set the course id of questionCreateDto as the course id state
-    questionCreateDto.courseId = courseId;
+    questionCreateDto.courseId = question.course.id;
 
     // set the questionTypeId of questionCreateDto
-    questionCreateDto.questionTypeId = questionTypeId;
+    question.questionType = new QuestionType(questionTypeId, clicked.querySelector(".dropdown-item-name").textContent);
+    questionCreateDto.questionTypeId = question.questionType.id;
 }
 
 const selectQuestionLevel = (event = new Event()) => {
@@ -185,7 +270,8 @@ const selectQuestionLevel = (event = new Event()) => {
         return;
     selectDropdownItem(clicked);
     // update the question level id of questionCreateDto state
-    questionCreateDto.questionLevelId = Number(clicked.dataset.questionLevelId);
+    question.questionLevel = new QuestionLevel(Number(clicked.dataset.questionLevelId), clicked.querySelector(".dropdown-item-name").textContent);
+    questionCreateDto.questionLevelId = question.questionLevel.id;
 }
 
 
@@ -201,8 +287,8 @@ const selectCourse = (event = new Event()) => {
     clicked.classList.add(..."border border-violet-600 ring-1 ring-violet-600".split(" "));
     clicked.querySelector(".checkbox").classList.remove("invisible");
 
-    // update course id state
-    courseId = Number(clicked.dataset.id);
+    // update questionState   
+    question.course = new Course(Number(clicked.dataset.id), clicked.querySelector(".course-name").textContent);
 }
 
 const fetchQuestionTypes = async () => {
@@ -458,6 +544,30 @@ step3.addEventListener("click", () => {
 </div>
         `);
         tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 200));
+    }
+});
+
+step4.addEventListener("click", () => {
+    populatePreviewInfo(question);
+    // Render the preview based on questionCreateDto's question type
+    switch (questionCreateDto.questionTypeId) {
+        case QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer:
+            renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer(questionCreateDto);
+            break;
+        case QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers:
+            renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers(questionCreateDto);
+            break;
+        case QuestionTypeIDs.TrueFalse:
+            renderPreviewForTrueFalseQuestion(questionCreateDto);
+            break;
+        case QuestionTypeIDs.ShortAnswer:
+            renderPreviewForShortAnswerQuestion(questionCreateDto);
+            break;
+        case QuestionTypeIDs.FillInBlank:
+            renderPreviewForFillInBlankQuestion(questionCreateDto);
+            break;
+        default:
+            break;
     }
 });
 

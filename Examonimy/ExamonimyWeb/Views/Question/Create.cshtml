@@ -7,6 +7,8 @@
     Layout = "_AdminSidebar";
 }
 @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
+
+<!-- Stepper -->
 <nav aria-label="Progress" class="">
     <ol id="step-container" role="list" class="flex items-center justify-center">
         <li class="step relative pr-8 sm:pr-96" data-order="1" id="step-1">
@@ -52,7 +54,7 @@
     </ol>
 </nav>
 
-<!-- Segment 1 -->
+<!-- Segment 1 (Select course) -->
 <div id="segment-1" class="segment mt-20">
     @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho câu hỏi bạn muốn tạo."))
     <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
@@ -76,7 +78,7 @@
     </div>
 </div>
 
-<!-- Segment 2 -->
+<!-- Segment 2 (Enter question details) -->
 <div id="segment-2" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">
         @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập câu hỏi", "Vui lòng nhập các thông tin như dạng câu hỏi, mức độ, nội dung câu hỏi và các phương án trả lời."))
@@ -144,7 +146,7 @@
     </div>
 </div>
 
-<!-- Segment 3 -->
+<!-- Segment 3 (Enter answers) -->
 <div id="segment-3" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">
         @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập đáp án", "Vui lòng nhập đáp án cho câu hỏi mà bạn đang tạo."))   
@@ -267,75 +269,48 @@
     </div>
 </div>
 
-<!-- Segment 4 -->
+<!-- Segment 4 (Preview) -->
 <div id="segment-4" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">      
         @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại các thông tin cần thiết trước khi hoàn tất."))
         <div id="question-preview-container" class="mt-6 p-6 bg-white rounded-lg">
+
+            <!-- Course info preview -->
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
-                <p class="mt-4 text-sm font-normal text-violet-600">Lập trình hướng đối tượng</p>
+                <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
             </div>
+
+            <!-- Question type preview -->
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
-                <p class="mt-4 text-sm font-normal text-violet-600">Trắc nghiệm đơn</p>
+                <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
             </div>
+
+            <!-- Question level preview -->
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
-                <p class="mt-4 text-sm font-normal text-violet-600">Vận dụng cao</p>
+                <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600"></p>
             </div>
-            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
-            <p class="mt-4 text-sm font-normal text-gray-700">
-                Hãy cho biết thể tích dung dịch HCl 0,05M đã phản ứng vừa đủ với dung dịch
-                NaOH trong thí nghiệm trên?
-            </p>         
-            <fieldset class="mt-4 mb-6">
-                <legend class="sr-only">Phương án</legend>
-                <div class="space-y-5">
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input id="small" aria-describedby="small-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="small" class="font-medium text-gray-900 mr-1">A.</label>
-                            <span id="small-description" class="text-gray-700">4 GB RAM / 2 CPUS / 80 GB SSD Storage</span>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input id="medium" aria-describedby="medium-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="medium" class="font-medium text-gray-900 mr-1">B.</label>
-                            <span id="medium-description" class="text-gray-700">8 GB RAM / 4 CPUS / 160 GB SSD Storage</span>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="large" class="font-medium text-gray-900 mr-1">C.</label>
-                            <span id="large-description" class="text-gray-700">16 GB RAM / 8 CPUS / 320 GB SSD Storage</span>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="large" class="font-medium text-gray-900 mr-1">D.</label>
-                            <span id="large-description" class="text-gray-700">32 GB RAM / 16 CPUS / 640 GB SSD Storage</span>
-                        </div>
-                    </div>
+
+            <!-- Question content preview -->
+            <div class="mb-6">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
+                <div id="question-content-preview" class="prose mt-4 text-gray-700">
+
+                </div>               
+            </div>
+
+            <!-- Answer preview -->
+            <div class="mb-6">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
+                <div id="answer-preview" class="mt-4 flex items-center text-sm font-medium" aria-current="step">
+                    <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+                        <span class="text-white">C</span>
+                    </span>
                 </div>
-            </fieldset>
-            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
-            <div class="mt-4 flex items-center text-sm font-medium" aria-current="step">
-                <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-                    <span class="text-white">C</span>
-                </span>              
             </div>
+                   
         </div>
     </div>
 </div>
