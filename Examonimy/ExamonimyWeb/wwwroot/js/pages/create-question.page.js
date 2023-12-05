@@ -208,7 +208,9 @@ const renderPreviewForTrueFalseQuestion = (questionCreateDto = new TrueFalseQues
 }
 
 const renderPreviewForShortAnswerQuestion = (questionCreateDto = new ShortAnswerQuestionCreateDto()) => {
-
+    // Render answer preview
+    questionCreateDto.correctAnswer = tinymce.get("answer-editor-for-short-answer-question").getContent();
+    answerPreview.innerHTML = questionCreateDto.correctAnswer;
 }
 
 const renderPreviewForFillInBlankQuestion = (questionCreateDto = new FillInBlankQuestionCreateDto()) => {
