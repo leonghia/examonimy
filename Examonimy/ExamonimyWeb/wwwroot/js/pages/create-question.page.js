@@ -174,7 +174,37 @@ const renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers = (questi
 }
 
 const renderPreviewForTrueFalseQuestion = (questionCreateDto = new TrueFalseQuestionCreateDto()) => {
+    // Render choice preview
+    questionContentPreview.insertAdjacentHTML("beforeend", `
+<fieldset class="mt-4">
+    <legend class="sr-only">Phương án</legend>
+    <div class="space-y-5">
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="mr-1">Đúng</label>           
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="mr-1">Sai</label>             
+            </div>
+        </div>
+    </div>
+</fieldset>
+    `);
 
+    // Render answer preview
+    answerPreview.innerHTML = `
+<span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+    <span class="text-white">${questionCreateDto.correctAnswer ? "Đ" : "S"}</span>
+</span>
+    `;
 }
 
 const renderPreviewForShortAnswerQuestion = (questionCreateDto = new ShortAnswerQuestionCreateDto()) => {
