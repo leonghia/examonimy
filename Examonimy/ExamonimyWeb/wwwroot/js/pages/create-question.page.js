@@ -29,6 +29,8 @@ const answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers = document
 const answerEditorForTrueFalseQuestion = document.querySelector('.answer-editor[data-question-type-id="3"]');
 const answerEditorForShortAnswerQuestion = document.querySelector('.answer-editor[data-question-type-id="4"]');
 const answerEditorForFillInBlankQuestion = document.querySelector('.answer-editor[data-question-type-id="5"]');
+const blankAnswerEditor = document.querySelector("#blank-answer-editor");
+const step3 = document.querySelector("#step-3");
 // States and rule
 const coursesRequestParams = new RequestParams(12, 1);
 let paginationMetadata = new PaginationMetadata();
@@ -172,6 +174,9 @@ const selectQuestionType = (event = new Event()) => {
 
     // set the course id of questionCreateDto as the course id state
     questionCreateDto.courseId = courseId;
+
+    // set the questionTypeId of questionCreateDto
+    questionCreateDto.questionTypeId = questionTypeId;
 }
 
 const selectQuestionLevel = (event = new Event()) => {
@@ -303,7 +308,7 @@ stepContainer.addEventListener("click", event => {
     // Change the state of the clicked step (if it is not completed yet)
     if (!clickedStep.getAttribute("data-completed")) {
         const currentStepName = clickedStep.querySelector(".step-name").textContent;
-        if (Number(currentStepOrder) === 4) {
+        if (currentStepOrder === 4) {
             // If this is the final step (the 4th step), we mark it as completed immediately
             clickedStep.innerHTML = `
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -326,7 +331,7 @@ stepContainer.addEventListener("click", event => {
               <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
               </div>
-              <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white" aria-current="step">
+              <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white">
                 <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
               </button>
@@ -335,7 +340,7 @@ stepContainer.addEventListener("click", event => {
     }
 
     // Mark previous step as completed
-    if (previousStep && !previousStep.getAttribute("data-completed")) {
+    if (previousStep && !previousStep.getAttribute("data-completed")) {      
         previousStep.setAttribute("data-completed", "true");
         const previousStepName = previousStep.querySelector(".step-name").textContent;
         previousStep.innerHTML = `
@@ -427,6 +432,34 @@ answerEditorForTrueFalseQuestion.addEventListener("click", event => {
     console.log(questionCreateDto);
 });
 
+step3.addEventListener("click", () => {
+    // We check if the question type is fill in blank
+    if (questionCreateDto.questionTypeId !== 5)
+        return;
+    // We render the answer editor based on the numbers of blank from tinymce editor
+    const content = tinymce.get("question-content-editor").getContent({ format: "text" });
+    const numbersOfBlank = (content.match(/__/g) || []).length;
+
+    const textareas = Array.from(blankAnswerEditor.querySelectorAll("textarea"));
+
+    textareas.forEach(textarea => tinymce.remove(`#${textarea.id}`));
+
+    blankAnswerEditor.innerHTML = "";
+
+    for (let i = 0; i < numbersOfBlank; i++) {       
+        blankAnswerEditor.insertAdjacentHTML("beforeend", `
+<div class="relative flex items-start">
+    <div class="text-sm leading-6 grow">
+        <label for="small" class="font-medium text-gray-700">Đáp án cho chỗ trống ${i + 1}</label>
+        <div class="mt-2">
+            <textarea id="blank-${i + 1}"></textarea>
+        </div>
+    </div>
+</div>
+        `);
+        tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 200));
+    }
+});
 
 // On load
 (() => {

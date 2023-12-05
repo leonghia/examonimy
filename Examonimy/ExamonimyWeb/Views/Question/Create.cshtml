@@ -9,7 +9,7 @@
 @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
 <nav aria-label="Progress" class="">
     <ol id="step-container" role="list" class="flex items-center justify-center">
-        <li class="step relative pr-8 sm:pr-96" data-order="1">
+        <li class="step relative pr-8 sm:pr-96" data-order="1" id="step-1">
             <!-- Current Step -->
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
@@ -19,7 +19,7 @@
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">1. Chọn môn học</span>
             </button>
         </li>
-        <li class="step relative pr-8 sm:pr-96" data-order="2">
+        <li class="step relative pr-8 sm:pr-96" data-order="2" id="step-2">
             <!-- Upcoming Step -->
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
@@ -29,22 +29,22 @@
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">2. Nhập câu hỏi</span>
             </button>
         </li>
-        <li class="step relative pr-8 sm:pr-96" data-order="3">
+        <li class="step relative pr-8 sm:pr-96" data-order="3" id="step-3">
             <!-- Upcoming Step -->
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
             </div>
-            <button type="button" id="step-btn-3" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
                 <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">3. Nhập đáp án</span>
             </button>
         </li>
-        <li class="step relative" data-order="4">
+        <li class="step relative" data-order="4" id="step-4">
             <!-- Upcoming Step -->
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="h-0.5 w-full bg-gray-200"></div>
             </div>
-            <button type="button" id="step-btn-4" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+            <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
                 <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
                 <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">4. Xem trước</span>
             </button>
@@ -255,7 +255,14 @@
                     <textarea id="answer-editor-for-short-answer-question"></textarea>
                 </div>              
             </div>
-            <div data-question-type-id="5" class="answer-editor hidden"></div>
+            <div data-question-type-id="5" class="answer-editor hidden">
+                <fieldset>
+                    <legend class="sr-only">Đáp án cho các chỗ trống</legend>
+                    <div id="blank-answer-editor" class="space-y-5">
+                                            
+                    </div>
+                </fieldset>
+            </div>
         </div>
     </div>
 </div>
@@ -263,7 +270,8 @@
 <!-- Segment 4 -->
 <div id="segment-4" class="segment mt-20 flex justify-center hidden">
     <div class="w-1/2">      
-        <div id="question-preview-container" class="p-6 bg-white rounded-lg">
+        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại các thông tin cần thiết trước khi hoàn tất."))
+        <div id="question-preview-container" class="mt-6 p-6 bg-white rounded-lg">
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
                 <p class="mt-4 text-sm font-normal text-violet-600">Lập trình hướng đối tượng</p>
