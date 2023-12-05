@@ -296,7 +296,7 @@
             <!-- Question content preview -->
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
-                <div id="question-content-preview" class="prose mt-4 text-gray-700">
+                <div id="question-content-preview" class="prose max-w-none mt-4 text-gray-700">
 
                 </div>               
             </div>
@@ -304,10 +304,8 @@
             <!-- Answer preview -->
             <div class="mb-6">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
-                <div id="answer-preview" class="mt-4 flex items-center text-sm font-medium" aria-current="step">
-                    <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-                        <span class="text-white">C</span>
-                    </span>
+                <div id="answer-preview" class="mt-4 flex items-center gap-x-3 text-sm font-medium">
+                    
                 </div>
             </div>
                    

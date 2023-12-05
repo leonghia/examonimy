@@ -4,7 +4,7 @@ import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
-import { QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
+import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
 import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
 import { QuestionType } from "../models/question-type.model.js";
 import { QuestionLevel } from "../models/question-level.model.js";
@@ -52,7 +52,9 @@ const populatePreviewInfo = (question = new Question()) => {
     questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();   
 }
 
-const renderChoicePreviewForMultipleChoiceQuestion = (questionCreateDto = new MultipleChoiceQuestionCreateDto()) => {
+const renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer = (questionCreateDto = new MultipleChoiceQuestionWithOneCorrectAnswerCreateDto()) => {
+
+    // Render choice preview
     questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
     questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
     questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
@@ -63,51 +65,112 @@ const renderChoicePreviewForMultipleChoiceQuestion = (questionCreateDto = new Mu
     <div class="space-y-5">
         <div class="relative flex items-start">
             <div class="flex h-6 items-center">
-                <input id="small" aria-describedby="small-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
             </div>
             <div class="ml-3 leading-6 flex">
-                <label for="small" class="font-medium text-gray-900 mr-1">A.</label>
+                <label class="font-medium text-gray-900 mr-1">A.</label>
                 <div class="prose-p:m-0">${questionCreateDto.choiceA}</div>
             </div>
         </div>
         <div class="relative flex items-start">
             <div class="flex h-6 items-center">
-                <input id="medium" aria-describedby="medium-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
             </div>
             <div class="ml-3 leading-6 flex">
-                <label for="medium" class="font-medium text-gray-900 mr-1">B.</label>
+                <label class="font-medium text-gray-900 mr-1">B.</label>
                 <div class="prose-p:m-0">${questionCreateDto.choiceB}</div>
             </div>
         </div>
         <div class="relative flex items-start">
             <div class="flex h-6 items-center">
-                <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
             </div>
             <div class="ml-3 leading-6 flex">
-                <label for="large" class="font-medium text-gray-900 mr-1">C.</label>
+                <label class="font-medium text-gray-900 mr-1">C.</label>
                 <div class="prose-p:m-0">${questionCreateDto.choiceC}</div>
             </div>
         </div>
         <div class="relative flex items-start">
             <div class="flex h-6 items-center">
-                <input id="large" aria-describedby="large-description" name="plan" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                <input name="choices" type="radio" class="pointer-events-none h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
             </div>
             <div class="ml-3 leading-6 flex">
-                <label for="large" class="font-medium text-gray-900 mr-1">D.</label>
+                <label class="font-medium text-gray-900 mr-1">D.</label>
                 <div class="prose-p:m-0">${questionCreateDto.choiceD}</div>
             </div>
         </div>
     </div>
 </fieldset>
     `);
-}
 
-const renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer = (questionCreateDto = new MultipleChoiceQuestionWithOneCorrectAnswerCreateDto()) => {
-    renderChoicePreviewForMultipleChoiceQuestion(questionCreateDto);
+    // Render answer preview
+    answerPreview.innerHTML = `
+<span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+    <span class="text-white">${ChoiceValueMappings[questionCreateDto.correctAnswer]}</span>
+</span>
+    `;
 }
 
 const renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers = (questionCreateDto = new MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto()) => {
-    renderChoicePreviewForMultipleChoiceQuestion(questionCreateDto);
+    // Render choice preview
+    questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
+    questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
+    questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
+    questionCreateDto.choiceD = tinymce.get("choice-d").getContent();
+    questionContentPreview.insertAdjacentHTML("beforeend", `
+<fieldset class="mt-4">
+    <legend class="sr-only">Phương án</legend>
+    <div class="space-y-5">
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="font-medium text-gray-900 mr-1">A.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceA}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="font-medium text-gray-900 mr-1">B.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceB}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="font-medium text-gray-900 mr-1">C.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceC}</div>
+            </div>
+        </div>
+        <div class="relative flex items-start">
+            <div class="flex h-6 items-center">
+                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+            </div>
+            <div class="ml-3 leading-6 flex">
+                <label class="font-medium text-gray-900 mr-1">D.</label>
+                <div class="prose-p:m-0">${questionCreateDto.choiceD}</div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+    `);
+
+    // Render answer preview
+    answerPreview.innerHTML = "";
+    const correctAnswers = questionCreateDto.correctAnswers.split("|").map(str => Number(str)).sort((a, b) => a - b);
+    correctAnswers.forEach(num => {
+        answerPreview.insertAdjacentHTML("beforeend", `
+<span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-600">
+    <span class="text-white">${ChoiceValueMappings[num]}</span>
+</span>
+        `);
+    });
 }
 
 const renderPreviewForTrueFalseQuestion = (questionCreateDto = new TrueFalseQuestionCreateDto()) => {

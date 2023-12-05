@@ -22,3 +22,10 @@ export const QuestionTypeIdQuestionCreateDtoConstructorMappings = {
     4: new ShortAnswerQuestionCreateDto(),
     5: new FillInBlankQuestionCreateDto()
 }
+
+export const ChoiceValueMappings = {
+    0: "A",
+    1: "B",
+    2: "C",
+    3: "D"
+}
