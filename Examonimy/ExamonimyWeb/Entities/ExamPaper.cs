@@ -3,10 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamonimyWeb.Entities
 {
-    public class Test
+    public class ExamPaper
     {
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        [StringLength(16)]
+        public required string ExamPaperCode { get; set; }
 
         [ForeignKey("Course")]
         [Required]
@@ -20,5 +24,8 @@ namespace ExamonimyWeb.Entities
         [Required]
         public required int AuthorId { get; set; }
         public User? Author { get; set; }
+        
+        public ICollection<Question>? Questions { get; set; }
+        public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
     }
 }

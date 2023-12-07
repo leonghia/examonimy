@@ -30,6 +30,9 @@ namespace ExamonimyWeb.Entities
         [ForeignKey("Author")]
         [Required]
         public required int AuthorId { get; set; }
-        public User? Author { get; set; }
+        public User? Author { get; set; }      
+
+        public ICollection<ExamPaper>? ExamPapers { get; set; }
+        public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
     }
 }

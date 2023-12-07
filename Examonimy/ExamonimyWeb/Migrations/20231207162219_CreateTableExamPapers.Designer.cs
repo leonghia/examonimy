@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231207162219_CreateTableExamPapers")]
+    partial class CreateTableExamPapers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,27 +229,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("ExamPapers");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
-                {
-                    b.Property<int>("ExamPaperId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("Number")
-                        .HasColumnType("tinyint");
-
-                    b.Property<float>("Point")
-                        .HasColumnType("real");
-
-                    b.HasKey("ExamPaperId", "QuestionId");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("ExamPaperQuestion");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
@@ -585,21 +567,6 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
-                {
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", null)
-                        .WithMany("ExamPaperQuestions")
-                        .HasForeignKey("ExamPaperId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ExamonimyWeb.Entities.Question", null)
-                        .WithMany("ExamPaperQuestions")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.Question", "Question")
@@ -699,16 +666,6 @@ namespace ExamonimyWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
-                {
-                    b.Navigation("ExamPaperQuestions");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
-                {
-                    b.Navigation("ExamPaperQuestions");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Role", b =>

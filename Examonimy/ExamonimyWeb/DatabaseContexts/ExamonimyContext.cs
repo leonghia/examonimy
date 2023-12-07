@@ -17,6 +17,11 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
             modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
+
+            modelBuilder.Entity<ExamPaper>()
+                .HasMany(eP => eP.Questions)
+                .WithMany(q => q.ExamPapers)
+                .UsingEntity<ExamPaperQuestion>();
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
@@ -29,6 +34,8 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<TrueFalseQuestion> TrueFalseQuestions { get; init; }
         public required DbSet<ShortAnswerQuestion> ShortAnswerQuestions { get; init; }
         public required DbSet<FillInBlankQuestion> FillInBlankQuestions { get; init; }
+
+        public required DbSet<ExamPaper> ExamPapers { get; init; }
 
     }
 }
