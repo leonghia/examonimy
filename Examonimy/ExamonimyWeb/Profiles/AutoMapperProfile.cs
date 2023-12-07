@@ -22,6 +22,17 @@ namespace ExamonimyWeb.Profiles
             CreateMap<ExamCreateDto, Exam>();
             CreateMap<QuestionType, QuestionTypeGetDto>();
             CreateMap<QuestionLevel, QuestionLevelGetDto>();
+            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithOneCorrectAnswer>();
+            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswers>();
+            CreateMap<TrueFalseQuestionCreateDto, TrueFalseQuestion>();
+            CreateMap<ShortAnswerQuestionCreateDto, ShortAnswerQuestion>();
+            CreateMap<FillInBlankQuestionCreateDto, FillInBlankQuestion>();
+            CreateMap<Question, QuestionGetDto>();
+            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswer, MultipleChoiceQuestionWithOneCorrectAnswerGetDto>();
+            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>();
+            CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>();
+            CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>();
+            CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>();
         }
     }
 }

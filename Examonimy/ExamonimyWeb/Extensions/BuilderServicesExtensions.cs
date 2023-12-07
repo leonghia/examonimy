@@ -100,6 +100,11 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IGenericRepository<Question>, GenericRepository<Question>>();
             services.AddScoped<IGenericRepository<QuestionType>, GenericRepository<QuestionType>>();
             services.AddScoped<IGenericRepository<QuestionLevel>, GenericRepository<QuestionLevel>>();
+            services.AddScoped<IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>, GenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>>();
+            services.AddScoped<IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>, GenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>>();
+            services.AddScoped<IGenericRepository<TrueFalseQuestion>, GenericRepository<TrueFalseQuestion>>();
+            services.AddScoped<IGenericRepository<ShortAnswerQuestion>, GenericRepository<ShortAnswerQuestion>>();
+            services.AddScoped<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();

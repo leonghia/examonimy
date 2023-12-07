@@ -14,9 +14,6 @@ namespace ExamonimyWeb.DTOs.QuestionDTO
         public required int QuestionLevelId { get; set; }
 
         [Required]
-        public required string QuestionContent { get; set; }
-
-        [Required]
-        public required int AuthorId { get; set; }
+        public required string QuestionContent { get; set; }    
     }
 }
