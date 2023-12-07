@@ -1,6 +1,4 @@
-﻿using ExamonimyWeb.DTOs.ExamDTO;
-
-namespace ExamonimyWeb.DTOs.CourseDTO
+﻿namespace ExamonimyWeb.DTOs.CourseDTO
 {
     public class CourseGetDto
     {

@@ -6,6 +6,7 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
@@ -43,10 +44,17 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("question")]
         public async Task<IActionResult> Index()
         {
-            var username = HttpContext.User.Identity!.Name;
-            var user = await _userManager.FindByUsernameAsync(username!);         
-            var userGetDto = _mapper.Map<UserGetDto>(user);
-            return View("Bank", userGetDto);
+            var username = HttpContext.User.Identity!.Name;                  
+            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
+            var questionsToReturn = (await _questionRepository.GetAsync(null, null, null)).Select(q => _mapper.Map<QuestionGetDto>(q));          
+            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var viewModel = new QuestionBankViewModel
+            {
+                User = userToReturn,
+                Questions = questionsToReturn,
+                QuestionTypes = questionTypesToReturn
+            };
+            return View("Bank", viewModel);
         }
 
         [CustomAuthorize(Roles = "Administrator")]

@@ -33,9 +33,9 @@ namespace ExamonimyWeb.Controllers
             var user = await _userManager.FindByUsernameAsync(username!);
             if (user is null)
                 return Forbid();
-            var role = _userManager.GetRole(user);
-            var userGetDto = _mapper.Map<UserGetDto>(user);
-            return View(role, userGetDto);
+            var role = _userManager.GetRole(user);          
+            var authorizedViewModel = new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(user) };
+            return View(role, authorizedViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

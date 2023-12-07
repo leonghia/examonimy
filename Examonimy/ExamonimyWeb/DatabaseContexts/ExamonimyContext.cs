@@ -20,8 +20,7 @@ namespace ExamonimyWeb.DatabaseContexts
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
-        public required DbSet<Course> Courses { get; init; }
-        public required DbSet<Exam> Exams { get; init; }
+        public required DbSet<Course> Courses { get; init; }      
         public required DbSet<QuestionType> QuestionTypes { get; init; }
         public required DbSet<QuestionLevel> QuestionLevels { get; init; }
         public required DbSet<Question> Questions { get; init; }
