@@ -138,7 +138,7 @@ namespace ExamonimyWeb.Controllers
         [HttpPost("api/question/multiplechoicewithmultiplecorrectanswers")]
         public async Task<IActionResult> Create([FromBody] MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var tuple = await CreateQuestion(multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, _multipleChoiceQuestionWithMultipleCorrectAnswersRepository, HttpContext.User.Identity!.Name!);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(tuple.Item2));
@@ -148,7 +148,7 @@ namespace ExamonimyWeb.Controllers
         [HttpPost("api/question/truefalse")]
         public async Task<IActionResult> Create([FromBody] TrueFalseQuestionCreateDto trueFalseQuestionCreateDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var tuple = await CreateQuestion(trueFalseQuestionCreateDto, _trueFalseQuestionRepository, HttpContext.User.Identity!.Name!);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<TrueFalseQuestionGetDto>(tuple.Item2));
@@ -158,7 +158,7 @@ namespace ExamonimyWeb.Controllers
         [HttpPost("api/question/shortanswer")]
         public async Task<IActionResult> Create([FromBody] ShortAnswerQuestionCreateDto shortAnswerQuestionCreateDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var tuple = await CreateQuestion(shortAnswerQuestionCreateDto, _shortAnswerQuestionRepository, HttpContext.User.Identity!.Name!);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<ShortAnswerQuestionGetDto>(tuple.Item2));
@@ -168,7 +168,7 @@ namespace ExamonimyWeb.Controllers
         [HttpPost("api/question/fillinblank")]
         public async Task<IActionResult> Create([FromBody] FillInBlankQuestionCreateDto fillInBlankQuestionCreateDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var tuple = await CreateQuestion(fillInBlankQuestionCreateDto, _fillInBlankQuestionRepository, HttpContext.User.Identity!.Name!);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<FillInBlankQuestionGetDto>(tuple.Item2));

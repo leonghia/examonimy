@@ -1,9 +1,10 @@
 ﻿// Imports
 import { BASE_API_URL } from "../config.js";
-import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton, spinnerMarkupForButton } from "../helpers/markup.helper.js";
+import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { UserLogin } from "../models/user-login.model.js";
 import { StatusCodes } from "../helpers/status-code.helper.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
 // DOM selectors
 const htmlElement = document.documentElement;
 const loginForm = document.querySelector("#login-form");
@@ -18,13 +19,12 @@ const rememberMeCheckbox = document.querySelector("#remember-me");
 
 // Event listeners
 loginButton.addEventListener("click", async () => {
-    showSpinnerForButton(loginButtonText, loginButton, spinnerMarkupForButton);
+    showSpinnerForButton(loginButtonText, loginButton, new SpinnerOption());
     const userLogin = new UserLogin(
         emailInput.value,
         passwordInput.value,
         rememberMeCheckbox.checked
     );
-    console.log(userLogin);
     const response = await fetch(`${BASE_API_URL}/auth/login`, {
         method: "POST",
         headers: {

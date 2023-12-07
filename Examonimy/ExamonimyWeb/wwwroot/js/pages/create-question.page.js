@@ -4,12 +4,11 @@ import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
-import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings } from "../helpers/question.helper.js";
+import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
 import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
-import { QuestionType } from "../models/question-type.model.js";
-import { QuestionLevel } from "../models/question-level.model.js";
-import { toggleDropdown, selectDropdownItem } from "../helpers/markup.helper.js";
-import { Question } from "../models/question.model.js";
+import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton } from "../helpers/markup.helper.js";
+import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -37,7 +36,7 @@ const questionLevelPreview = document.querySelector("#question-level-preview");
 const questionContentPreview = document.querySelector("#question-content-preview");
 const answerPreview = document.querySelector("#answer-preview");
 const buttonContainer = document.querySelector("#button-container");
-
+const createQuestionButton = document.querySelector("#create-question-btn");
 
 // States and rule
 const coursesRequestParams = new RequestParams(12, 1);
@@ -487,6 +486,24 @@ const populateQuestionLevels = (dropdown = new HTMLElement(), questionLevels = [
     });
 }
 
+const postQuestion = async (questionCreateDto = new QuestionCreateDto()) => {
+    const buttonText = createQuestionButton.querySelector("span");
+    showSpinnerForButton(buttonText, createQuestionButton, new SpinnerOption());
+    const endpoint = QuestionTypeIdQuestionCreationEndpointMappings[questionCreateDto.questionTypeId];
+    const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(questionCreateDto)
+    });
+    hideSpinnerForButton(createQuestionButton, buttonText);
+    if (response.ok) {
+        window.location.href = "/question";
+    }
+}
+
 // Event listeners
 courseContainer.addEventListener("click", selectCourse);
 
@@ -717,6 +734,11 @@ step4.addEventListener("click", () => {
     console.log(questionCreateDto);
     buttonContainer.classList.remove("hidden");
 });
+
+createQuestionButton.addEventListener("click", async () => {
+    await postQuestion(questionCreateDto);
+});
+
 
 // On load
 (() => {

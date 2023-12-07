@@ -8,6 +8,14 @@ export const QuestionTypeIDs = {
     FillInBlank: 5
 }
 
+export const QuestionTypeIdQuestionCreationEndpointMappings = {
+    1: "question/multiplechoicewithonecorrectanswer",
+    2: "question/multiplechoicewithmultiplecorrectanswers",
+    3: "question/truefalse",
+    4: "question/shortanswer",
+    5: "question/fillinblank"
+}
+
 export const QuestionLevelIDs = {
     Perception: 1,
     Understand: 2,
