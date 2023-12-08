@@ -64,7 +64,11 @@ namespace ExamonimyWeb.Controllers
             var username = HttpContext.User.Identity!.Name;
             var user = await _userManager.FindByUsernameAsync(username!);        
             var userGetDto = _mapper.Map<UserGetDto>(user);
-            return View(userGetDto);
+            var authorizedViewModel = new AuthorizedViewModel
+            {
+                User = userGetDto
+            };
+            return View(authorizedViewModel);
         }
 
         [CustomAuthorize]
