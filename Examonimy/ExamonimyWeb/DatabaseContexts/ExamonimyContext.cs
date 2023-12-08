@@ -1,19 +1,24 @@
 ﻿using ExamonimyWeb.Configurations;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.UserManager;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamonimyWeb.DatabaseContexts
 {
     public class ExamonimyContext : DbContext
     {
+        
+
         public ExamonimyContext(DbContextOptions options) : base(options)
         {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Role>(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
             modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
