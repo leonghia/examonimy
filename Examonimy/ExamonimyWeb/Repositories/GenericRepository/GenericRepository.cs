@@ -1,6 +1,6 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
 using ExamonimyWeb.Extensions;
-using ExamonimyWeb.Models;
+using ExamonimyWeb.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -15,6 +15,11 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             _context = context;
             _dbSet = _context.Set<TEntity>();
+        }
+
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter)
+        {
+            return await _dbSet.CountAsync(filter);
         }
 
         public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, List<string>? includedProperties)

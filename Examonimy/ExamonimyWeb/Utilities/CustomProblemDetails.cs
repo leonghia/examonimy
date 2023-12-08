@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace ExamonimyWeb.Models
+namespace ExamonimyWeb.Utilities
 {
     public class CustomProblemDetails : ProblemDetails
     {

@@ -1,6 +1,6 @@
 ﻿using ExamonimyWeb.DTOs.QuestionDTO;
 
-namespace ExamonimyWeb.ViewModels
+namespace ExamonimyWeb.Models
 {
     public class QuestionBankViewModel : AuthorizedViewModel
     {

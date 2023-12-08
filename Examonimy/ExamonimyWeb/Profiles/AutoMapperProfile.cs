@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.DTOs.CourseDTO;
+using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
@@ -30,6 +31,7 @@ namespace ExamonimyWeb.Profiles
             CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>();
             CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>();
             CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>();
+            CreateMap<ExamPaper, ExamPaperGetDto>();
         }
     }
 }

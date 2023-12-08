@@ -1,4 +1,4 @@
-﻿namespace ExamonimyWeb.Models
+﻿namespace ExamonimyWeb.Utilities
 {
     public class PagedList<TEntity> : List<TEntity>
     {
