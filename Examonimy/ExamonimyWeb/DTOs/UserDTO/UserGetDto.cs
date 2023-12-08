@@ -16,5 +16,6 @@ namespace ExamonimyWeb.DTOs.UserDTO
         public DateTime? DateOfBirth { get; set; }
 
         public required RoleGetDto Role { get; set; }
+        public string? ProfilePicture { get; set; }
     }
 }

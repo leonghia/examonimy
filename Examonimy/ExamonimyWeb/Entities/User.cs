@@ -52,5 +52,7 @@ namespace ExamonimyWeb.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime? RefreshTokenExpiryTime { get; set; }
+
+        public string? ProfilePicture { get; set; } = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg";
     }
 }
