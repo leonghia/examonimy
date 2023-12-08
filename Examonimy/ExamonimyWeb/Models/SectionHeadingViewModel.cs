@@ -1,4 +1,4 @@
-﻿namespace ExamonimyWeb.ViewModels
+﻿namespace ExamonimyWeb.Models
 {
     public class SectionHeadingViewModel
     {

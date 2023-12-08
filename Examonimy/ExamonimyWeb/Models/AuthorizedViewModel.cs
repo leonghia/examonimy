@@ -1,6 +1,6 @@
 ﻿using ExamonimyWeb.DTOs.UserDTO;
 
-namespace ExamonimyWeb.ViewModels
+namespace ExamonimyWeb.Models
 {
     public class AuthorizedViewModel
     {

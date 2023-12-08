@@ -4,7 +4,6 @@ using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Services.AuthService;
-using ExamonimyWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

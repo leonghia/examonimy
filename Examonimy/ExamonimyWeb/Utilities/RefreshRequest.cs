@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExamonimyWeb.Models
+namespace ExamonimyWeb.Utilities
 {
     public class RefreshRequest
     {

@@ -5,8 +5,8 @@ using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.UserManager;
+using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
-using ExamonimyWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
@@ -42,7 +42,7 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator")]
         [HttpGet("question")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Bank()
         {
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
@@ -54,7 +54,7 @@ namespace ExamonimyWeb.Controllers
                 Questions = questionsToReturn,
                 QuestionTypes = questionTypesToReturn
             };
-            return View("Bank", viewModel);
+            return View(viewModel);
         }
 
         [CustomAuthorize(Roles = "Administrator")]

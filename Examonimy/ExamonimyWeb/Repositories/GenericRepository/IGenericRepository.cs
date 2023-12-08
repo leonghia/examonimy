@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Models;
+﻿using ExamonimyWeb.Utilities;
 using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Repositories.GenericRepository
@@ -10,5 +10,6 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         Task InsertAsync(TEntity entity);
         void Update(TEntity entity);
         Task SaveAsync();
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> filter);
     }
 }

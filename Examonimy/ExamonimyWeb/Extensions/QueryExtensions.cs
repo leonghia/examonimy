@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Models;
+﻿using ExamonimyWeb.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamonimyWeb.Extensions

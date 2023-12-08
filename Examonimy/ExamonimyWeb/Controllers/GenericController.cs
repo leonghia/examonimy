@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

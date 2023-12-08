@@ -1,5 +1,5 @@
 ﻿using ExamonimyWeb.Entities;
-using ExamonimyWeb.Models;
+using ExamonimyWeb.Utilities;
 
 namespace ExamonimyWeb.Managers.UserManager
 {
