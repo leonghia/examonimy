@@ -6,7 +6,7 @@ import { RequestParams } from "../models/request-params.model.js";
 import { PaginationMetadata } from "../models/pagination-metadata.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
 import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
-import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton } from "../helpers/markup.helper.js";
+import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton, changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 
@@ -741,10 +741,7 @@ createQuestionButton.addEventListener("click", async () => {
 
 
 // On load
-(() => {
-    document.documentElement.classList.remove("bg-gray-100");
-    document.documentElement.classList.add("bg-white");
-})();
+changeHtmlBackgroundColorToWhite();
 
 (async () => {
     const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);

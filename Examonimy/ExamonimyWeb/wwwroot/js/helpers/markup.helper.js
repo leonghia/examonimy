@@ -83,3 +83,13 @@ export const selectDropdownItem = (clicked = new HTMLElement()) => {
     dropdownItemCheckmark.classList.add("text-violet-600");
     toggleDropdown(dropdown);
 }
+
+export const changeHtmlBackgroundColorToWhite = () => {
+    document.documentElement.classList.remove("bg-gray-100");
+    document.documentElement.classList.add("bg-white");
+}
+
+export const changeHtmlBackgroundColorToGray = () => {
+    document.documentElement.classList.remove("bg-white");
+    document.documentElement.classList.add("bg-gray-100");
+}

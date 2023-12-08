@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
+using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
@@ -18,13 +19,15 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<ExamPaper> _examPaperRepository;
         private readonly IUserManager _userManager;
         private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
+        private readonly IGenericRepository<Course> _courseRepository;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository) : base(mapper, examPaperRepository)
+        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository) : base(mapper, examPaperRepository)
         {
             _mapper = mapper;
             _examPaperRepository = examPaperRepository;
             _userManager = userManager;
             _examPaperQuestionRepository = examPaperQuestionRepository;
+            _courseRepository = courseRepository;
         }
 
         [CustomAuthorize(Roles = "Administrator")]
@@ -44,6 +47,15 @@ namespace ExamonimyWeb.Controllers
             var user = await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!);
             var userGetDto = _mapper.Map<UserGetDto>(user);
             var viewModel = new ExamPaperBankViewModel { User = userGetDto, ExamPapers = examPaperGetDtos };
+            return View(viewModel);
+        }
+
+        [CustomAuthorize(Roles = "Administrator")]
+        [HttpGet("exam-paper/create")]
+        public async Task<IActionResult> Create()
+        {           
+            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!));
+            var viewModel = new AuthorizedViewModel { User = userToReturn };
             return View(viewModel);
         }
     }
