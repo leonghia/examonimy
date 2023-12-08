@@ -46,7 +46,7 @@ namespace ExamonimyWeb.Controllers
         {
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
-            var questionsToReturn = (await _questionRepository.GetAsync(null, null, null)).Select(q => _mapper.Map<QuestionGetDto>(q));          
+            var questionsToReturn = (await _questionRepository.GetAsync(null, null, new List<string> { "QuestionType", "QuestionLevel", "Course", "Author" })).Select(q => _mapper.Map<QuestionGetDto>(q));          
             var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
             var viewModel = new QuestionBankViewModel
             {
