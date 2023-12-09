@@ -6,6 +6,7 @@ export class StepperComponent extends BaseComponent {
     #steps;
     #container;
     _events = {
+        onClick: [],
         onClickStep3: [],
         onClickStep4: []
     }
@@ -35,22 +36,22 @@ export class StepperComponent extends BaseComponent {
             if (Number(clickedStep.dataset.order) === this.#steps.length) {
                 this.#markStepAsCompleted(clickedStep);
                 changeHtmlBackgroundColorToGray();
-            } else {
-                this.#markStepAsCurrent(clickedStep);
+            } else {               
                 changeHtmlBackgroundColorToWhite();
+                if (!clickedStep.dataset.completed)
+                    this.#markStepAsCurrent(clickedStep);
             }
             
             if (clickedStep.previousElementSibling) {
                 this.#markStepAsCompleted(clickedStep.previousElementSibling);
             }    
-
-            if (clickedStep.nextElementSibling && clickedStep.nextElementSibling.dataset.completed) {
-                this.#markStepAsCompleted(clickedStep.nextElementSibling);
-            }
+           
 
             const order = Number(clickedStep.dataset.order);
             const segments = Array.from(document.querySelectorAll(".segment"));
             toggleSegment(segments, order);
+
+            this._trigger("onClick", order);
         });
 
         step3.addEventListener("click", () => {
@@ -97,6 +98,21 @@ export class StepperComponent extends BaseComponent {
 </button>
         `;
         step.dataset.completed = "true";
+    }
+
+    #markStepAsUpcoming(step = new HTMLElement()) {
+        const stepOrder = Number(step.dataset.order);
+        const stepName = this.#steps[stepOrder - 1];
+        step.innerHTML = `
+    <!-- Upcoming Step -->
+    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+        <div class="h-0.5 w-full bg-gray-200"></div>
+    </div>
+    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
+        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">${stepOrder}. ${stepName}</span>
+    </button>
+        `;
     }
 
     #render() {

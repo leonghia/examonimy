@@ -1,6 +1,6 @@
 ﻿// Imports
 import { CourseGridComponent } from "../components/course-grid.component.js";
-import { changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
+import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { ExamPaperCreate } from "../models/exam-paper-create.model.js";
 import { fetchCourses } from "../helpers/ajax.helper.js";
@@ -32,12 +32,20 @@ const onNavigateHandler = async (pageNumber = 0) => {
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.TotalPages);
 }
 
+const onClickStepperHandler = (stepOrder = 0) => {
+    if (stepOrder === 1)
+        changeHtmlBackgroundColorToWhite();
+    else
+        changeHtmlBackgroundColorToGray();
+}
+
 // Event listeners
 
 
 // On load
 changeHtmlBackgroundColorToWhite();
 stepperComponent.connectedCallback();
+stepperComponent.subscribe("onClick", onClickStepperHandler);
 paginationComponentForCourses.subscribe("onNext", onNavigateHandler);
 paginationComponentForCourses.subscribe("onPrev", onNavigateHandler);
 courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);

@@ -87,11 +87,15 @@ export const selectDropdownItem = (clicked = new HTMLElement()) => {
 export const changeHtmlBackgroundColorToWhite = () => {
     document.documentElement.classList.remove("bg-gray-100");
     document.documentElement.classList.add("bg-white");
+    document.querySelector("#navbar").classList.remove("bg-gray-100");
+    document.querySelector("#navbar").classList.add("bg-white");
 }
 
 export const changeHtmlBackgroundColorToGray = () => {
     document.documentElement.classList.remove("bg-white");
     document.documentElement.classList.add("bg-gray-100");
+    document.querySelector("#navbar").classList.remove("bg-white");
+    document.querySelector("#navbar").classList.add("bg-gray-100");
 }
 
 export const toggleSegment = (segments = [new HTMLElement()], segmentOrder = 0) => {
