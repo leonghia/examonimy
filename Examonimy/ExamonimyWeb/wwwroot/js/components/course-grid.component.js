@@ -4,13 +4,19 @@ export class CourseGridComponent {
 
     
     #courseContainer;
+    #courses;
 
-    constructor(courseContainer = new HTMLElement()) {
+    constructor(courseContainer = new HTMLElement(), courses = [new Course()]) {
         this.#courseContainer = courseContainer;
+        this.#courses = courses;
     }
 
-    render(courses = [new Course()]) {      
-        return courses.reduce((accumulator, course) => {
+    set courses(data) {
+        this.#courses = data;
+    }
+
+    render() {      
+        return this.#courses.reduce((accumulator, course) => {
             return accumulator + `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
         <label data-id="${course.id}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">

@@ -3,4 +3,6 @@
     PageSize = 0;
     CurrentPage = 0;
     TotalPages = 0;
+
+    
 }

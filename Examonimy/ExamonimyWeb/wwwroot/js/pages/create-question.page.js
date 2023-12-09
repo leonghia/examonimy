@@ -1,14 +1,15 @@
 ﻿// Imports
 import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
-import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
+import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
-import { RequestParams } from "../models/request-params.model.js";
-import { PaginationMetadata } from "../models/pagination-metadata.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
-import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question-create.dto.js";
 import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton, changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
+import { CourseGridComponent } from "../components/course-grid.component.js";
+import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
+import { fetchCourses } from "../helpers/ajax.helper.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -16,10 +17,7 @@ const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
 const questionLevelDropdown = document.querySelector("#question-level-dropdown");
 const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
-const paginationContainer = document.querySelector("#pagination-container");
-const paginationInfoElement = document.querySelector("#pagination-info");
-const previousButton = document.querySelector("#prev-btn");
-const nextButton = document.querySelector("#next-btn");
+const paginationContainerForCourses = document.querySelector("#pagination-container");
 const stepContainer = document.querySelector("#step-container");
 const segments = Array.from(document.querySelectorAll(".segment"));
 const optionEditorContainer = document.querySelector("#option-editor-container");
@@ -39,11 +37,11 @@ const buttonContainer = document.querySelector("#button-container");
 const createQuestionButton = document.querySelector("#create-question-btn");
 
 // States and rule
-const coursesRequestParams = new RequestParams(12, 1);
-let paginationMetadata = new PaginationMetadata();
+const pageSizeForCourses = 12;
 let question = new Question();
 let questionCreateDto = new QuestionCreateDto();
-
+const courseGridComponent = new CourseGridComponent(courseContainer);
+const paginationComponentForCourses = new SimplePaginationComponent();
 
 // Function expressions
 const populatePreviewInfo = (question = new Question()) => {
@@ -325,50 +323,12 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
     }
 }
 
-const fetchCourses = async (pageSize, pageNumber) => {
-    paginationContainer.classList.add("hidden");
-    const response = await fetch(`${BASE_API_URL}/course?pageSize=${pageSize}&pageNumber=${pageNumber}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
-    });
-
-    const data = await response.json();
-    const courses = [new Course()];
-    Object.assign(paginationMetadata, JSON.parse(response.headers.get(PAGINATION_METADATA_HEADER)));
-    paginationInfoElement.textContent = `${paginationMetadata.CurrentPage} trên ${paginationMetadata.TotalPages}`;
-    Object.assign(courses, data);
-    return courses;
-}
-
-const populateCourses = (courses = [new Course()]) => {
-    courseContainer.innerHTML = "";
-    courses.forEach(course => {
-        courseContainer.insertAdjacentHTML("beforeend", `
-        <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label data-id="${course.id}" class="course relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
-            <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
-            <span class="flex flex-1">
-                <span class="flex flex-col">                  
-                    <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
-                    <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có câu hỏi nào được tạo</span>
-                    <span class="mt-6 text-sm font-medium text-gray-900">0 câu hỏi</span>
-                </span>
-            </span>
-            <!-- Not Checked: "invisible" -->
-            <svg class="checkbox h-5 w-5 text-violet-600 invisible" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-            </svg>
-            <!--
-              Active: "border", Not Active: "border-2"
-              Checked: "border-violet-600", Not Checked: "border-transparent"
-            -->
-            <span class="pointer-events-none absolute -inset-px rounded-lg border-transparent" aria-hidden="true"></span>
-        </label>
-        `);
-    });
-    paginationContainer.classList.remove("hidden");
+const populateCourses = async () => {
+    const coursePaginationMetadata = await fetchCourses(pageSizeForCourses, paginationComponentForCourses.currentPage);
+    courseGridComponent.courses = coursePaginationMetadata.courses;
+    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.TotalPages;
+    courseContainer.innerHTML = courseGridComponent.render();
+    paginationContainerForCourses.innerHTML = paginationComponentForCourses.render();
 }
 
 const selectQuestionType = (event = new Event()) => {
@@ -515,20 +475,20 @@ questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(quest
 
 questionLevelDropdown.addEventListener("click", selectQuestionLevel);
 
-previousButton.addEventListener("click", async () => {
-    if (paginationMetadata.CurrentPage === 1)
-        return;
-    coursesRequestParams.pageNumber--;
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
-});
+paginationContainerForCourses.addEventListener("click", event => {
+    if (event.target.closest("#next-btn")) {
+        if (paginationComponentForCourses.hasNext()) {
+            paginationComponentForCourses.next();
+            populateCourses();
+        }
+    }
 
-nextButton.addEventListener("click", async () => {
-    if (paginationMetadata.CurrentPage === paginationMetadata.TotalPages)
-        return;
-    coursesRequestParams.pageNumber++;
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
+    if (event.target.closest("#prev-btn")) {
+        if (paginationComponentForCourses.hasPrev()) {
+            paginationComponentForCourses.prev();
+            populateCourses();
+        }
+    }
 });
 
 stepContainer.addEventListener("click", event => {
@@ -739,13 +699,21 @@ createQuestionButton.addEventListener("click", async () => {
     await postQuestion(questionCreateDto);
 });
 
+courseContainer.addEventListener("click", event => {
+    const clickedCourse = event.target.closest(".course-label");
+    if (!clickedCourse)
+        return;
+    courseGridComponent.highlightCourse(clickedCourse);
+
+    // Update the state for questionCreateDto
+    questionCreateDto.courseId = Number(clickedCourse.dataset.id);
+});
 
 // On load
 changeHtmlBackgroundColorToWhite();
 
 (async () => {
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
+    populateCourses();
     const questionTypes = await fetchQuestionTypes();
     populateQuestionTypes(questionTypeDropdown, questionTypes);
     const questionLevels = await fetchQuestionLevels();
