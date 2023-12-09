@@ -1,26 +1,52 @@
 ﻿import { Course } from "../models/course.model.js";
+import { BaseComponent } from "./base.component.js";
 
-export class CourseGridComponent {
+export class CourseGridComponent extends BaseComponent {
 
     
     #courseContainer;
     #courses;
+    _events = {
+        onClickCourse: []
+    }
 
     constructor(courseContainer = new HTMLElement(), courses = [new Course()]) {
+        super();
         this.#courseContainer = courseContainer;
         this.#courses = courses;
+        
+    }
+
+    connectedCallback() {
+        this.#courseContainer.innerHTML = this.#render();
+
+        this.#courseContainer.addEventListener("click", event => {
+            const clickedCourse = event.target.closest(".course-label");
+            if (!clickedCourse)
+                return;
+            this.#highlightCourse(clickedCourse);
+            const courseId = Number(clickedCourse.dataset.id);
+            const courseName = clickedCourse.querySelector(".course-name").textContent;
+            const course = new Course(courseId, courseName);
+
+            this._trigger("onClickCourse", course);        
+        });
+    }
+
+    populateCourses(courses = [new Course()]) {
+        this.#courses = courses;
+        this.#courseContainer.innerHTML = this.#render();
     }
 
     set courses(data) {
         this.#courses = data;
     }
 
-    render() {      
+    #render() {      
         return this.#courses.reduce((accumulator, course) => {
             return accumulator + `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label data-id="${course.id}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
-            <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
+        <label data-id="${course.id}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
                     <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
@@ -41,7 +67,7 @@ export class CourseGridComponent {
         `}, "");
     }
 
-    highlightCourse(clickedCourse = new HTMLElement()) {
+    #highlightCourse(clickedCourse = new HTMLElement()) {
         const courseLabels = Array.from(this.#courseContainer.querySelectorAll(".course-label"));
         courseLabels.forEach(courseLabel => {
             courseLabel.classList.remove(..."border-violet-600 ring-2 ring-violet-600".split(" "));           

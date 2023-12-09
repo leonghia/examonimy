@@ -11,54 +11,16 @@
     <div>
         <!-- Stepper -->
         <nav aria-label="Progress" class="mb-20">
-            <ol id="step-container" role="list" class="flex items-center justify-center">
-                <li class="step relative pr-8 sm:pr-96" data-order="1" id="step-1">
-                    <!-- Current Step -->
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="h-0.5 w-full bg-gray-200"></div>
-                    </div>
-                    <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white">
-                        <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
-                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">1. Chọn môn học</span>
-                    </button>
-                </li>
-                <li class="step relative pr-8 sm:pr-96" data-order="2" id="step-2">
-                    <!-- Upcoming Step -->
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="h-0.5 w-full bg-gray-200"></div>
-                    </div>
-                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">2. Nhập thông tin</span>
-                    </button>
-                </li>
-                <li class="step relative pr-8 sm:pr-96" data-order="3" id="step-3">
-                    <!-- Upcoming Step -->
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="h-0.5 w-full bg-gray-200"></div>
-                    </div>
-                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">3. Nhập câu hỏi</span>
-                    </button>
-                </li>
-                <li class="step relative" data-order="4" id="step-4">
-                    <!-- Upcoming Step -->
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="h-0.5 w-full bg-gray-200"></div>
-                    </div>
-                    <button type="button" class="step-btn group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-                        <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true"></span>
-                        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-gray-300">4. Xem trước</span>
-                    </button>
-                </li>
+            <ol id="stepper-container" role="list" class="flex items-center justify-center">
+                
             </ol>
         </nav>
 
         <!-- Segment 1 (Select course) -->
-        <div id="segment-1" class="segment">
+        <div id="segment-1" data-order="1" class="segment">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho đề thi bạn muốn tạo."))
             <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+
             </div>
             <div id="pagination-container" class="mt-10 flex items-center justify-center col-span-2">
                 <div class="flex items-center justify-between w-full text-gray-600 dark:text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-600 max-w-[128px] mx-2">
@@ -78,6 +40,31 @@
                 </div>
             </div>
         </div>
+
+        <!-- Segment 2 (Fill in details) -->
+        <div id="segment-2" data-order="2" class="segment hidden">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập thông tin", "Vui lòng nhập các thông tin cần thiết cho đề thi bạn muốn tạo."))
+            <div id="detail-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+
+            </div>
+        </div>
+
+        <!-- Segment 3 (Add questions) -->
+        <div id="segment-3" data-order="3" class="segment hidden">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Thêm câu hỏi", "Vui lòng thêm danh sách câu hỏi vào trong đề thi."))
+            <div id="question-list-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+
+            </div>
+        </div>
+
+        <!-- Segment 4 (Preview) -->
+        <div id="segment-4" data-order="4" class="segment hidden">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại đề thi lần cuối trước khi bạn nhấn tạo."))
+            <div id="preview-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+
+            </div>
+        </div>
+
     </div>
 </div>
 <script src="~/js/pages/create-exam-paper.page.js" type="module"></script>

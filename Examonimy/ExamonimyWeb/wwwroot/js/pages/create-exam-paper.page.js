@@ -4,54 +4,49 @@ import { changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { ExamPaperCreate } from "../models/exam-paper-create.model.js";
 import { fetchCourses } from "../helpers/ajax.helper.js";
+import { StepperComponent } from "../components/stepper.component.js";
+import { Course } from "../models/course.model.js";
+import { ExamPaper } from "../models/exam-paper.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
 const paginationContainerForCourses = document.querySelector("#pagination-container"); 
+const stepperContainer = document.querySelector("#stepper-container");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
-const paginationComponentForCourses = new SimplePaginationComponent();
+const paginationComponentForCourses = new SimplePaginationComponent(paginationContainerForCourses);
+const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn học", "Nhập thông tin", "Thêm câu hỏi", "Xem trước"])
 const examPaperCreate = new ExamPaperCreate();
+const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
 
 // Function expressions
+const onClickCourseHandler = (course = new Course()) => {
+    examPaper.course = course;
+}
 
-const populateCourses = async () => {
-    const coursePaginationMetadata = await fetchCourses(pageSizeForCourses, paginationComponentForCourses.currentPage);
-    courseGridComponent.courses = coursePaginationMetadata.courses;
-    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.TotalPages;
-    courseContainer.innerHTML = courseGridComponent.render();
-    paginationContainerForCourses.innerHTML = paginationComponentForCourses.render();
+const onNavigateHandler = async (pageNumber = 0) => {
+    const coursePaginationMetadata = await fetchCourses(pageSizeForCourses, pageNumber);
+    courseGridComponent.populateCourses(coursePaginationMetadata.courses);
+    paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.TotalPages);
 }
 
 // Event listeners
-courseContainer.addEventListener("click", event => {
-    const clickedCourse = event.target.closest(".course-label");
-    if (!clickedCourse)
-        return;
-    courseGridComponent.highlightCourse(clickedCourse);
 
-    // Update the state for examPaperCreateDto
-    examPaperCreate.courseId = Number(clickedCourse.dataset.id);
-});
-
-paginationContainerForCourses.addEventListener("click", event => {
-    if (event.target.closest("#next-btn")) {
-        if (paginationComponentForCourses.hasNext()) {
-            paginationComponentForCourses.next();
-            populateCourses();
-        }
-    }
-
-    if (event.target.closest("#prev-btn")) {
-        if (paginationComponentForCourses.hasPrev()) {
-            paginationComponentForCourses.prev();
-            populateCourses();
-        }
-    }
-});
 
 // On load
 changeHtmlBackgroundColorToWhite();
-populateCourses();
+stepperComponent.connectedCallback();
+paginationComponentForCourses.subscribe("onNext", onNavigateHandler);
+paginationComponentForCourses.subscribe("onPrev", onNavigateHandler);
+courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
+
+(async () => {
+    const coursePaginationMetadata = await fetchCourses(pageSizeForCourses, 1);
+    courseGridComponent.courses = coursePaginationMetadata.courses;
+    courseGridComponent.connectedCallback();
+    paginationComponentForCourses.currentPage = 1;
+    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.TotalPages;
+    paginationComponentForCourses.connectedCallback();
+})();

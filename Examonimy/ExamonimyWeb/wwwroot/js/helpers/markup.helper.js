@@ -93,3 +93,12 @@ export const changeHtmlBackgroundColorToGray = () => {
     document.documentElement.classList.remove("bg-white");
     document.documentElement.classList.add("bg-gray-100");
 }
+
+export const toggleSegment = (segments = [new HTMLElement()], segmentOrder = 0) => {
+    segments.forEach(segment => {
+        if (Number(segment.dataset.order) === segmentOrder)
+            segment.classList.remove("hidden");
+        else
+            segment.classList.add("hidden");
+    });
+}
