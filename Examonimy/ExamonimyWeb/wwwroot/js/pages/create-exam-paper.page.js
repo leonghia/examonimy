@@ -23,6 +23,7 @@ const paginationComponentForCourses = new SimplePaginationComponent(paginationCo
 const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn học", "Nhập thông tin", "Thêm câu hỏi", "Xem trước"])
 const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
+const pageSizeForQuestions = 10;
 const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
 
 // Function expressions
@@ -64,7 +65,10 @@ const onClickStepperHandler = async (stepOrder = 0) => {
         changeHtmlBackgroundColorToGray();
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
-        questionListPaletteComponent.questions = (await fetchData("question")).data;
+        const res = await fetchData("question", pageSizeForQuestions);
+        questionListPaletteComponent.questions = res.data
+        questionListPaletteComponent.currentPage = res.paginationMetadata.currentPage;
+        questionListPaletteComponent.totalPages = res.paginationMetadata.totalPages;
         questionListPaletteComponent.connectedCallback();
     }
         

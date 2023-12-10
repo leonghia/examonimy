@@ -1,10 +1,14 @@
 ﻿import { BaseComponent } from "./base.component.js";
 import { Question } from "../models/question.model.js";
+import { SimplePaginationComponent } from "./simple-pagination.component.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
 
     #container;
     #questions = [new Question()];
+    #paginationContainer;
+    #currentPage = 1;
+    #totalPages = 999;
 
     constructor(container = new HTMLElement()) {
         super();
@@ -13,6 +17,11 @@ export class QuestionListPaletteComponent extends BaseComponent {
 
     connectedCallback() {
         this.#container.innerHTML = this.#render();
+        this.#paginationContainer = this.#container.querySelector("#pagination-container-for-palette");
+        const paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
+        paginationComponent.currentPage = this.#currentPage;
+        paginationComponent.totalPages = this.#totalPages;
+        paginationComponent.connectedCallback();
 
         this.#container.addEventListener("click", event => {
             const clickedQuestion = event.target.closest(".question-palette-item");
@@ -29,6 +38,14 @@ export class QuestionListPaletteComponent extends BaseComponent {
 
     set questions(value = [new Question()]) {
         this.#questions = value;
+    }
+
+    set currentPage(value) {
+        this.#currentPage = value;
+    }
+
+    set totalPages(value) {
+        this.#totalPages = value;
     }
 
     #renderQuestions() {      
@@ -81,7 +98,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         <input type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
     </div>   
     <!-- Results, show/hide based on command palette state -->
-    <ul class="max-h-fit scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
+    <ul class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
         ${questionListMarkup}
     </ul>
 
@@ -95,6 +112,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
         <p class="mt-2 text-gray-500">No components found for this search term. Please try again.</p>
     </div>
     -->
+    <div id="pagination-container-for-palette" class="p-4 flex items-center justify-end">
+
+    </div>
 </div>
         `;
     }

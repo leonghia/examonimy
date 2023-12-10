@@ -30,6 +30,7 @@ export class SimplePaginationComponent extends BaseComponent {
                 return;
             this.#currentPage++;
             this._trigger("onNext", this.#currentPage);
+            this.populatePaginationInfo();
         });
 
         this.#prevButton.addEventListener("click", () => {
@@ -37,6 +38,7 @@ export class SimplePaginationComponent extends BaseComponent {
                 return;
             this.#currentPage--;
             this._trigger("onPrev", this.#currentPage);
+            this.populatePaginationInfo();
         });
     }
 
@@ -48,8 +50,7 @@ export class SimplePaginationComponent extends BaseComponent {
         this.#totalPages = value;
     }
 
-    populatePaginationInfo(totalPages) {       
-        this.#totalPages = totalPages;
+    populatePaginationInfo() {              
         this.#paginationInfo.textContent = `Trang ${this.#currentPage} / ${this.#totalPages}`;
     }
 

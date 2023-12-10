@@ -3,13 +3,13 @@ import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
 import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
-import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question-create.dto.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question-create.model.js";
 import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton, changeHtmlBackgroundColorToWhite, changeHtmlBackgroundColorToGray } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 import { CourseGridComponent } from "../components/course-grid.component.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
-import { fetchCourses } from "../helpers/ajax.helper.js";
+import { fetchData } from "../helpers/ajax.helper.js";
 import { StepperComponent } from "../components/stepper.component.js";
 
 // DOM selectors
@@ -326,10 +326,10 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
 }
 
 const populateCourses = async () => {
-    const coursePaginationMetadata = await fetchCourses(pageSizeForCourses, paginationComponentForCourses.currentPage);
-    courseGridComponent.courses = coursePaginationMetadata.courses;
+    const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, paginationComponentForCourses.currentPage);
+    courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
-    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.TotalPages;
+    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
     paginationComponentForCourses.connectedCallback();
 }
 
@@ -535,6 +535,12 @@ const onClickCourseHandler = (course = new Course()) => {
     questionCreateDto.courseId = course.id;
 }
 
+const onNavigateCoursePageHandler = async (pageNumber = 0) => {
+    const res = await fetchData("course", pageSizeForCourses, pageNumber);
+    const courses = res.data;
+    courseGridComponent.populateCourses(courses);
+}
+
 // Event listeners
 courseContainer.addEventListener("click", selectCourse);
 
@@ -545,22 +551,6 @@ questionTypeDropdown.addEventListener("click", selectQuestionType);
 questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(questionLevelDropdown));
 
 questionLevelDropdown.addEventListener("click", selectQuestionLevel);
-
-paginationContainerForCourses.addEventListener("click", event => {
-    if (event.target.closest("#next-btn")) {
-        if (paginationComponentForCourses.hasNext()) {
-            paginationComponentForCourses.next();
-            populateCourses();
-        }
-    }
-
-    if (event.target.closest("#prev-btn")) {
-        if (paginationComponentForCourses.hasPrev()) {
-            paginationComponentForCourses.prev();
-            populateCourses();
-        }
-    }
-});
 
 answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.addEventListener("click", event => {
     const clicked = event.target.closest("label");
@@ -636,6 +626,8 @@ courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("onClickStep3", onClickStep3Handler);
 stepperComponent.subscribe("onClickStep4", onClickStep4Hanlder);
+paginationComponentForCourses.subscribe("onNext", onNavigateCoursePageHandler);
+paginationComponentForCourses.subscribe("onPrev", onNavigateCoursePageHandler);
 
 (async () => {
     populateCourses();
