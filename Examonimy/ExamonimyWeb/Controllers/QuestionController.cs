@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
+using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
@@ -7,7 +8,9 @@ using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Controllers
@@ -55,6 +58,103 @@ namespace ExamonimyWeb.Controllers
                 QuestionTypes = questionTypesToReturn
             };
             return View(viewModel);
+        }
+
+        [CustomAuthorize(Roles = "Administrator")]
+        [HttpGet("api/question")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
+        {
+            var questions = await _questionRepository.GetAsync(requestParams, null, new List<string> { "Course", "QuestionType", "QuestionLevel" });
+            var questionsToReturn = new List<QuestionGetDto>();         
+            foreach (var question in questions)
+            {
+                
+                switch (question.QuestionTypeId)
+                {
+                    case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
+                        Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == question.Id;
+                        var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, null);
+                        var questionToReturn1 = new MultipleChoiceQuestionWithOneCorrectAnswerGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            ChoiceA = specificQuestion1!.ChoiceA,
+                            ChoiceB = specificQuestion1!.ChoiceB,
+                            ChoiceC = specificQuestion1!.ChoiceC,
+                            ChoiceD = specificQuestion1!.ChoiceD,
+                            CorrectAnswer = specificQuestion1.CorrectAnswer
+                        };
+                        questionsToReturn.Add(questionToReturn1);
+                        break;
+                    case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
+                        Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == question.Id;
+                        var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, null);
+                        var questionToReturn2 = new MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            ChoiceA = specificQuestion2!.ChoiceA,
+                            ChoiceB = specificQuestion2!.ChoiceB,
+                            ChoiceC = specificQuestion2!.ChoiceC,
+                            ChoiceD = specificQuestion2!.ChoiceD,
+                            CorrectAnswers = specificQuestion2!.CorrectAnswers
+                        };
+                        questionsToReturn.Add(questionToReturn2);
+                        break;
+                    case (int)QuestionTypeId.TrueFalse:
+                        Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == question.Id;
+                        var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, null);
+                        var questionToReturn3 = new TrueFalseQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,                           
+                            CorrectAnswer = specificQuestion3!.CorrectAnswer
+                        };
+                        questionsToReturn.Add(questionToReturn3);
+                        break;
+                    case (int)QuestionTypeId.ShortAnswer:
+                        Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == question.Id;
+                        var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, null);
+                        var questionToReturn4 = new ShortAnswerQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            CorrectAnswer = specificQuestion4!.CorrectAnswer
+                        };
+                        questionsToReturn.Add(questionToReturn4);
+                        break;
+                    case (int)QuestionTypeId.FillInBlank:
+                        Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == question.Id;
+                        var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, null);
+                        var questionToReturn5 = new FillInBlankQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            CorrectAnswers = specificQuestion5!.CorrectAnswers
+                        };
+                        questionsToReturn.Add(questionToReturn5);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return Ok(questionsToReturn);
         }
 
         [CustomAuthorize(Roles = "Administrator")]

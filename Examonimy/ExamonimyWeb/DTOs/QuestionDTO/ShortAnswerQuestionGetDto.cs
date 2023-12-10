@@ -4,12 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExamonimyWeb.DTOs.QuestionDTO
 {
-    public class ShortAnswerQuestionGetDto
+    public class ShortAnswerQuestionGetDto : QuestionGetDto
     {
-        
-        public required QuestionGetDto Question { get; set; }
-
-        
+                   
         public required string CorrectAnswer { get; set; }
     }
 }

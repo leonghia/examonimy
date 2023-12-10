@@ -1,12 +1,18 @@
 ﻿using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.UserDTO;
+using System.Text.Json.Serialization;
 
 namespace ExamonimyWeb.DTOs.QuestionDTO
 {
+    [JsonDerivedType(typeof(MultipleChoiceQuestionWithOneCorrectAnswerGetDto))]
+    [JsonDerivedType(typeof(MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto))]
+    [JsonDerivedType(typeof(TrueFalseQuestionGetDto))]
+    [JsonDerivedType(typeof(ShortAnswerQuestionGetDto))]
+    [JsonDerivedType(typeof(FillInBlankQuestionGetDto))]
     public class QuestionGetDto
     {
         
-        public int Id { get; set; }
+        public required int Id { get; set; }
           
         public required CourseGetDto Course { get; set; }
            
@@ -16,6 +22,6 @@ namespace ExamonimyWeb.DTOs.QuestionDTO
       
         public required string QuestionContent { get; set; }
              
-        public required UserGetDto Author { get; set; }
+        public UserGetDto? Author { get; set; }
     }
 }
