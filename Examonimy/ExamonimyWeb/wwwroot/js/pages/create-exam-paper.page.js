@@ -33,7 +33,7 @@ const onClickCourseHandler = (course = new Course()) => {
 const onNavigateHandler = async (pageNumber = 0) => {
     const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, pageNumber);
     courseGridComponent.populateCourses(coursePaginationMetadata.data);
-    paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.TotalPages);
+    paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
 }
 
 const populateEmptyQuestions = (numbersOfQuestion = 0) => {
@@ -64,7 +64,7 @@ const onClickStepperHandler = async (stepOrder = 0) => {
         changeHtmlBackgroundColorToGray();
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
-        questionListPaletteComponent.questions = await fetchData("question");
+        questionListPaletteComponent.questions = (await fetchData("question")).data;
         questionListPaletteComponent.connectedCallback();
     }
         
@@ -90,6 +90,6 @@ courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
     courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.currentPage = 1;
-    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.TotalPages;
+    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
     paginationComponentForCourses.connectedCallback();
 })();

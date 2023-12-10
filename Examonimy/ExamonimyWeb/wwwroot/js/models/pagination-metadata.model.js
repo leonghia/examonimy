@@ -1,8 +1,8 @@
 ﻿export class PaginationMetadata {
-    TotalCount = 0;
-    PageSize = 0;
-    CurrentPage = 0;
-    TotalPages = 0;
+    totalCount = 0;
+    pageSize = 0;
+    currentPage = 0;
+    totalPages = 0;
 
     
 }

@@ -12,6 +12,7 @@ using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -154,6 +155,17 @@ namespace ExamonimyWeb.Controllers
                         break;
                 }
             }
+
+            var paginationMetadata = new PaginationMetadata
+            {
+                PageSize = questions.PageSize,
+                TotalCount = questions.TotalCount,
+                CurrentPage = questions.PageNumber,
+                TotalPages = questions.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
             return Ok(questionsToReturn);
         }
 

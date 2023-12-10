@@ -10,6 +10,55 @@ export class Question {
     constructor() { }
 }
 
+export class MultipleChoiceQuestionWithOneCorrectAnswer extends Question {
+    choiceA = "";
+    choiceB = "";
+    choiceC = "";
+    choiceD = "";
+    correctAnswer = "";
+
+    constructor() {
+        super();
+    }
+}
+
+export class MultipleChoiceQuestionWithMultipleCorrectAnswers extends Question {
+    choiceA = "";
+    choiceB = "";
+    choiceC = "";
+    choiceD = "";
+    correctAnswers = "";
+
+    constructor() {
+        super();
+    }
+}
+
+export class TrueFalseQuestion extends Question {
+    correctAnswer = false;
+
+    constructor() {
+        super();
+    }
+}
+
+export class ShortAnswerQuestion extends Question {
+    correctAnswer = "";
+
+    constructor() {
+        super();
+    }
+}
+
+export class FillInBlankQuestion extends Question {
+
+    correctAnswers = "";
+
+    constructor() {
+        super();
+    }
+}
+
 export class QuestionLevel {
     id = 0;
     name = "";
