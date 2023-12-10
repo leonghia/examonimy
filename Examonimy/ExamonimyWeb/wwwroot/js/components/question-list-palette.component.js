@@ -12,6 +12,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #currentPage = 1;
     #totalPages = 999;
     #pageSize = 10;
+    #questionListContainerForPalette;
+    #questionDetailContainer;
 
     constructor(container = new HTMLElement()) {
         super();
@@ -20,7 +22,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
 
     connectedCallback() {
         this.#container.innerHTML = this.#render();
+        this.#questionListContainerForPalette = this.#container.querySelector("#question-list-container-for-palette");
         this.#paginationContainer = this.#container.querySelector("#pagination-container-for-palette");
+        this.#questionDetailContainer = this.#container.querySelector("#question-detail-container");
         const paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
         paginationComponent.currentPage = this.#currentPage;
         paginationComponent.totalPages = this.#totalPages;
@@ -30,6 +34,15 @@ export class QuestionListPaletteComponent extends BaseComponent {
         paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));
 
         this.#container.addEventListener("click", event => {
+            const clickedViewQuestionDetailButton = event.target.closest(".view-question-detail-btn");
+
+            if (clickedViewQuestionDetailButton) {
+                this.#questionListContainerForPalette.classList.add("hidden");
+                this.#paginationContainer.classList.add("hidden");
+                this.#questionDetailContainer.classList.remove("hidden");
+                this.#questionDetailContainer.innerHTML = this.#renderQuestionDetail();
+            }
+
             const clickedQuestion = event.target.closest(".question-palette-item");
             if (!clickedQuestion)
                 return;
@@ -39,6 +52,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
             });
 
             clickedQuestion.classList.add("bg-gray-100");
+
+            
         });
     }
 
@@ -46,7 +61,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         const getResponse = await fetchData("question", this.#pageSize, pageNumber);
         this.#questions = getResponse.data;
         this.#currentPage = getResponse.paginationMetadata.currentPage;
-        this.#container.querySelector("#question-list-container-for-palette").innerHTML = this.#renderQuestions();
+        this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();
     }
     
 
@@ -66,13 +81,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
         return this.#questions.reduce((accumulator, currentValue) => {
             return accumulator + `
 <!-- Active: "bg-gray-200" -->
-<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 hover:bg-gray-100 cursor-pointer">
-    <div class="flex h-10 w-10 flex-none items-center justify-center rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
-        </svg>
-    </div>
-    <div class="ml-4 flex-auto">
+<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 cursor-pointer">
+    <div class="ml-4 basis-4/5">
         <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
         <div class="prose prose-sm font-medium text-violet-700 mb-2">
             ${trimMarkup(currentValue.questionContent)}
@@ -92,6 +102,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
             </div>
         </div>
     </div>
+    <div class="basis-1/5 flex h-10 w-10 flex-none items-center justify-end rounded-lg">     
+        <button type="button" class="view-question-detail-btn rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">Xem chi tiết</button>
+    </div>
 </li>
             `;
         }, "");
@@ -110,7 +123,10 @@ export class QuestionListPaletteComponent extends BaseComponent {
             <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
         </svg>
         <input type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
-    </div>   
+    </div>
+    <div id="question-detail-container" class="hidden">
+    
+    </div>
     <!-- Results, show/hide based on command palette state -->
     <ul id="question-list-container-for-palette" class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
         ${questionListMarkup}
@@ -131,5 +147,23 @@ export class QuestionListPaletteComponent extends BaseComponent {
     </div>
 </div>
         `;
+    }
+
+    #renderQuestionDetail(question) {
+        return `
+<div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+  <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+    <div class="ml-4 mt-2">
+      <h3 class="text-sm font-semibold leading-6 text-gray-700">Chi tiết câu hỏi</h3>
+    </div>
+    <div class="ml-4 mt-2 flex items-center gap-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-violet-600">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+      </svg>
+      <span class="text-violet-600 font-medium text-sm cursor-pointer">Quay lại</span>
+    </div>
+  </div>
+</div>
+        `
     }
 }
