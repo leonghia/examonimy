@@ -1,6 +1,7 @@
 ﻿import { Course } from "./course.model.js";
 
 export class Question {
+    id = 0;
     course = new Course();
     questionType = new QuestionType();
     questionLevel = new QuestionLevel();

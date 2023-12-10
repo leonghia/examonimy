@@ -27,7 +27,8 @@ export class CourseGridComponent extends BaseComponent {
             this.#highlightCourse(clickedCourse);
             const courseId = Number(clickedCourse.dataset.id);
             const courseName = clickedCourse.querySelector(".course-name").textContent;
-            const course = new Course(courseId, courseName);
+            const courseCode = clickedCourse.dataset.courseCode;
+            const course = new Course(courseId, courseName, courseCode);
 
             this._trigger("onClickCourse", course);        
         });
@@ -46,7 +47,7 @@ export class CourseGridComponent extends BaseComponent {
         return this.#courses.reduce((accumulator, course) => {
             return accumulator + `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label data-id="${course.id}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
+        <label data-id="${course.id}" data-course-code="${course.courseCode}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
                     <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
