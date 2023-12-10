@@ -2,6 +2,7 @@
 import { Question } from "../models/question.model.js";
 import { SimplePaginationComponent } from "./simple-pagination.component.js";
 import { trimMarkup } from "../helpers/markup.helper.js";
+import { fetchData } from "../helpers/ajax.helper.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
 
@@ -10,6 +11,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #paginationContainer;
     #currentPage = 1;
     #totalPages = 999;
+    #pageSize = 10;
 
     constructor(container = new HTMLElement()) {
         super();
@@ -24,6 +26,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
         paginationComponent.totalPages = this.#totalPages;
         paginationComponent.connectedCallback();
 
+        paginationComponent.subscribe("onNext", this.onNavigateHandler.bind(this));
+        paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));
+
         this.#container.addEventListener("click", event => {
             const clickedQuestion = event.target.closest(".question-palette-item");
             if (!clickedQuestion)
@@ -36,6 +41,14 @@ export class QuestionListPaletteComponent extends BaseComponent {
             clickedQuestion.classList.add("bg-gray-100");
         });
     }
+
+    async onNavigateHandler(pageNumber = 1) {       
+        const getResponse = await fetchData("question", this.#pageSize, pageNumber);
+        this.#questions = getResponse.data;
+        this.#currentPage = getResponse.paginationMetadata.currentPage;
+        this.#container.querySelector("#question-list-container-for-palette").innerHTML = this.#renderQuestions();
+    }
+    
 
     set questions(value = [new Question()]) {
         this.#questions = value;
@@ -99,7 +112,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         <input type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
     </div>   
     <!-- Results, show/hide based on command palette state -->
-    <ul class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
+    <ul id="question-list-container-for-palette" class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
         ${questionListMarkup}
     </ul>
 
