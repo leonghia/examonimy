@@ -1,6 +1,7 @@
 ﻿import { BaseComponent } from "./base.component.js";
 import { Question } from "../models/question.model.js";
 import { SimplePaginationComponent } from "./simple-pagination.component.js";
+import { trimMarkup } from "../helpers/markup.helper.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
 
@@ -60,8 +61,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
     </div>
     <div class="ml-4 flex-auto">
         <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
-        <div class="prose prose-sm font-medium text-violet-700 mb-3">
-            ${currentValue.questionContent}
+        <div class="prose prose-sm font-medium text-violet-700 mb-2">
+            ${trimMarkup(currentValue.questionContent)}
         </div>
         <!-- Active: "text-gray-700", Not Active: "text-gray-500" -->
         <div class="flex items-center gap-x-8 text-sm">

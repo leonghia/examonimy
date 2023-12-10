@@ -106,3 +106,8 @@ export const toggleSegment = (segments = [new HTMLElement()], segmentOrder = 0) 
             segment.classList.add("hidden");
     });
 }
+
+export const trimMarkup = (markup = "") => {
+    const temp = markup.substring(0, markup.indexOf(">") + 1).replace("<", "</");
+    return markup.substring(0, markup.indexOf(temp) + temp.length);
+}
