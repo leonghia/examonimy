@@ -8,6 +8,7 @@ import { Course } from "../models/course.model.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionPaletteComponent } from "../components/question-palette.component.js";
+import { QuestionPreviewComponent } from "../components/question-preview.component.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -24,7 +25,7 @@ const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn h�
 const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
 const pageSizeForQuestions = 10;
-const questionListPaletteComponent = new QuestionPaletteComponent(questionPaletteContainer);
+const questionPaletteComponent = new QuestionPaletteComponent(questionPaletteContainer);
 
 // Function expressions
 const onClickCourseHandler = (course = new Course()) => {
@@ -37,21 +38,53 @@ const onNavigateHandler = async (pageNumber = 0) => {
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
 }
 
+const dragoverHandler = (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+}
+
+const dragenterHandler = (event) => {
+    event.preventDefault();
+    event.currentTarget.querySelector(".empty-placeholder")?.classList.remove("border-gray-300");
+    event.currentTarget.querySelector(".empty-placeholder")?.classList.add("border-green-500");
+    event.currentTarget.querySelector(".empty-placeholder")?.classList.add("bg-green-50");
+}
+
+const dropHandler = (event) => {
+    event.preventDefault();
+    const questionId = Number(event.dataTransfer.getData("text/plain"));
+    const questionPreviewComponent = new QuestionPreviewComponent(event.currentTarget.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
+    questionPreviewComponent.connectedCallback();
+    event.currentTarget.querySelector(".empty-placeholder").classList.add("hidden");
+}
+
+const addEventHandlersToEmptyQuestions = () => {
+    Array.from(questionListContainer.querySelectorAll(".empty-question")).forEach(emptyQuestion => {
+        emptyQuestion.addEventListener("dragenter", dragenterHandler);
+        emptyQuestion.addEventListener("dragover", dragoverHandler);
+        emptyQuestion.addEventListener("drop", dropHandler);
+    });
+}
+
 const populateEmptyQuestions = (numbersOfQuestion = 0) => {
     questionListContainer.innerHTML = "";
     for (let i = 0; i < numbersOfQuestion; i++) {
         questionListContainer.insertAdjacentHTML("beforeend", `
-<div data-number="${i + 1}" class="bg-white rounded-lg p-6">
-    <p class="font-semibold text-base text-gray-900 mb-4">Câu ${i + 1}</p>
-    <button type="button" class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+<div data-number="${i + 1}" class="empty-question bg-white rounded-lg p-6">
+    <p class="font-bold text-base text-gray-900 mb-4">Câu ${i + 1}</p>
+    <div class="empty-placeholder relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-0 focus:ring-indigo-500 focus:ring-offset-2">
+        <svg class="empty-icon mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
         </svg>
-        <span class="mt-2 block text-sm font-semibold text-gray-700">Chưa có câu hỏi</span>
-    </button>
+        <span class="empty-text mt-2 block text-sm font-semibold text-gray-700">Chưa có câu hỏi</span>
+    </div>
+    <div class="question-placeholder">
+
+    </div>
 </div>
         `);
     }
+    addEventHandlersToEmptyQuestions();
 }
 
 const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {
@@ -66,10 +99,10 @@ const onClickStepperHandler = async (stepOrder = 0) => {
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
         const res = await fetchData("question", pageSizeForQuestions);
-        questionListPaletteComponent.questions = res.data
-        questionListPaletteComponent.currentPage = res.paginationMetadata.currentPage;
-        questionListPaletteComponent.totalPages = res.paginationMetadata.totalPages;
-        questionListPaletteComponent.connectedCallback();
+        questionPaletteComponent.questions = res.data
+        questionPaletteComponent.currentPage = res.paginationMetadata.currentPage;
+        questionPaletteComponent.totalPages = res.paginationMetadata.totalPages;
+        questionPaletteComponent.connectedCallback();
     }
         
     if (stepOrder === 3) {

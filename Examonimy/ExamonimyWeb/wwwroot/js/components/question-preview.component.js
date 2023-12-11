@@ -5,8 +5,9 @@ export class QuestionPreviewComponent {
     #question = new Question();
     #container;
 
-    constructor(container) {
-        this.#container = container;        
+    constructor(container, question) {
+        this.#container = container;     
+        this.#question = question;
     }
 
     connectedCallback() {

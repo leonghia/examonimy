@@ -17,6 +17,7 @@ export class QuestionPaletteComponent extends BaseComponent {
     #questionPreviewContainer;
     #questionPreviewWrapper;
     #questionPreviewComponent = new QuestionPreviewComponent();
+    #backLink;
 
     constructor(container = new HTMLElement()) {
         super();
@@ -30,6 +31,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         this.#paginationContainer = this.#container.querySelector("#pagination-container-for-palette");
         this.#questionPreviewContainer = this.#container.querySelector("#question-preview-container");        
         this.#questionPreviewWrapper = this.#container.querySelector("#question-preview-wrapper");
+        this.#backLink = this.#container.querySelector("#back-link");
 
         this.#questionPreviewComponent = new QuestionPreviewComponent(this.#questionPreviewWrapper);
 
@@ -41,7 +43,9 @@ export class QuestionPaletteComponent extends BaseComponent {
         paginationComponent.subscribe("onNext", this.onNavigateHandler.bind(this));
         paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));
 
-        this.#container.addEventListener("click", event => {
+        this.#addOnDragStartEventListenerToQuestionElements();
+
+        this.#questionListContainerForPalette.addEventListener("click", event => {
             const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
             if (clickedQuestionPreviewButton) {
                 this.#questionListContainerForPalette.classList.add("hidden");
@@ -51,17 +55,8 @@ export class QuestionPaletteComponent extends BaseComponent {
                 const idOfQuestionToPreview = Number(clickedQuestionPreviewButton.closest(".question-palette-item").dataset.questionId);
                 const questionToPreview = this.#questions.find(q => q.id === idOfQuestionToPreview);
                 this.#questionPreviewComponent.question = questionToPreview;
-                this.#questionPreviewComponent.connectedCallback();             
+                this.#questionPreviewComponent.connectedCallback();
                 this.#questionPreviewContainer.classList.remove("hidden");
-                return;
-            }
-
-            const clickedBackButton = event.target.closest("#back-btn");
-            if (clickedBackButton) {
-                this.#questionListContainerForPalette.classList.remove("hidden");
-                this.#paginationContainer.classList.remove("hidden");
-                this.#questionPreviewContainer.classList.add("hidden");
-                this.#questionPreviewWrapper.innerHTML = "";
                 return;
             }
 
@@ -73,9 +68,16 @@ export class QuestionPaletteComponent extends BaseComponent {
                 item.classList.remove("bg-gray-100");
             });
 
-            clickedQuestion.classList.add("bg-gray-100");           
+            clickedQuestion.classList.add("bg-gray-100");      
         });
 
+        this.#backLink.addEventListener("click", event => {
+            event.preventDefault();
+            this.#questionListContainerForPalette.classList.remove("hidden");
+            this.#paginationContainer.classList.remove("hidden");
+            this.#questionPreviewContainer.classList.add("hidden");
+            this.#questionPreviewWrapper.innerHTML = "";
+        });
     }
 
     async onNavigateHandler(pageNumber = 1) {       
@@ -83,8 +85,23 @@ export class QuestionPaletteComponent extends BaseComponent {
         this.#questions = getResponse.data;
         this.#currentPage = getResponse.paginationMetadata.currentPage;
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();
+        this.#addOnDragStartEventListenerToQuestionElements();
     }
-    
+
+    #addOnDragStartEventListenerToQuestionElements() {      
+        Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(questionElement => {
+            questionElement.addEventListener("dragstart", this.#dragstartHandler.bind(this));
+        });
+    }
+
+    #dragstartHandler(event) {
+        event.dataTransfer.setData("text/plain", event.target.dataset.questionId);
+        event.dataTransfer.dropEffect = "copy";
+    }
+
+    get questions() {
+        return this.#questions;
+    }
 
     set questions(value = [new Question()]) {
         this.#questions = value;
@@ -102,7 +119,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         return this.#questions.reduce((accumulator, currentValue) => {
             return accumulator + `
 <!-- Active: "bg-gray-200" -->
-<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 cursor-pointer">
+<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 cursor-pointer" draggable="true">
     <div class="ml-4 basis-4/5">
         <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
         <div class="prose prose-sm font-medium text-violet-700 mb-2">
@@ -148,12 +165,12 @@ export class QuestionPaletteComponent extends BaseComponent {
     <div id="question-preview-container" class="hidden">
         <div class="bg-white px-4 py-5 sm:px-6">
             <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div id="back-btn" class="ml-4 mt-2 flex items-center gap-x-2 cursor-pointer">
+                <a href="#" id="back-link" class="ml-4 mt-2 flex items-center gap-x-2 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-600">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
                     </svg>
                     <span class="text-blue-600 font-medium text-sm">Quay lại</span>
-                </div>
+                </a>
             </div>
             <div id="question-preview-wrapper">
                 
