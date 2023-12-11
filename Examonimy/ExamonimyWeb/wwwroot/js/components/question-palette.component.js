@@ -3,8 +3,9 @@ import { Question } from "../models/question.model.js";
 import { SimplePaginationComponent } from "./simple-pagination.component.js";
 import { trimMarkup } from "../helpers/markup.helper.js";
 import { fetchData } from "../helpers/ajax.helper.js";
+import { QuestionPreviewComponent } from "./question-preview.component.js";
 
-export class QuestionListPaletteComponent extends BaseComponent {
+export class QuestionPaletteComponent extends BaseComponent {
 
     #container;
     #questions = [new Question()];
@@ -13,7 +14,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #totalPages = 999;
     #pageSize = 10;
     #questionListContainerForPalette;
-    #questionDetailContainer;
+    #questionPreviewContainer;
+    #questionPreviewWrapper;
+    #questionPreviewComponent = new QuestionPreviewComponent();
 
     constructor(container = new HTMLElement()) {
         super();
@@ -21,10 +24,15 @@ export class QuestionListPaletteComponent extends BaseComponent {
     }
 
     connectedCallback() {
-        this.#container.innerHTML = this.#render();
+        this.#container.innerHTML = this.#render();    
+
         this.#questionListContainerForPalette = this.#container.querySelector("#question-list-container-for-palette");
         this.#paginationContainer = this.#container.querySelector("#pagination-container-for-palette");
-        this.#questionDetailContainer = this.#container.querySelector("#question-detail-container");
+        this.#questionPreviewContainer = this.#container.querySelector("#question-preview-container");        
+        this.#questionPreviewWrapper = this.#container.querySelector("#question-preview-wrapper");
+
+        this.#questionPreviewComponent = new QuestionPreviewComponent(this.#questionPreviewWrapper);
+
         const paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
         paginationComponent.currentPage = this.#currentPage;
         paginationComponent.totalPages = this.#totalPages;
@@ -34,13 +42,27 @@ export class QuestionListPaletteComponent extends BaseComponent {
         paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));
 
         this.#container.addEventListener("click", event => {
-            const clickedViewQuestionDetailButton = event.target.closest(".view-question-detail-btn");
-
-            if (clickedViewQuestionDetailButton) {
+            const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
+            if (clickedQuestionPreviewButton) {
                 this.#questionListContainerForPalette.classList.add("hidden");
                 this.#paginationContainer.classList.add("hidden");
-                this.#questionDetailContainer.classList.remove("hidden");
-                this.#questionDetailContainer.innerHTML = this.#renderQuestionDetail();
+
+                // retrieve the question
+                const idOfQuestionToPreview = Number(clickedQuestionPreviewButton.closest(".question-palette-item").dataset.questionId);
+                const questionToPreview = this.#questions.find(q => q.id === idOfQuestionToPreview);
+                this.#questionPreviewComponent.question = questionToPreview;
+                this.#questionPreviewComponent.connectedCallback();             
+                this.#questionPreviewContainer.classList.remove("hidden");
+                return;
+            }
+
+            const clickedBackButton = event.target.closest("#back-btn");
+            if (clickedBackButton) {
+                this.#questionListContainerForPalette.classList.remove("hidden");
+                this.#paginationContainer.classList.remove("hidden");
+                this.#questionPreviewContainer.classList.add("hidden");
+                this.#questionPreviewWrapper.innerHTML = "";
+                return;
             }
 
             const clickedQuestion = event.target.closest(".question-palette-item");
@@ -51,10 +73,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
                 item.classList.remove("bg-gray-100");
             });
 
-            clickedQuestion.classList.add("bg-gray-100");
-
-            
+            clickedQuestion.classList.add("bg-gray-100");           
         });
+
     }
 
     async onNavigateHandler(pageNumber = 1) {       
@@ -103,7 +124,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         </div>
     </div>
     <div class="basis-1/5 flex h-10 w-10 flex-none items-center justify-end rounded-lg">     
-        <button type="button" class="view-question-detail-btn rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">Xem chi tiết</button>
+        <button type="button" class="preview-question-btn rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">Xem chi tiết</button>
     </div>
 </li>
             `;
@@ -124,8 +145,20 @@ export class QuestionListPaletteComponent extends BaseComponent {
         </svg>
         <input type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
     </div>
-    <div id="question-detail-container" class="hidden">
-    
+    <div id="question-preview-container" class="hidden">
+        <div class="bg-white px-4 py-5 sm:px-6">
+            <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                <div id="back-btn" class="ml-4 mt-2 flex items-center gap-x-2 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                    </svg>
+                    <span class="text-blue-600 font-medium text-sm">Quay lại</span>
+                </div>
+            </div>
+            <div id="question-preview-wrapper">
+                
+            </div>
+        </div>
     </div>
     <!-- Results, show/hide based on command palette state -->
     <ul id="question-list-container-for-palette" class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
@@ -143,27 +176,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
     </div>
     -->
     <div id="pagination-container-for-palette" class="p-4 flex items-center justify-end">
-
+        
     </div>
 </div>
         `;
-    }
-
-    #renderQuestionDetail(question) {
-        return `
-<div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
-  <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-    <div class="ml-4 mt-2">
-      <h3 class="text-sm font-semibold leading-6 text-gray-700">Chi tiết câu hỏi</h3>
-    </div>
-    <div class="ml-4 mt-2 flex items-center gap-x-2">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-violet-600">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-      </svg>
-      <span class="text-violet-600 font-medium text-sm cursor-pointer">Quay lại</span>
-    </div>
-  </div>
-</div>
-        `
     }
 }

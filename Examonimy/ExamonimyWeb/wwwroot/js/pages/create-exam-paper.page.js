@@ -7,7 +7,7 @@ import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { fetchData } from "../helpers/ajax.helper.js";
-import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
+import { QuestionPaletteComponent } from "../components/question-palette.component.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -15,7 +15,7 @@ const paginationContainerForCourses = document.querySelector("#pagination-contai
 const stepperContainer = document.querySelector("#stepper-container");
 const numbersOfQuestionInput = document.querySelector("#numbers-of-question");
 const questionListContainer = document.querySelector("#question-list-container");
-const questionListPaletteContainer = document.querySelector("#question-list-palette-container");
+const questionPaletteContainer = document.querySelector("#question-list-palette-container");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
@@ -24,7 +24,7 @@ const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn h�
 const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
 const pageSizeForQuestions = 10;
-const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
+const questionListPaletteComponent = new QuestionPaletteComponent(questionPaletteContainer);
 
 // Function expressions
 const onClickCourseHandler = (course = new Course()) => {
