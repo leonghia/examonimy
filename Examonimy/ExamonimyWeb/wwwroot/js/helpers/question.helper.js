@@ -39,3 +39,17 @@ export const ChoiceValueMappings = {
 }
 
 export const splitCorrectAnswersForMultipleChoiceQuestion = (correctAnswers = "") => correctAnswers.split("|").map(str => Number(str)).sort((a, b) => a - b);
+
+export const splitCorrectAnswersForFillInBlankQuestion = (correctAnswers = "") => correctAnswers.split("|");
+
+export const formatFillInBlankQuestionContent = (content = "") => {
+    let i = 0;
+    return content.replaceAll("__", () => {
+        return `
+<span class="mx-1 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
+    <span class="text-white font-semibold text-xs">${++i}</span>
+</span>
+<span class="mr-2 inline-flex w-20 border-b-2 border-gray-300"></span>
+        `;
+    });
+}
