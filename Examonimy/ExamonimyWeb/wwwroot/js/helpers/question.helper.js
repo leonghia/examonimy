@@ -37,3 +37,5 @@ export const ChoiceValueMappings = {
     2: "C",
     3: "D"
 }
+
+export const splitCorrectAnswersForMultipleChoiceQuestion = (correctAnswers = "") => correctAnswers.split("|").map(str => Number(str)).sort((a, b) => a - b);

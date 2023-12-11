@@ -124,7 +124,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         </div>
     </div>
     <div class="basis-1/5 flex h-10 w-10 flex-none items-center justify-end rounded-lg">     
-        <button type="button" class="preview-question-btn rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100">Xem chi tiết</button>
+        <button type="button" class="preview-question-btn rounded bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Xem chi tiết</button>
     </div>
 </li>
             `;
