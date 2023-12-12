@@ -16,7 +16,7 @@ const courseContainer = document.querySelector("#course-container");
 const paginationContainerForCourses = document.querySelector("#pagination-container"); 
 const stepperContainer = document.querySelector("#stepper-container");
 const numbersOfQuestionInput = document.querySelector("#numbers-of-question");
-const questionListContainer = document.querySelector("#question-list-container");
+const questionSampleListContainer = document.querySelector("#question-sample-list-container");
 const questionPaletteContainer = document.querySelector("#question-list-palette-container");
 
 // States
@@ -39,46 +39,43 @@ const navigateHandler = async (pageNumber = 0) => {
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
 }
 
-const dragoverHandler = (event) => {
+questionSampleListContainer.addEventListener("dragenter", event => {
+    event.preventDefault();
+    if (event.target.matches(".empty-placeholder")) {
+        event.target.classList.remove("border-gray-300");
+        event.target.classList.add("border-green-500");
+        event.target.classList.add("bg-green-50");
+    }
+});
+
+questionSampleListContainer.addEventListener("dragleave", event => {
+    event.preventDefault();
+    if (event.target.matches(".empty-placeholder")) {
+        event.target.classList.remove("bg-green-50");
+        event.target.classList.remove("border-green-500");
+        event.target.classList.add("border-gray-300");
+    }
+});
+
+questionSampleListContainer.addEventListener("dragover", event => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
-}
+});
 
-const dragenterHandler = (event) => {
+questionSampleListContainer.addEventListener("drop", event => {
     event.preventDefault();
-    event.currentTarget.classList.remove("border-gray-300");
-    event.currentTarget.classList.add("border-green-500");
-    event.currentTarget.classList.add("bg-green-50");
-}
-
-const dragleaveHandler = (event) => {
-    event.preventDefault(); 
-    event.currentTarget.classList.remove("bg-green-50");
-    event.currentTarget.classList.remove("border-green-500");
-    event.currentTarget.classList.add("border-gray-300");
-}
-
-const dropHandler = (event) => {
-    event.preventDefault();
-    const questionId = Number(event.dataTransfer.getData("text/plain"));
-    const questionSampleComponent = new QuestionSampleComponent(event.currentTarget.parentElement.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
-    questionSampleComponent.connectedCallback();
-    event.currentTarget.classList.add("hidden");
-}
-
-const addEventHandlersToEmptyPlaceholders = () => {
-    Array.from(questionListContainer.querySelectorAll(".empty-placeholder")).forEach(emptyPlaceholder => {
-        emptyPlaceholder.addEventListener("dragenter", dragenterHandler);
-        emptyPlaceholder.addEventListener("dragleave", dragleaveHandler);
-        emptyPlaceholder.addEventListener("dragover", dragoverHandler);
-        emptyPlaceholder.addEventListener("drop", dropHandler);
-    });
-}
+    if (event.target.matches(".empty-placeholder")) {
+        const questionId = Number(event.dataTransfer.getData("text/plain"));
+        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
+        questionSampleComponent.connectedCallback();
+        event.target.classList.add("hidden");
+    }  
+});
 
 const populateEmptyQuestions = (numbersOfQuestion = 0) => {
-    questionListContainer.innerHTML = "";
+    questionSampleListContainer.innerHTML = "";
     for (let i = 0; i < numbersOfQuestion; i++) {
-        questionListContainer.insertAdjacentHTML("beforeend", `
+        questionSampleListContainer.insertAdjacentHTML("beforeend", `
 <div data-number="${i + 1}" class="empty-question bg-white rounded-lg p-6">
     <p class="font-bold text-base text-gray-900 mb-4">Câu ${i + 1}</p>
     <div class="empty-placeholder relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-0 focus:ring-indigo-500 focus:ring-offset-2">
@@ -93,7 +90,6 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
 </div>
         `);
     }
-    addEventHandlersToEmptyPlaceholders();
 }
 
 const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {

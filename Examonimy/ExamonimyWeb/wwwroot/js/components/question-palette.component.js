@@ -41,9 +41,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         paginationComponent.connectedCallback();
 
         paginationComponent.subscribe("onNext", this.onNavigateHandler.bind(this));
-        paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));
-
-        this.#addOnDragStartEventListenerToQuestionElements();
+        paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));       
 
         this.#questionListContainerForPalette.addEventListener("click", event => {
             const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
@@ -71,6 +69,13 @@ export class QuestionPaletteComponent extends BaseComponent {
             clickedQuestion.classList.add("bg-gray-100");      
         });
 
+        this.#questionListContainerForPalette.addEventListener("dragstart", event => {
+            if (event.target.matches(".question-palette-item")) {
+                event.dataTransfer.setData("text/plain", event.target.dataset.questionId);
+                event.dataTransfer.dropEffect = "copy";
+            }           
+        })
+
         this.#backLink.addEventListener("click", event => {
             event.preventDefault();
             this.#questionListContainerForPalette.classList.remove("hidden");
@@ -85,18 +90,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         this.#questions = getResponse.data;
         this.#currentPage = getResponse.paginationMetadata.currentPage;
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();
-        this.#addOnDragStartEventListenerToQuestionElements();
-    }
-
-    #addOnDragStartEventListenerToQuestionElements() {      
-        Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(questionElement => {
-            questionElement.addEventListener("dragstart", this.#dragstartHandler.bind(this));
-        });
-    }
-
-    #dragstartHandler(event) {
-        event.dataTransfer.setData("text/plain", event.target.dataset.questionId);
-        event.dataTransfer.dropEffect = "copy";
+        
     }
 
     get questions() {
@@ -178,7 +172,7 @@ export class QuestionPaletteComponent extends BaseComponent {
         </div>
     </div>
     <!-- Results, show/hide based on command palette state -->
-    <ul id="question-list-container-for-palette" class="max-h-[36rem] scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
+    <ul id="question-list-container-for-palette" class="max-h-96 scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
         ${questionListMarkup}
     </ul>
 
