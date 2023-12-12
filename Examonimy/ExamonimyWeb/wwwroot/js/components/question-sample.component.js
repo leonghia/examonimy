@@ -35,7 +35,7 @@ export class QuestionSampleComponent {
 
     #renderSampleForMultipleChoiceQuestionWithOneCorrectAnswer(question = new MultipleChoiceQuestionWithOneCorrectAnswer()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -87,7 +87,7 @@ export class QuestionSampleComponent {
 
     #renderSampleForMultipleChoiceQuestionWithMultipleCorrectAnswers(question = new MultipleChoiceQuestionWithMultipleCorrectAnswers()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -139,7 +139,7 @@ export class QuestionSampleComponent {
 
     #renderSampleForTrueFalseQuestion(question = new TrueFalseQuestion()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -170,7 +170,7 @@ export class QuestionSampleComponent {
 
     #renderSampleForShortAnswerQuestion(question = new ShortAnswerQuestion()) {
         return `
-<div class="">
+<div class="question-sample" data-question-id="${question.id}">
     <div class="prose prose-sm max-w-none font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -186,7 +186,7 @@ export class QuestionSampleComponent {
 
     #renderSampleForFillInBlankQuestion(question = FillInBlankQuestion()) {
         return `
-<div class="">
+<div class="question-sample" data-question-id="${question.id}">
     <div class="prose prose-sm max-w-none font-medium text-gray-700 leading-8 mb-8">
         ${formatFillInBlankQuestionContent(question.questionContent)}
     </div>

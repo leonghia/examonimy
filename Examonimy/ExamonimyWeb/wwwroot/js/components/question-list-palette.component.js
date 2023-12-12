@@ -98,6 +98,14 @@ export class QuestionListPaletteComponent extends BaseComponent {
             
     }
 
+    removeQuestionIdFromDisabledListThenEnableIt(questionId = 0) {
+        const index = this.#disabledQuestionIds.indexOf(questionId);
+        if (index > -1) {
+            this.#disabledQuestionIds.splice(index, 1);
+            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.remove(..."opacity-20 pointer-events-none".split(" "));
+        }
+    }
+
     disableQuestions() {      
         Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
             if (this.#disabledQuestionIds.includes(Number(item.dataset.questionId)))
