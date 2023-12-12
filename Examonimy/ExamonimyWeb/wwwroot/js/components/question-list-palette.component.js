@@ -5,7 +5,7 @@ import { trimMarkup } from "../helpers/markup.helper.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionPreviewComponent } from "./question-preview.component.js";
 
-export class QuestionPaletteComponent extends BaseComponent {
+export class QuestionListPaletteComponent extends BaseComponent {
 
     #container;
     #questions = [new Question()];
@@ -62,9 +62,7 @@ export class QuestionPaletteComponent extends BaseComponent {
             if (!clickedQuestion)
                 return;
 
-            Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
-                item.classList.remove("bg-gray-100");
-            });
+            this.unHighlightAllQuestions();
 
             clickedQuestion.classList.add("bg-gray-100");      
         });
@@ -82,6 +80,12 @@ export class QuestionPaletteComponent extends BaseComponent {
             this.#paginationContainer.classList.remove("hidden");
             this.#questionPreviewContainer.classList.add("hidden");
             this.#questionPreviewWrapper.innerHTML = "";
+        });
+    }
+
+    unHighlightAllQuestions() {
+        Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
+            item.classList.remove("bg-gray-100");
         });
     }
 

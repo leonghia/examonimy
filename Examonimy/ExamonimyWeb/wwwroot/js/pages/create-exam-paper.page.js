@@ -7,7 +7,7 @@ import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { fetchData } from "../helpers/ajax.helper.js";
-import { QuestionPaletteComponent } from "../components/question-palette.component.js";
+import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
 import { QuestionSampleComponent } from "../components/question-sample.component.js";
 
@@ -17,7 +17,7 @@ const paginationContainerForCourses = document.querySelector("#pagination-contai
 const stepperContainer = document.querySelector("#stepper-container");
 const numbersOfQuestionInput = document.querySelector("#numbers-of-question");
 const questionSampleListContainer = document.querySelector("#question-sample-list-container");
-const questionPaletteContainer = document.querySelector("#question-list-palette-container");
+const questionListPaletteContainer = document.querySelector("#question-list-palette-container");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
@@ -26,7 +26,7 @@ const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn h�
 const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
 const pageSizeForQuestions = 10;
-const questionPaletteComponent = new QuestionPaletteComponent(questionPaletteContainer);
+const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
 
 // Function expressions
 const onClickCourseHandler = (course = new Course()) => {
@@ -66,9 +66,10 @@ questionSampleListContainer.addEventListener("drop", event => {
     event.preventDefault();
     if (event.target.matches(".empty-placeholder")) {
         const questionId = Number(event.dataTransfer.getData("text/plain"));
-        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
+        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-placeholder"), questionListPaletteComponent.questions.find(q => q.id === questionId));
         questionSampleComponent.connectedCallback();
         event.target.classList.add("hidden");
+        
     }  
 });
 
@@ -82,7 +83,7 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
         <svg class="empty-icon pointer-events-none mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
         </svg>
-        <span class="empty-text pointer-events-none mt-2 block text-sm font-semibold text-gray-700">Chưa có câu hỏi</span>
+        <span class="empty-text pointer-events-none mt-2 block text-sm font-semibold text-gray-400">Chưa có câu hỏi</span>
     </div>
     <div class="question-placeholder">
 
@@ -104,10 +105,10 @@ const onClickStepperHandler = async (stepOrder = 0) => {
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
         const res = await fetchData("question", pageSizeForQuestions);
-        questionPaletteComponent.questions = res.data
-        questionPaletteComponent.currentPage = res.paginationMetadata.currentPage;
-        questionPaletteComponent.totalPages = res.paginationMetadata.totalPages;
-        questionPaletteComponent.connectedCallback();
+        questionListPaletteComponent.questions = res.data
+        questionListPaletteComponent.currentPage = res.paginationMetadata.currentPage;
+        questionListPaletteComponent.totalPages = res.paginationMetadata.totalPages;
+        questionListPaletteComponent.connectedCallback();
     }
         
     if (stepOrder === 3) {
