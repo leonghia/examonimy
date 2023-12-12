@@ -69,7 +69,8 @@ questionSampleListContainer.addEventListener("drop", event => {
         const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-placeholder"), questionListPaletteComponent.questions.find(q => q.id === questionId));
         questionSampleComponent.connectedCallback();
         event.target.classList.add("hidden");
-        
+        questionListPaletteComponent.unHighlightAllQuestions();
+        questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(questionId);
     }  
 });
 

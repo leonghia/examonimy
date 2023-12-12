@@ -18,6 +18,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #questionPreviewWrapper;
     #questionPreviewComponent = new QuestionPreviewComponent();
     #backLink;
+    #disabledQuestionIds = [0];
 
     constructor(container = new HTMLElement()) {
         super();
@@ -89,12 +90,27 @@ export class QuestionListPaletteComponent extends BaseComponent {
         });
     }
 
+    addQuestionIdToDisabledListThenDisableIt(questionId = 0) {
+        if (!this.#disabledQuestionIds.includes(questionId)) {
+            this.#disabledQuestionIds.push(questionId);
+            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.add(..."opacity-20 pointer-events-none".split(" "));
+        }
+            
+    }
+
+    disableQuestions() {      
+        Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
+            if (this.#disabledQuestionIds.includes(Number(item.dataset.questionId)))
+                item.classList.add(..."opacity-20 pointer-events-none".split(" "));
+        });    
+    }
+
     async onNavigateHandler(pageNumber = 1) {       
         const getResponse = await fetchData("question", this.#pageSize, pageNumber);
         this.#questions = getResponse.data;
         this.#currentPage = getResponse.paginationMetadata.currentPage;
-        this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();
-        
+        this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
+        this.disableQuestions();
     }
 
     get questions() {
