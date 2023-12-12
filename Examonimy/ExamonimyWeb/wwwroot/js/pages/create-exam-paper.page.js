@@ -9,6 +9,7 @@ import { ExamPaper } from "../models/exam-paper.model.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionPaletteComponent } from "../components/question-palette.component.js";
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
+import { QuestionSampleComponent } from "../components/question-sample.component.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -32,7 +33,7 @@ const onClickCourseHandler = (course = new Course()) => {
     examPaper.course = course;
 }
 
-const onNavigateHandler = async (pageNumber = 0) => {
+const navigateHandler = async (pageNumber = 0) => {
     const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, pageNumber);
     courseGridComponent.populateCourses(coursePaginationMetadata.data);
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
@@ -45,24 +46,32 @@ const dragoverHandler = (event) => {
 
 const dragenterHandler = (event) => {
     event.preventDefault();
-    event.currentTarget.querySelector(".empty-placeholder")?.classList.remove("border-gray-300");
-    event.currentTarget.querySelector(".empty-placeholder")?.classList.add("border-green-500");
-    event.currentTarget.querySelector(".empty-placeholder")?.classList.add("bg-green-50");
+    event.currentTarget.classList.remove("border-gray-300");
+    event.currentTarget.classList.add("border-green-500");
+    event.currentTarget.classList.add("bg-green-50");
+}
+
+const dragleaveHandler = (event) => {
+    event.preventDefault(); 
+    event.currentTarget.classList.remove("bg-green-50");
+    event.currentTarget.classList.remove("border-green-500");
+    event.currentTarget.classList.add("border-gray-300");
 }
 
 const dropHandler = (event) => {
     event.preventDefault();
     const questionId = Number(event.dataTransfer.getData("text/plain"));
-    const questionPreviewComponent = new QuestionPreviewComponent(event.currentTarget.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
-    questionPreviewComponent.connectedCallback();
-    event.currentTarget.querySelector(".empty-placeholder").classList.add("hidden");
+    const questionSampleComponent = new QuestionSampleComponent(event.currentTarget.parentElement.querySelector(".question-placeholder"), questionPaletteComponent.questions.find(q => q.id === questionId));
+    questionSampleComponent.connectedCallback();
+    event.currentTarget.classList.add("hidden");
 }
 
-const addEventHandlersToEmptyQuestions = () => {
-    Array.from(questionListContainer.querySelectorAll(".empty-question")).forEach(emptyQuestion => {
-        emptyQuestion.addEventListener("dragenter", dragenterHandler);
-        emptyQuestion.addEventListener("dragover", dragoverHandler);
-        emptyQuestion.addEventListener("drop", dropHandler);
+const addEventHandlersToEmptyPlaceholders = () => {
+    Array.from(questionListContainer.querySelectorAll(".empty-placeholder")).forEach(emptyPlaceholder => {
+        emptyPlaceholder.addEventListener("dragenter", dragenterHandler);
+        emptyPlaceholder.addEventListener("dragleave", dragleaveHandler);
+        emptyPlaceholder.addEventListener("dragover", dragoverHandler);
+        emptyPlaceholder.addEventListener("drop", dropHandler);
     });
 }
 
@@ -73,10 +82,10 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
 <div data-number="${i + 1}" class="empty-question bg-white rounded-lg p-6">
     <p class="font-bold text-base text-gray-900 mb-4">Câu ${i + 1}</p>
     <div class="empty-placeholder relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-0 focus:ring-indigo-500 focus:ring-offset-2">
-        <svg class="empty-icon mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+        <svg class="empty-icon pointer-events-none mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
         </svg>
-        <span class="empty-text mt-2 block text-sm font-semibold text-gray-700">Chưa có câu hỏi</span>
+        <span class="empty-text pointer-events-none mt-2 block text-sm font-semibold text-gray-700">Chưa có câu hỏi</span>
     </div>
     <div class="question-placeholder">
 
@@ -84,7 +93,7 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
 </div>
         `);
     }
-    addEventHandlersToEmptyQuestions();
+    addEventHandlersToEmptyPlaceholders();
 }
 
 const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {
@@ -118,8 +127,8 @@ const onClickStepperHandler = async (stepOrder = 0) => {
 changeHtmlBackgroundColorToWhite();
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("onClick", onClickStepperHandler);
-paginationComponentForCourses.subscribe("onNext", onNavigateHandler);
-paginationComponentForCourses.subscribe("onPrev", onNavigateHandler);
+paginationComponentForCourses.subscribe("onNext", navigateHandler);
+paginationComponentForCourses.subscribe("onPrev", navigateHandler);
 courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
 
 (async () => {

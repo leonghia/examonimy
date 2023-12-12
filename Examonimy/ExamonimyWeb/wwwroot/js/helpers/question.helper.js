@@ -53,3 +53,24 @@ export const formatFillInBlankQuestionContent = (content = "") => {
         `;
     });
 }
+
+export const renderAnswerSheetForFillInBlankQuestion = (numbersOfBlank) => {
+    return new Array(numbersOfBlank).fill(0).reduce((accumulator, currentValue, currentIndex) => {
+        return accumulator + `
+        <div class="relative flex items-start">
+            <div class="leading-6 flex gap-x-2 w-full items-center">
+                <span class="mr-2 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-700">
+                   <span class="text-white font-semibold text-xs">${currentIndex + 1}</span>
+                </span>
+                <div class="grow">                  
+                    <textarea rows="2" name="blank-${currentIndex + 1}" id="blank-${currentIndex + 1}" class="pointer-events-none block w-full bg-gray-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nhập câu trả lời của bạn vào đây"></textarea>      
+                </div>
+            </div>
+        </div>
+        `;
+    }, "");
+}
+
+export const countNumbersOfBlank = (questionContent = "") => {
+    return (questionContent.match(/__/g) || []).length;
+}
