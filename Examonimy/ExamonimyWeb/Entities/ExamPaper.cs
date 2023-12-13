@@ -15,10 +15,7 @@ namespace ExamonimyWeb.Entities
         [ForeignKey("Course")]
         [Required]
         public required int CourseId { get; set; }
-        public Course? Course { get; set; }
-
-        [Required]
-        public byte TimeAllowedInMinutes { get; set; }
+        public Course? Course { get; set; }        
 
         [ForeignKey("Author")]
         [Required]

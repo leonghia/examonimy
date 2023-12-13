@@ -2,13 +2,11 @@
 import { CourseGridComponent } from "../components/course-grid.component.js";
 import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
-import { ExamPaperCreate } from "../models/exam-paper-create.model.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
-import { QuestionPreviewComponent } from "../components/question-preview.component.js";
 import { QuestionSampleComponent } from "../components/question-sample.component.js";
 import { RequestParams } from "../models/request-params.model.js";
 

@@ -3,5 +3,5 @@
 export class ExamPaper {
     course = new Course();
     examPaperCode = "";
-    timeAllowedInMinutes = 0;
+    numbersOfQuestion = 0;
 }
