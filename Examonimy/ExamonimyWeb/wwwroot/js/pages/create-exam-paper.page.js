@@ -17,6 +17,7 @@ const stepperContainer = document.querySelector("#stepper-container");
 const numbersOfQuestionInput = document.querySelector("#numbers-of-question");
 const questionSampleListContainer = document.querySelector("#question-sample-list-container");
 const questionListPaletteContainer = document.querySelector("#question-list-palette-container");
+const questionSampleListPreviewContainer = document.querySelector("#question-sample-list-preview-container");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
@@ -26,6 +27,8 @@ const examPaper = new ExamPaper();
 const pageSizeForCourses = 12;
 const pageSizeForQuestions = 10;
 const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
+
+const examPaperQuestionMap = new Map();
 
 // Function expressions
 const clickCourseHandler = (course = new Course()) => {
@@ -73,11 +76,15 @@ questionSampleListContainer.addEventListener("drop", event => {
     event.preventDefault();
     if (event.target.matches(".empty-placeholder")) {
         const questionId = Number(event.dataTransfer.getData("text/plain"));
-        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-placeholder"), questionListPaletteComponent.questions.find(q => q.id === questionId));
+        var question = questionListPaletteComponent.questions.find(q => q.id === questionId);
+        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-sample-placeholder"), question);
         questionSampleComponent.connectedCallback();
         event.target.classList.add("hidden");
         questionListPaletteComponent.unHighlightAllQuestions();
         questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(questionId);
+
+        const questionNumber = Number(event.target.parentElement.dataset.questionNumber);
+        examPaperQuestionMap.set(questionNumber, question);
 
         // show the clear button
         event.target.parentElement.querySelector(".clear-btn").classList.remove("hidden");
@@ -87,7 +94,7 @@ questionSampleListContainer.addEventListener("drop", event => {
 questionSampleListContainer.addEventListener("click", event => {
     if (event.target.closest(".clear-btn")) {
         questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(Number(event.target.closest(".empty-question").querySelector(".question-sample").dataset.questionId));
-        event.target.closest(".empty-question").querySelector(".question-placeholder").innerHTML = "";
+        event.target.closest(".empty-question").querySelector(".question-sample-placeholder").innerHTML = "";
         event.target.closest(".empty-question").querySelector(".empty-placeholder").classList.remove("hidden");
         event.target.closest(".clear-btn").classList.add("hidden");
 
@@ -100,7 +107,7 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
     questionSampleListContainer.innerHTML = "";
     for (let i = 0; i < numbersOfQuestion; i++) {
         questionSampleListContainer.insertAdjacentHTML("beforeend", `
-<div data-number="${i + 1}" class="empty-question bg-white rounded-lg p-6">
+<div data-question-number="${i + 1}" class="empty-question bg-white rounded-lg p-6">
     <div class="flex items-center justify-between mb-4">
         <p class="font-bold text-base text-gray-900">Câu ${i + 1}</p>
         <button type="button" class="hidden clear-btn rounded bg-red-50 px-2 py-1" title="Gỡ câu hỏi">
@@ -115,7 +122,7 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
         </svg>
         <span class="empty-text pointer-events-none mt-2 block text-sm font-semibold text-gray-400">Chưa có câu hỏi</span>
     </div>
-    <div class="question-placeholder">
+    <div class="question-sample-placeholder">
 
     </div>
 </div>
@@ -126,6 +133,18 @@ const populateEmptyQuestions = (numbersOfQuestion = 0) => {
 const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {
     document.querySelector("#course-code").textContent = courseCode;
 }
+
+const populateQuestionSampleListPreviewContainer = (examPaperQuestionMap = new Map()) => {
+    for (let i = 0; i < examPaper.numbersOfQuestion; i++) {
+        questionSampleListPreviewContainer.insertAdjacentHTML("beforeend", `
+        <div class="bg-white rounded-lg p-6">
+            <p class="font-bold text-gray-900 mb-6">Câu ${i + 1}</p>
+            <div id="question-sample-preview-${i + 1}"></div>
+        </div>       
+        `);
+        new QuestionSampleComponent(questionSampleListPreviewContainer.querySelector(`#question-sample-preview-${i + 1}`), examPaperQuestionMap.get(i + 1)).connectedCallback();
+    }
+} 
 
 const onClickStepperHandler = async (stepOrder = 0) => {
     if (stepOrder === 1)
@@ -144,6 +163,11 @@ const onClickStepperHandler = async (stepOrder = 0) => {
     if (stepOrder === 3) {
         examPaper.numbersOfQuestion = Number(numbersOfQuestionInput.value);   
         populateEmptyQuestions(examPaper.numbersOfQuestion);
+    }
+
+    if (stepOrder === 4) {
+        console.log(examPaperQuestionMap);
+        populateQuestionSampleListPreviewContainer(examPaperQuestionMap);
     }
 }
 

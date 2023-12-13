@@ -89,11 +89,31 @@
         </div>
 
         <!-- Segment 4 (Preview) -->
-        <div id="segment-4" data-order="4" class="segment hidden">
-            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại đề thi lần cuối trước khi bạn nhấn tạo."))
-            <div id="preview-container" class="mt-8">
-               
+        <div id="segment-4" data-order="4" class="segment flex justify-center hidden">
+            <div class="w-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại đề thi lần cuối trước khi bạn nhấn tạo."))
+                <div id="preview-container" class="mt-8">
+                    <div id="detail-preview-container" class="bg-white p-6 rounded-lg mb-8">
+                        <div class="mb-8">
+                            <h5 class="text-sm font-semibold text-gray-700 mb-4">Môn học</h5>
+                            <p id="course-preview-el" class="text-sm font-normal text-violet-700">Lập trình C#</p>
+                        </div>
+                        <div class="flex items-center justify-between gap-x-6">
+                            <div class="basis-1/2">
+                                <h5 class="text-sm font-semibold text-gray-700 mb-4">Mã đề</h5>
+                                <p id="exam-paper-code-preview-el" class="text-sm font-normal text-violet-700">APC#001</p>
+                            </div>
+                            <div class="basis-1/2">
+                                <h5 class="text-sm font-semibold text-gray-700 mb-4">Số lượng câu hỏi</h5>
+                                <p id="numbers-of-question-preview-el" class="text-sm font-normal text-violet-700">16</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="question-sample-list-preview-container" class="flex flex-col gap-y-8">
+                    </div>
+                </div>
             </div>
+            
         </div>
 
     </div>
