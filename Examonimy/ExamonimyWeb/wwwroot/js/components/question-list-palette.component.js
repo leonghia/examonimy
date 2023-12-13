@@ -4,12 +4,14 @@ import { SimplePaginationComponent } from "./simple-pagination.component.js";
 import { trimMarkup } from "../helpers/markup.helper.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionPreviewComponent } from "./question-preview.component.js";
+import { RequestParams } from "../models/request-params.model.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
 
     #container;
     #questions = [new Question()];
     #paginationContainer;
+    #searchQuery = "";
     #currentPage = 1;
     #totalPages = 999;
     #pageSize = 10;
@@ -19,6 +21,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #questionPreviewComponent = new QuestionPreviewComponent();
     #backLink;
     #disabledQuestionIds = [0];
+    #searchForm;
+    #searchInput;
+    #paginationComponent = new SimplePaginationComponent(null);
 
     constructor(container = new HTMLElement()) {
         super();
@@ -33,16 +38,18 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#questionPreviewContainer = this.#container.querySelector("#question-preview-container");        
         this.#questionPreviewWrapper = this.#container.querySelector("#question-preview-wrapper");
         this.#backLink = this.#container.querySelector("#back-link");
+        this.#searchForm = this.#container.querySelector("#search-form");
+        this.#searchInput = this.#container.querySelector("#search-input");
 
         this.#questionPreviewComponent = new QuestionPreviewComponent(this.#questionPreviewWrapper);
 
-        const paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
-        paginationComponent.currentPage = this.#currentPage;
-        paginationComponent.totalPages = this.#totalPages;
-        paginationComponent.connectedCallback();
+        this.#paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
+        this.#paginationComponent.currentPage = this.#currentPage;
+        this.#paginationComponent.totalPages = this.#totalPages;
+        this.#paginationComponent.connectedCallback();
 
-        paginationComponent.subscribe("onNext", this.onNavigateHandler.bind(this));
-        paginationComponent.subscribe("onPrev", this.onNavigateHandler.bind(this));       
+        this.#paginationComponent.subscribe("onNext", this.navigateHandler.bind(this));
+        this.#paginationComponent.subscribe("onPrev", this.navigateHandler.bind(this));       
 
         this.#questionListContainerForPalette.addEventListener("click", event => {
             const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
@@ -82,6 +89,12 @@ export class QuestionListPaletteComponent extends BaseComponent {
             this.#questionPreviewContainer.classList.add("hidden");
             this.#questionPreviewWrapper.innerHTML = "";
         });
+
+        this.#searchForm.addEventListener("submit", event => {
+            event.preventDefault();
+            this.#searchQuery = this.#searchInput.value;
+            this.navigateHandler(1);
+        });
     }
 
     unHighlightAllQuestions() {
@@ -113,10 +126,14 @@ export class QuestionListPaletteComponent extends BaseComponent {
         });    
     }
 
-    async onNavigateHandler(pageNumber = 1) {       
-        const getResponse = await fetchData("question", this.#pageSize, pageNumber);
+    async navigateHandler(pageNumber = 1) {       
+        const getResponse = await fetchData("question", new RequestParams(this.#searchQuery, this.#pageSize, pageNumber));
         this.#questions = getResponse.data;
         this.#currentPage = getResponse.paginationMetadata.currentPage;
+        this.#totalPages = getResponse.paginationMetadata.totalPages;
+        this.#paginationComponent.currentPage = this.#currentPage;
+        this.#paginationComponent.totalPages = this.#totalPages;
+        this.#paginationComponent.populatePaginationInfo();
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
         this.disableQuestions();
     }
@@ -178,12 +195,14 @@ export class QuestionListPaletteComponent extends BaseComponent {
     <div>
         <p class="mb-4 mt-4 px-5 text-sm font-semibold text-gray-500">Môn học: ${this.#questions[0].course.name}</p>
     </div>
-    <div class="relative">
-        <svg class="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-        </svg>
-        <input type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
-    </div>
+    <form id="search-form" method="GET" action="" class="relative">
+        <button type="submit" class="absolute left-4 top-3.5">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+        </button>
+        <input id="search-input" type="text" class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" placeholder="Tìm kiếm câu hỏi..." role="combobox" aria-expanded="false" aria-controls="options">
+    </form>
     <div id="question-preview-container" class="hidden">
         <div class="bg-white px-4 py-5 sm:px-6">
             <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">

@@ -10,6 +10,7 @@ import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
 import { QuestionSampleComponent } from "../components/question-sample.component.js";
+import { RequestParams } from "../models/request-params.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -29,12 +30,12 @@ const pageSizeForQuestions = 10;
 const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
 
 // Function expressions
-const onClickCourseHandler = (course = new Course()) => {
+const clickCourseHandler = (course = new Course()) => {
     examPaper.course = course;
 }
 
-const navigateHandler = async (pageNumber = 0) => {
-    const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, pageNumber);
+const navigateCoursesHandler = async (pageNumberForCourses = 0) => {
+    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumberForCourses));
     courseGridComponent.populateCourses(coursePaginationMetadata.data);
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
 }
@@ -135,7 +136,7 @@ const onClickStepperHandler = async (stepOrder = 0) => {
         changeHtmlBackgroundColorToGray();
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
-        const res = await fetchData("question", pageSizeForQuestions);
+        const res = await fetchData("question", new RequestParams(null, pageSizeForQuestions));
         questionListPaletteComponent.questions = res.data
         questionListPaletteComponent.currentPage = res.paginationMetadata.currentPage;
         questionListPaletteComponent.totalPages = res.paginationMetadata.totalPages;
@@ -155,12 +156,12 @@ const onClickStepperHandler = async (stepOrder = 0) => {
 changeHtmlBackgroundColorToWhite();
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("onClick", onClickStepperHandler);
-paginationComponentForCourses.subscribe("onNext", navigateHandler);
-paginationComponentForCourses.subscribe("onPrev", navigateHandler);
-courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
+paginationComponentForCourses.subscribe("onNext", navigateCoursesHandler);
+paginationComponentForCourses.subscribe("onPrev", navigateCoursesHandler);
+courseGridComponent.subscribe("onClickCourse", clickCourseHandler);
 
 (async () => {
-    const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, 1);
+    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, 1));
     courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.currentPage = 1;

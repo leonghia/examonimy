@@ -34,7 +34,7 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("exam-paper")]
         public async Task<IActionResult> Bank()
         {
-            var examPapers = await _examPaperRepository.GetAsync(null, null, null);
+            var examPapers = await _examPaperRepository.GetAsync(null, null, null, null);
             var examPaperGetDtos = new List<ExamPaperGetDto>();
             foreach (var examPaper in examPapers)
             {

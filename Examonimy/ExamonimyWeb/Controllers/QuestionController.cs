@@ -50,8 +50,8 @@ namespace ExamonimyWeb.Controllers
         {
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
-            var questionsToReturn = (await _questionRepository.GetAsync(null, null, new List<string> { "QuestionType", "QuestionLevel", "Course", "Author" })).Select(q => _mapper.Map<QuestionGetDto>(q));          
-            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var questionsToReturn = (await _questionRepository.GetAsync(null, null, null, new List<string> { "QuestionType", "QuestionLevel", "Course", "Author" })).Select(q => _mapper.Map<QuestionGetDto>(q));          
+            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
             var viewModel = new QuestionBankViewModel
             {
                 User = userToReturn,
@@ -66,7 +66,12 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
         {
-            var questions = await _questionRepository.GetAsync(requestParams, null, new List<string> { "Course", "QuestionType", "QuestionLevel" });
+            Expression<Func<Question, bool>>? searchPredicate = null; 
+            if (requestParams?.SearchQuery is not null)
+            {
+                searchPredicate = q => q.QuestionContent.ToUpper().Contains(requestParams.SearchQuery.ToUpper());
+            }
+            var questions = await _questionRepository.GetAsync(requestParams, searchPredicate, null, new List<string> { "Course", "QuestionType", "QuestionLevel" });
             var questionsToReturn = new List<QuestionGetDto>();         
             foreach (var question in questions)
             {
@@ -303,7 +308,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionTypes()
         {
-            var questionTypes = await _questionTypeRepository.GetAsync(null, null, null);
+            var questionTypes = await _questionTypeRepository.GetAsync(null, null, null, null);
             var questionTypesToReturn = questionTypes.Select(questionType => _mapper.Map<QuestionTypeGetDto>(questionType));
             return Ok(questionTypesToReturn);
         }
@@ -313,7 +318,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionLevels()
         {
-            var questionLevels = await _questionLevelRepository.GetAsync(null, null, null);
+            var questionLevels = await _questionLevelRepository.GetAsync(null, null, null, null);
             var questionLevelsToReturn = questionLevels.Select(questionLevel => _mapper.Map<QuestionLevelGetDto>(questionLevel));
             return Ok(questionLevelsToReturn);
         }

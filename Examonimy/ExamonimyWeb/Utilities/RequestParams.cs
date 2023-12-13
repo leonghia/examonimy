@@ -2,7 +2,7 @@
 {
     public class RequestParams
     {
-
+        public string? SearchQuery { get; set; }
         public int PageNumber { get; set; } = 1;
 
         private const int _maxPageSize = 50;
