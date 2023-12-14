@@ -1,4 +1,5 @@
-﻿import { ProblemDetails } from "../models/problem-details.model.js";
+﻿import { MAX_LENGTH_FOR_QUESTION_CONTENT } from "../config.js";
+import { ProblemDetails } from "../models/problem-details.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 
 export const getErrorMessageMarkup = (errorMessage = "") => {
@@ -82,4 +83,39 @@ export const selectDropdownItem = (clicked = new HTMLElement()) => {
     dropdownItemCheckmark.classList.remove("text-white");
     dropdownItemCheckmark.classList.add("text-violet-600");
     toggleDropdown(dropdown);
+}
+
+export const changeHtmlBackgroundColorToWhite = () => {
+    document.documentElement.classList.remove("bg-gray-100");
+    document.documentElement.classList.add("bg-white");
+    document.querySelector("#navbar").classList.remove("bg-gray-100");
+    document.querySelector("#navbar").classList.add("bg-white");
+}
+
+export const changeHtmlBackgroundColorToGray = () => {
+    document.documentElement.classList.remove("bg-white");
+    document.documentElement.classList.add("bg-gray-100");
+    document.querySelector("#navbar").classList.remove("bg-white");
+    document.querySelector("#navbar").classList.add("bg-gray-100");
+}
+
+export const toggleSegment = (segments = [new HTMLElement()], segmentOrder = 0) => {
+    segments.forEach(segment => {
+        if (Number(segment.dataset.order) === segmentOrder)
+            segment.classList.remove("hidden");
+        else
+            segment.classList.add("hidden");
+    });
+}
+
+export const trimMarkup = (markup = "") => {
+    const endTagPosition = markup.indexOf("</");
+
+    if (endTagPosition > MAX_LENGTH_FOR_QUESTION_CONTENT) {
+        const openingTag = markup.substring(0, markup.indexOf(">") + 1);
+        return markup.substring(0, MAX_LENGTH_FOR_QUESTION_CONTENT).concat("......").concat(openingTag.replace(">", "/>"));
+    }
+
+    const temp = markup.substring(0, markup.indexOf(">") + 1).replace("<", "</");
+    return markup.substring(0, markup.indexOf(temp) + temp.length);
 }

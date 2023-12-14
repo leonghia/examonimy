@@ -1,0 +1,149 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminSidebar";
+    ViewData["Title"] = "Create new exam paper";
+}
+<div>
+    @await Html.PartialAsync("_PageHeadingPartial", "Tạo đề thi mới")
+
+    <div>
+        <!-- Stepper -->
+        <nav aria-label="Progress" class="mb-20">
+            <ol id="stepper-container" role="list" class="flex items-center justify-center">
+                
+            </ol>
+        </nav>
+
+        <!-- Segment 1 (Select course) -->
+        <div id="segment-1" data-order="1" class="segment">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Chọn môn học", "Vui lòng lựa chọn môn học cho đề thi bạn muốn tạo."))
+            <div id="course-container" class="mt-8 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
+
+            </div>
+            <div id="pagination-container" class="mt-10 flex items-center justify-center col-span-2">
+                <div class="flex items-center justify-between w-full text-gray-600 dark:text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-600 max-w-[128px] mx-2">
+                    <button id="prev-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-s-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
+                        <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                        </svg>
+                        <span class="sr-only">Previous page</span>
+                    </button>
+                    <span id="pagination-info" class="flex-shrink-0 mx-1 text-sm font-medium space-x-0.5 rtl:space-x-reverse"></span>
+                    <button id="next-btn" type="button" class="inline-flex items-center justify-center h-8 px-1 w-6 bg-gray-100 rounded-e-lg dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-800">
+                        <svg class="w-2 h-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="sr-only">Next page</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segment 2 (Fill in details) -->
+        <div id="segment-2" data-order="2" class="segment flex justify-center hidden">
+            <div class="basis-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập thông tin", "Vui lòng nhập các thông tin cần thiết như mã đề thi và số lượng câu hỏi."))
+                <div id="detail-container" class="mt-8 bg-white rounded-lg p-8">
+                    <div class="flex items-center gap-x-8 mb-8">
+                        <!-- Exam paper code -->
+                        <div class="basis-1/2">
+                            <label for="exam-paper-code" class="block text-sm font-medium leading-6 text-gray-900">Mã đề thi</label>
+                            <div class="mt-2 flex rounded-md shadow-sm">
+                                <span id="course-code" class="inline-flex items-center rounded-l-md bg-gray-200 px-3 text-gray-500 sm:text-sm"></span>
+                                <input type="text" name="examPaperCode" id="exam-paper-code" class="block w-full bg-gray-100 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 border-gray-200 placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                            <p class="mt-2 text-sm text-red-600 hidden" id="-error">Mã đề thi này đã bị trùng.</p>
+                        </div>
+                        <!-- Numbers of questions -->
+                        <div class="basis-1/2">
+                            <label for="number-of-question" class="block text-sm font-medium leading-6 text-gray-900">Số lượng câu hỏi</label>
+                            <div class="mt-2">
+                                <input type="number" name="numbersOfQuestion" id="numbers-of-question" class="block w-full bg-gray-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>                                              
+                    </div>                                   
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Segment 3 (Add questions) -->
+        <div id="segment-3" data-order="3" class="segment flex gap-x-12 hidden">
+            <div class="basis-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Thêm câu hỏi", "Vui lòng thêm danh sách câu hỏi bằng cách kéo thả từ ngân hàng câu hỏi bên phải vào trong đề thi."))
+                <div id="question-sample-list-container" class="mt-8 flex flex-col gap-y-10">                                   
+                                      
+                </div>
+            </div>   
+            <div class="basis-1/2">
+                <div class="sticky top-24">
+                    @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Ngân hàng câu hỏi", "Đây là danh sách các câu hỏi từ ngân hàng mà bạn có thể kéo thả vào đề thi."))
+                    <div id="question-list-palette-container" class="mt-8">
+
+                    </div>                   
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Segment 4 (Preview) -->
+        <div id="segment-4" data-order="4" class="segment flex justify-center hidden">
+            <div class="w-1/2">
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại đề thi lần cuối trước khi bạn nhấn tạo."))
+                <div id="preview-container" class="mt-8">
+                    <div id="detail-preview-container" class="bg-white p-6 rounded-lg mb-8">
+                        <div class="mb-8">
+                            <h5 class="text-sm font-semibold text-gray-700 mb-4">Môn học</h5>
+                            <p id="course-preview-el" class="text-sm font-normal text-violet-700"></p>
+                        </div>
+                        <div class="flex items-center justify-between gap-x-6">
+                            <div class="basis-1/2">
+                                <h5 class="text-sm font-semibold text-gray-700 mb-4">Mã đề</h5>
+                                <p id="exam-paper-code-preview-el" class="text-sm font-normal text-violet-700"></p>
+                            </div>
+                            <div class="basis-1/2">
+                                <h5 class="text-sm font-semibold text-gray-700 mb-4">Số lượng câu hỏi</h5>
+                                <p id="numbers-of-question-preview-el" class="text-sm font-normal text-violet-700"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="question-sample-list-preview-container" class="flex flex-col gap-y-8">
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+</div>
+
+<!-- Create button and cancel button -->
+<div id="button-container" class="flex items-center gap-x-5 justify-end hidden">
+    <a href="/exam-paper" class="font-semibold text-violet-700 hover:text-violet-600">Huỷ</a>
+    <button type="button" id="create-exam-paper-btn" class="w-28 rounded-md bg-violet-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"><span class="button-text-el">Tạo đề thi</span></button>
+</div>
+
+<script src="~/js/pages/create-exam-paper.page.js" type="module"></script>
+
+<!-- Time allowed -->
+@* <div class="basis-1/2">
+    <label for="time-allowed-in-minutes" class="block text-sm font-medium leading-6 text-gray-900">Thời gian làm bài (phút)</label>
+    <div class="mt-2">
+        <input type="number" name="timeAllowedInMinutes" id="time-allowed-in-minutes" class="block w-full bg-gray-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+    </div>
+</div> *@
+
+<!-- Mark to pass -->
+@* <div class="mb-8">
+    <label for="mark-to-pass" class="block text-sm font-medium leading-6 text-gray-900">Số điểm cần đạt</label>
+    <div class="relative mt-2">
+        <input id="labels-range-input" type="range" value="50" min="0" max="100" step="25" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">0%</span>
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 absolute start-1/4 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">25%</span>
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 absolute start-1/2 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">50%</span>
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 absolute start-3/4 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">75%</span>
+        <span class="text-sm font-medium text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">100%</span>
+    </div>
+</div> *@

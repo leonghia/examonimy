@@ -21,9 +21,9 @@ namespace ExamonimyWeb.Controllers
             _genericRepository = genericRepository;
         }
 
-        protected async Task<ActionResult> Get<TGetDto>(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filter, List<string>? includedProperties)
+        protected async Task<ActionResult> Get<TGetDto>(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
         {
-            var items = await _genericRepository.GetAsync(requestParams, filter, includedProperties);
+            var items = await _genericRepository.GetAsync(requestParams, null, filterPredicate, includedProperties);
 
             var itemsToReturn = items.Select(e => _mapper.Map<TGetDto>(e));
 

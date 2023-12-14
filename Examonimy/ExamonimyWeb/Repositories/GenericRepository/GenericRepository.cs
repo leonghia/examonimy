@@ -17,15 +17,15 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter)
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> filterPredicate)
         {
-            return await _dbSet.CountAsync(filter);
+            return await _dbSet.CountAsync(filterPredicate);
         }
 
-        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter, List<string>? includedProperties)
+        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties)
         {
             IQueryable<TEntity> query = _dbSet;
-            query = query.Where<TEntity>(filter);          
+            query = query.Where<TEntity>(filterPredicate);          
 
             if (includedProperties is not null)
             {
@@ -54,13 +54,20 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.Update(entity);
         }
 
-        public async Task<PagedList<TEntity>> GetAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filter, List<string>? includedProperties)
+        public async Task<PagedList<TEntity>> GetAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
         {
+            requestParams ??= new RequestParams();
+
             IQueryable<TEntity> query = _dbSet;
 
-            if (filter is not null)
+            if (searchPredicate is not null)
             {
-                query = query.Where<TEntity>(filter);
+                query = query.Where<TEntity>(searchPredicate);
+            }
+
+            if (filterPredicate is not null)
+            {
+                query = query.Where<TEntity>(filterPredicate);
             }
 
             if (includedProperties is not null)
@@ -71,9 +78,12 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 }
             }
 
-            requestParams ??= new RequestParams();
-
             return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
+        }
+
+        public async Task InserRangeAsync(List<TEntity> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
         }
     }
 }

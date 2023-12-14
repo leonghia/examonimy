@@ -4,7 +4,6 @@
     {
         public required int ExamPaperId { get; set; }
         public required int QuestionId { get; set; }
-        public required float Point { get; set; }
         public required byte Number { get; set; }
     }
 }

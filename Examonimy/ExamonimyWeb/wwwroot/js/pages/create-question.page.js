@@ -1,14 +1,16 @@
 ﻿// Imports
 import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
-import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js";
+import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
-import { RequestParams } from "../models/request-params.model.js";
-import { PaginationMetadata } from "../models/pagination-metadata.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
-import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../dtos/question-create.dto.js";
-import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton } from "../helpers/markup.helper.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question-create.model.js";
+import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton, changeHtmlBackgroundColorToWhite, changeHtmlBackgroundColorToGray } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
+import { CourseGridComponent } from "../components/course-grid.component.js";
+import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
+import { fetchData } from "../helpers/ajax.helper.js";
+import { StepperComponent } from "../components/stepper.component.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -16,11 +18,8 @@ const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
 const questionLevelDropdown = document.querySelector("#question-level-dropdown");
 const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
-const paginationContainer = document.querySelector("#pagination-container");
-const paginationInfoElement = document.querySelector("#pagination-info");
-const previousButton = document.querySelector("#prev-btn");
-const nextButton = document.querySelector("#next-btn");
-const stepContainer = document.querySelector("#step-container");
+const paginationContainerForCourses = document.querySelector("#pagination-container");
+const stepperContainer = document.querySelector("#step-container");
 const segments = Array.from(document.querySelectorAll(".segment"));
 const optionEditorContainer = document.querySelector("#option-editor-container");
 const answerEditors = Array.from(document.querySelectorAll(".answer-editor"));
@@ -39,11 +38,12 @@ const buttonContainer = document.querySelector("#button-container");
 const createQuestionButton = document.querySelector("#create-question-btn");
 
 // States and rule
-const coursesRequestParams = new RequestParams(12, 1);
-let paginationMetadata = new PaginationMetadata();
+const pageSizeForCourses = 12;
 let question = new Question();
 let questionCreateDto = new QuestionCreateDto();
-
+const courseGridComponent = new CourseGridComponent(courseContainer);
+const paginationComponentForCourses = new SimplePaginationComponent(paginationContainerForCourses);
+const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn học", "Nhập nội dung", "Nhập đáp án", "Xem trước"]);
 
 // Function expressions
 const populatePreviewInfo = (question = new Question()) => {
@@ -325,50 +325,12 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
     }
 }
 
-const fetchCourses = async (pageSize, pageNumber) => {
-    paginationContainer.classList.add("hidden");
-    const response = await fetch(`${BASE_API_URL}/course?pageSize=${pageSize}&pageNumber=${pageNumber}`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
-    });
-
-    const data = await response.json();
-    const courses = [new Course()];
-    Object.assign(paginationMetadata, JSON.parse(response.headers.get(PAGINATION_METADATA_HEADER)));
-    paginationInfoElement.textContent = `${paginationMetadata.CurrentPage} trên ${paginationMetadata.TotalPages}`;
-    Object.assign(courses, data);
-    return courses;
-}
-
-const populateCourses = (courses = [new Course()]) => {
-    courseContainer.innerHTML = "";
-    courses.forEach(course => {
-        courseContainer.insertAdjacentHTML("beforeend", `
-        <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label data-id="${course.id}" class="course relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
-            <input type="radio" name="project-type" value="Newsletter" class="sr-only" aria-labelledby="project-type-0-label" aria-describedby="project-type-0-description-0 project-type-0-description-1">
-            <span class="flex flex-1">
-                <span class="flex flex-col">                  
-                    <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
-                    <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có câu hỏi nào được tạo</span>
-                    <span class="mt-6 text-sm font-medium text-gray-900">0 câu hỏi</span>
-                </span>
-            </span>
-            <!-- Not Checked: "invisible" -->
-            <svg class="checkbox h-5 w-5 text-violet-600 invisible" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-            </svg>
-            <!--
-              Active: "border", Not Active: "border-2"
-              Checked: "border-violet-600", Not Checked: "border-transparent"
-            -->
-            <span class="pointer-events-none absolute -inset-px rounded-lg border-transparent" aria-hidden="true"></span>
-        </label>
-        `);
-    });
-    paginationContainer.classList.remove("hidden");
+const populateCourses = async () => {
+    const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, paginationComponentForCourses.currentPage);
+    courseGridComponent.courses = coursePaginationMetadata.data;
+    courseGridComponent.connectedCallback();
+    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
+    paginationComponentForCourses.connectedCallback();
 }
 
 const selectQuestionType = (event = new Event()) => {
@@ -504,6 +466,81 @@ const postQuestion = async (questionCreateDto = new QuestionCreateDto()) => {
     }
 }
 
+const onClickStep3Handler = () => {
+    // Update the question content for questionCreateDto
+    const content = tinymce.get("question-content-editor").getContent();
+    questionCreateDto.questionContent = content;
+    if (questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer || questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers) {
+        questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
+        questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
+        questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
+        questionCreateDto.choiceD = tinymce.get("choice-d").getContent();
+    }
+
+    // We only proceed if this is a fill in blank question
+    if (questionCreateDto.questionTypeId !== 5)
+        return;
+    // We render the answer editor based on the numbers of blank from tinymce editor
+    const numbersOfBlank = (content.match(/__/g) || []).length;
+
+    const textareas = Array.from(blankAnswerEditor.querySelectorAll("textarea"));
+
+    textareas.forEach(textarea => tinymce.remove(`#${textarea.id}`));
+
+    blankAnswerEditor.innerHTML = "";
+
+    for (let i = 0; i < numbersOfBlank; i++) {
+        blankAnswerEditor.insertAdjacentHTML("beforeend", `
+<div class="relative flex items-start">
+    <div class="text-sm leading-6 grow">
+        <label for="small" class="font-medium text-gray-700">Đáp án cho chỗ trống ${i + 1}</label>
+        <div class="mt-2">
+            <textarea id="blank-${i + 1}"></textarea>
+        </div>
+    </div>
+</div>
+        `);
+        tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 150));
+    }
+}
+
+const onClickStep4Hanlder = () => {
+    populatePreviewInfo(question);
+    // Render the preview based on questionCreateDto's question type
+    switch (questionCreateDto.questionTypeId) {
+        case QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer:
+            renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer(questionCreateDto);
+            break;
+        case QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers:
+            renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers(questionCreateDto);
+            break;
+        case QuestionTypeIDs.TrueFalse:
+            renderPreviewForTrueFalseQuestion(questionCreateDto);
+            break;
+        case QuestionTypeIDs.ShortAnswer:
+            renderPreviewForShortAnswerQuestion(questionCreateDto);
+            break;
+        case QuestionTypeIDs.FillInBlank:
+            renderPreviewForFillInBlankQuestion(questionCreateDto);
+            break;
+        default:
+            break;
+    }
+
+    buttonContainer.classList.remove("hidden");
+}
+
+const onClickCourseHandler = (course = new Course()) => {
+    question.course = course;
+    questionCreateDto.courseId = course.id;
+}
+
+const onNavigateCoursePageHandler = async (pageNumber = 0) => {
+    const res = await fetchData("course", pageSizeForCourses, pageNumber);
+    const courses = res.data;
+    courseGridComponent.populateCourses(courses);
+}
+
 // Event listeners
 courseContainer.addEventListener("click", selectCourse);
 
@@ -514,98 +551,6 @@ questionTypeDropdown.addEventListener("click", selectQuestionType);
 questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(questionLevelDropdown));
 
 questionLevelDropdown.addEventListener("click", selectQuestionLevel);
-
-previousButton.addEventListener("click", async () => {
-    if (paginationMetadata.CurrentPage === 1)
-        return;
-    coursesRequestParams.pageNumber--;
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
-});
-
-nextButton.addEventListener("click", async () => {
-    if (paginationMetadata.CurrentPage === paginationMetadata.TotalPages)
-        return;
-    coursesRequestParams.pageNumber++;
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
-});
-
-stepContainer.addEventListener("click", event => {
-    // First of all, we need to reset the background color to white (in case it had been changed to gray)
-    document.documentElement.classList.remove("bg-gray-100");
-    document.documentElement.classList.add("bg-white");
-
-    const clicked = event.target.closest(".step-btn");
-    if (!clicked)
-        return;
-    const clickedStep = clicked.closest(".step");
-    const previousStep = clickedStep.previousElementSibling;
-
-    const currentStepOrder = Number(clickedStep.dataset.order);
-
-    // Change the state of the clicked step (if it is not completed yet)
-    if (!clickedStep.getAttribute("data-completed")) {
-        const currentStepName = clickedStep.querySelector(".step-name").textContent;
-        if (currentStepOrder === 4) {
-            // If this is the final step (the 4th step), we mark it as completed immediately
-            clickedStep.innerHTML = `
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-green-500"></div>
-            </div>
-            <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600">
-                <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                </svg>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
-            </button>
-            `;
-            // We also want to change the background color to bg-gray-100
-            document.documentElement.classList.remove("bg-white");
-            document.documentElement.classList.add("bg-gray-100");
-
-        } else {
-            // Else we mark it as current step          
-            clickedStep.innerHTML = `
-              <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="h-0.5 w-full bg-gray-200"></div>
-              </div>
-              <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-green-500 bg-white">
-                <span class="h-2.5 w-2.5 rounded-full bg-green-500" aria-hidden="true"></span>
-                <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${currentStepName}</span>
-              </button>
-            `;
-        }
-    }
-
-    // Mark previous step as completed
-    if (previousStep && !previousStep.getAttribute("data-completed")) {      
-        previousStep.setAttribute("data-completed", "true");
-        const previousStepName = previousStep.querySelector(".step-name").textContent;
-        previousStep.innerHTML = `
-      <div class="absolute inset-0 flex items-center" aria-hidden="true">
-        <div class="h-0.5 w-full bg-green-500"></div>
-      </div>
-      <button type="button" class="step-btn relative flex h-8 w-8 items-center justify-center rounded-full bg-green-500 hover:bg-green-600">
-        <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-        </svg>
-        <span class="step-name absolute top-10 p-0 overflow-hidden whitespace-nowrap border-0 text-base font-bold text-green-500">${previousStepName}</span>
-      </button>
-    `;
-
-    }
-
-    // Hide all other segments
-    segments.forEach(segment => {
-        if (Number(segment.id.split("-")[1]) !== currentStepOrder)
-            segment.classList.add("hidden");
-    });
-
-    // Show current segment
-    const currentSegmentContainer = document.querySelector(`#segment-${currentStepOrder}`);
-    currentSegmentContainer.classList.remove("hidden");
-});
 
 answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.addEventListener("click", event => {
     const clicked = event.target.closest("label");
@@ -671,84 +616,21 @@ answerEditorForTrueFalseQuestion.addEventListener("click", event => {
     console.log(questionCreateDto);
 });
 
-step3.addEventListener("click", () => {  
-    // Update the question content for questionCreateDto
-    const content = tinymce.get("question-content-editor").getContent();
-    questionCreateDto.questionContent = content;
-    if (questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer || questionCreateDto.questionTypeId === QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers) {
-        questionCreateDto.choiceA = tinymce.get("choice-a").getContent();
-        questionCreateDto.choiceB = tinymce.get("choice-b").getContent();
-        questionCreateDto.choiceC = tinymce.get("choice-c").getContent();
-        questionCreateDto.choiceD = tinymce.get("choice-d").getContent();
-    }
-
-    // We only proceed if this is a fill in blank question
-    if (questionCreateDto.questionTypeId !== 5)
-        return;
-    // We render the answer editor based on the numbers of blank from tinymce editor
-    const numbersOfBlank = (content.match(/__/g) || []).length;
-
-    const textareas = Array.from(blankAnswerEditor.querySelectorAll("textarea"));
-
-    textareas.forEach(textarea => tinymce.remove(`#${textarea.id}`));
-
-    blankAnswerEditor.innerHTML = "";
-
-    for (let i = 0; i < numbersOfBlank; i++) {
-        blankAnswerEditor.insertAdjacentHTML("beforeend", `
-<div class="relative flex items-start">
-    <div class="text-sm leading-6 grow">
-        <label for="small" class="font-medium text-gray-700">Đáp án cho chỗ trống ${i + 1}</label>
-        <div class="mt-2">
-            <textarea id="blank-${i + 1}"></textarea>
-        </div>
-    </div>
-</div>
-        `);
-        tinymce.init(getTinyMCEOption(`#blank-${i + 1}`, 150));
-    }
-});
-
-step4.addEventListener("click", () => {
-    populatePreviewInfo(question);
-    // Render the preview based on questionCreateDto's question type
-    switch (questionCreateDto.questionTypeId) {
-        case QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer:
-            renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer(questionCreateDto);
-            break;
-        case QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers:
-            renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers(questionCreateDto);
-            break;
-        case QuestionTypeIDs.TrueFalse:
-            renderPreviewForTrueFalseQuestion(questionCreateDto);
-            break;
-        case QuestionTypeIDs.ShortAnswer:
-            renderPreviewForShortAnswerQuestion(questionCreateDto);
-            break;
-        case QuestionTypeIDs.FillInBlank:
-            renderPreviewForFillInBlankQuestion(questionCreateDto);
-            break;
-        default:
-            break;
-    }
-    console.log(questionCreateDto);
-    buttonContainer.classList.remove("hidden");
-});
-
 createQuestionButton.addEventListener("click", async () => {
     await postQuestion(questionCreateDto);
 });
 
-
 // On load
-(() => {
-    document.documentElement.classList.remove("bg-gray-100");
-    document.documentElement.classList.add("bg-white");
-})();
+changeHtmlBackgroundColorToWhite();
+courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
+stepperComponent.connectedCallback();
+stepperComponent.subscribe("onClickStep3", onClickStep3Handler);
+stepperComponent.subscribe("onClickStep4", onClickStep4Hanlder);
+paginationComponentForCourses.subscribe("onNext", onNavigateCoursePageHandler);
+paginationComponentForCourses.subscribe("onPrev", onNavigateCoursePageHandler);
 
 (async () => {
-    const courses = await fetchCourses(coursesRequestParams.pageSize, coursesRequestParams.pageNumber);
-    populateCourses(courses);
+    populateCourses();
     const questionTypes = await fetchQuestionTypes();
     populateQuestionTypes(questionTypeDropdown, questionTypes);
     const questionLevels = await fetchQuestionLevels();

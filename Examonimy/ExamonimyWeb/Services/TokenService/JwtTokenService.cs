@@ -59,7 +59,7 @@ namespace ExamonimyWeb.Services.TokenService
             return new JwtSecurityToken(
                 issuer: _jwtConfigurations["Issuer"],
                 claims: CreateClaims(user),
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtConfigurations["Lifetime"])),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtConfigurations["AccessTokenLifetimeInMinutes"])),
                 signingCredentials: CreateSigningCredentials()
                 );
         }

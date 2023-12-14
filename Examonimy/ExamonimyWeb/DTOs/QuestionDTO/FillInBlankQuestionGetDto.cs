@@ -1,11 +1,7 @@
 ﻿namespace ExamonimyWeb.DTOs.QuestionDTO
 {
-    public class FillInBlankQuestionGetDto
-    {
-        
-        
-        public required QuestionGetDto Question { get; set; }
-        
+    public class FillInBlankQuestionGetDto : QuestionGetDto
+    {                 
         public required string CorrectAnswers { get; set; }
     }
 }

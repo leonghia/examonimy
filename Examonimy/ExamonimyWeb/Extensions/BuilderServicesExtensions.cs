@@ -45,7 +45,7 @@ namespace ExamonimyWeb.Extensions
                     {
                         OnMessageReceived = context =>
                         {
-                            context.Token = context.Request.Cookies[configuration["JwtConfigurations:TokenName"]!];
+                            context.Token = context.Request.Cookies[configuration["JwtConfigurations:AccessTokenName"]!];
                             return Task.CompletedTask;
                         }
                     };

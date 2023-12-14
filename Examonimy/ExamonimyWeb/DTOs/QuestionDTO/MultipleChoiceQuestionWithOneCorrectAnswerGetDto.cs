@@ -1,9 +1,8 @@
 ﻿namespace ExamonimyWeb.DTOs.QuestionDTO
 {
-    public class MultipleChoiceQuestionWithOneCorrectAnswerGetDto
+    public class MultipleChoiceQuestionWithOneCorrectAnswerGetDto : QuestionGetDto
     {
-               
-        public required QuestionGetDto Question { get; set; }
+                     
 
         
         public required string ChoiceA { get; set; }

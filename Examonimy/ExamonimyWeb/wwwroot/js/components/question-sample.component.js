@@ -1,12 +1,12 @@
-﻿import { ChoiceValueMappings, QuestionTypeIDs, formatFillInBlankQuestionContent, splitCorrectAnswersForFillInBlankQuestion, splitCorrectAnswersForMultipleChoiceQuestion } from "../helpers/question.helper.js";
+﻿import { QuestionTypeIDs, countNumbersOfBlank, renderAnswerSheetForFillInBlankQuestion, formatFillInBlankQuestionContent } from "../helpers/question.helper.js";
 import { FillInBlankQuestion, MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithOneCorrectAnswer, Question, ShortAnswerQuestion, TrueFalseQuestion } from "../models/question.model.js";
-export class QuestionPreviewComponent {
-    
+
+export class QuestionSampleComponent {
     #question = new Question();
     #container;
 
-    constructor(container, question) {
-        this.#container = container;     
+    constructor(container = new HTMLElement(), question = new Question()) {
+        this.#container = container;
         this.#question = question;
     }
 
@@ -17,15 +17,15 @@ export class QuestionPreviewComponent {
     #render() {
         switch (this.#question.questionType.id) {
             case QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer:
-                return this.#renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer(this.#question);
+                return this.#renderSampleForMultipleChoiceQuestionWithOneCorrectAnswer(this.#question);
             case QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers:
-                return this.#renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers(this.#question);
-            case QuestionTypeIDs.ShortAnswer:
-                return this.#renderPreviewForShortAnswerQuestion(this.#question);
+                return this.#renderSampleForMultipleChoiceQuestionWithMultipleCorrectAnswers(this.#question);           
             case QuestionTypeIDs.TrueFalse:
-                return this.#renderPreviewForTrueFalseQuestion(this.#question);
+                return this.#renderSampleForTrueFalseQuestion(this.#question);
+            case QuestionTypeIDs.ShortAnswer:
+                return this.#renderSampleForShortAnswerQuestion(this.#question);
             case QuestionTypeIDs.FillInBlank:
-                return this.#rendePreviewForFillInBlankQuestion(this.#question);
+                return this.#renderSampleForFillInBlankQuestion(this.#question);
         }
     }
 
@@ -33,9 +33,9 @@ export class QuestionPreviewComponent {
         this.#question = value;
     }
 
-    #renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer(question = new MultipleChoiceQuestionWithOneCorrectAnswer()) {
+    #renderSampleForMultipleChoiceQuestionWithOneCorrectAnswer(question = new MultipleChoiceQuestionWithOneCorrectAnswer()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -81,20 +81,13 @@ export class QuestionPreviewComponent {
             </div>
         </div>
     </fieldset>
-
-    <p class="text-gray-700 font-medium">Đáp án</p>
-    <div>
-        <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-            <span class="text-white font-semibold">${ChoiceValueMappings[question.correctAnswer]}</span>
-        </span>
-    </div>
 </div>
         `;
     }
 
-    #renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers(question = new MultipleChoiceQuestionWithMultipleCorrectAnswers()) {
+    #renderSampleForMultipleChoiceQuestionWithMultipleCorrectAnswers(question = new MultipleChoiceQuestionWithMultipleCorrectAnswers()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -140,24 +133,13 @@ export class QuestionPreviewComponent {
             </div>
         </div>
     </fieldset>
-
-    <p class="text-gray-700 font-medium">Đáp án</p>
-    <div class="flex items-center gap-x-2">
-        ${splitCorrectAnswersForMultipleChoiceQuestion(question.correctAnswers).reduce((accumulator, currentValue) => {
-            return accumulator + `
-            <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-600">
-                <span class="text-white font-semibold">${ChoiceValueMappings[currentValue]}</span>
-            </span>
-            `;
-        }, "")}
-    </div>
 </div>
         `;
     }
 
-    #renderPreviewForTrueFalseQuestion(question = new TrueFalseQuestion()) {
+    #renderSampleForTrueFalseQuestion(question = new TrueFalseQuestion()) {
         return `
-<div class="prose prose-sm max-w-none">
+<div class="question-sample prose prose-sm max-w-none" data-question-id="${question.id}">
     <div class="font-medium text-gray-700">
         ${question.questionContent}
     </div>
@@ -182,53 +164,35 @@ export class QuestionPreviewComponent {
             </div>
         </div>
     </fieldset>
+</div>
+        `;
+    }
 
-    <p class="text-gray-700 font-medium">Đáp án</p>
-    <div>
-        <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-            <span class="text-white font-semibold">${question.correctAnswer ? "Đ" : "S"}</span>
-        </span>
+    #renderSampleForShortAnswerQuestion(question = new ShortAnswerQuestion()) {
+        return `
+<div class="question-sample" data-question-id="${question.id}">
+    <div class="prose prose-sm max-w-none font-medium text-gray-700">
+        ${question.questionContent}
+    </div>
+
+    <div class="mt-6">      
+        <div class="">
+            <textarea rows="4" name="comment" id="comment" class="pointer-events-none block w-full bg-gray-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Sinh viên nhập câu trả lời vào đây"></textarea>
+        </div>
     </div>
 </div>
         `;
     }
 
-    #renderPreviewForShortAnswerQuestion(question = new ShortAnswerQuestion()) {
+    #renderSampleForFillInBlankQuestion(question = FillInBlankQuestion()) {
         return `
-<div class="prose prose-sm max-w-none">
-    <div class="font-medium text-gray-700">
-        ${question.questionContent}
-    </div>
-
-    <p class="text-gray-700 font-medium">Đáp án</p>
-    <div class="">
-        ${question.correctAnswer}
-    </div>
-</div>
-        `;
-    } 
-
-    #rendePreviewForFillInBlankQuestion(question = new FillInBlankQuestion()) {
-        return `
-<div class="prose prose-sm max-w-none">
-    <div class="font-medium text-gray-700 leading-8">
+<div class="question-sample" data-question-id="${question.id}">
+    <div class="prose prose-sm max-w-none font-medium text-gray-700 leading-8 mb-8">
         ${formatFillInBlankQuestionContent(question.questionContent)}
     </div>
     
-    <p class="text-gray-700 font-medium">Đáp án</p>
-    <div class="space-y-4">
-        ${splitCorrectAnswersForFillInBlankQuestion(question.correctAnswers).reduce((accumulator, currentValue, currentIndex) => {
-            return accumulator + `
-        <div class="relative flex items-start">
-            <div class="leading-6 flex">
-                <span class="mr-2 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-                   <span class="text-white font-semibold text-xs">${currentIndex + 1}</span>
-                </span>
-                <div class="prose-p:m-0">${currentValue}</div>
-            </div>
-        </div>
-            `;
-        }, "")}
+    <div class="space-y-6">
+        ${renderAnswerSheetForFillInBlankQuestion(countNumbersOfBlank(question.questionContent))}
     </div>
 </div>
         `;

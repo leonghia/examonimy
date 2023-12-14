@@ -22,25 +22,17 @@ namespace ExamonimyWeb.Controllers
         private readonly IConfiguration _jwtConfigurations;
         private readonly string _tokenName;
         private readonly string _refreshTokenName;
-        private readonly CookieOptions _cookieOptionsForTokenWithMaxAge = new()
-        {         
-            MaxAge = new TimeSpan(0, 15, 0),
-            Path = "/",
-            HttpOnly = true
-        };
+        private readonly int _accessTokenLifetimeInMinutes;
+        private readonly int _refreshTokenLifetimeInDays;
+        private readonly CookieOptions _cookieOptionForAccessTokenWithMaxAge;
 
-        private readonly CookieOptions _cookieOptionsForTokenWithoutMaxAge = new()
+        private readonly CookieOptions _cookieOptionsForAccessTokenWithoutMaxAge = new()
         {          
             Path = "/",
             HttpOnly = true
         };
 
-        private readonly CookieOptions _cookieOptionsForRefreshTokenWithMaxAge = new()
-        {
-            MaxAge = new TimeSpan(7, 0, 0, 0),
-            Path = "/api/auth/refresh",
-            HttpOnly = true
-        };
+        private readonly CookieOptions _cookieOptionsForRefreshTokenWithMaxAge;
 
         private readonly CookieOptions _cookieOptionsForRefreshTokenWithoutMaxAge = new()
         {          
@@ -56,8 +48,22 @@ namespace ExamonimyWeb.Controllers
             _userManager = userManager;
             _tokenService = tokenService;
             _jwtConfigurations = configuration.GetSection("JwtConfigurations");
-            _tokenName = _jwtConfigurations["TokenName"]!;
+            _tokenName = _jwtConfigurations["AccessTokenName"]!;
             _refreshTokenName = _jwtConfigurations["RefreshTokenName"]!;
+            _accessTokenLifetimeInMinutes = int.Parse(_jwtConfigurations["AccessTokenLifetimeInMinutes"]!);
+            _refreshTokenLifetimeInDays = int.Parse(_jwtConfigurations["RefreshTokenLifetimeInDays"]!);
+            _cookieOptionForAccessTokenWithMaxAge = new()
+            {
+                MaxAge = new TimeSpan(0, _accessTokenLifetimeInMinutes, 0),
+                Path = "/",
+                HttpOnly = true
+            };
+            _cookieOptionsForRefreshTokenWithMaxAge = new()
+            {
+                MaxAge = new TimeSpan(_refreshTokenLifetimeInDays, 0, 0, 0),
+                Path = "/api/auth/refresh",
+                HttpOnly = true
+            };
         }
 
         [HttpGet("login", Name = "GetLoginView")]
@@ -126,16 +132,16 @@ namespace ExamonimyWeb.Controllers
             if (userLoginDto.RememberMe)
             {
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtConfigurations["RefreshTokenLifetime"]));
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtConfigurations["RefreshTokenLifetimeInDays"]));
 
                 await _userManager.UpdateAsync(user);
 
-                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForTokenWithMaxAge);
+                Response.Cookies.Append(_tokenName, jwt, _cookieOptionForAccessTokenWithMaxAge);
                 Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithMaxAge);
             }
             else
             {
-                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForTokenWithoutMaxAge);
+                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForAccessTokenWithoutMaxAge);
                 Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithoutMaxAge);
             }
 

@@ -32,6 +32,8 @@ namespace ExamonimyWeb.Profiles
             CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>();
             CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>();
             CreateMap<ExamPaper, ExamPaperGetDto>();
+            CreateMap<ExamPaperCreateDto, ExamPaper>();
+            CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();
         }
     }
 }

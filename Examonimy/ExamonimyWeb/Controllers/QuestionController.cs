@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
+using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
@@ -7,8 +8,11 @@ using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -42,19 +46,135 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator")]
         [HttpGet("question")]
-        public async Task<IActionResult> Bank()
+        public async Task<IActionResult> Index()
         {
             var username = HttpContext.User.Identity!.Name;                  
-            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
-            var questionsToReturn = (await _questionRepository.GetAsync(null, null, new List<string> { "QuestionType", "QuestionLevel", "Course", "Author" })).Select(q => _mapper.Map<QuestionGetDto>(q));          
-            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));    
+            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
             var viewModel = new QuestionBankViewModel
             {
-                User = userToReturn,
-                Questions = questionsToReturn,
+                User = userToReturn,               
                 QuestionTypes = questionTypesToReturn
             };
             return View(viewModel);
+        }
+
+        [CustomAuthorize(Roles = "Administrator")]
+        [HttpGet("api/question")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
+        {
+            Expression<Func<Question, bool>>? searchPredicate = null; 
+            if (requestParams?.SearchQuery is not null)
+            {
+                searchPredicate = q => q.QuestionContent.ToUpper().Contains(requestParams.SearchQuery.ToUpper());
+            }
+            var questions = await _questionRepository.GetAsync(requestParams, searchPredicate, null, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
+            var questionsToReturn = new List<QuestionGetDto>();         
+            foreach (var question in questions)
+            {
+                
+                switch (question.QuestionTypeId)
+                {
+                    case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
+                        Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == question.Id;
+                        var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, null);
+                        var questionToReturn1 = new MultipleChoiceQuestionWithOneCorrectAnswerGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
+                            ChoiceA = specificQuestion1!.ChoiceA,
+                            ChoiceB = specificQuestion1!.ChoiceB,
+                            ChoiceC = specificQuestion1!.ChoiceC,
+                            ChoiceD = specificQuestion1!.ChoiceD,
+                            CorrectAnswer = specificQuestion1.CorrectAnswer,
+                        };
+                        questionsToReturn.Add(questionToReturn1);
+                        break;
+                    case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
+                        Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == question.Id;
+                        var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, null);
+                        var questionToReturn2 = new MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
+                            ChoiceA = specificQuestion2!.ChoiceA,
+                            ChoiceB = specificQuestion2!.ChoiceB,
+                            ChoiceC = specificQuestion2!.ChoiceC,
+                            ChoiceD = specificQuestion2!.ChoiceD,
+                            CorrectAnswers = specificQuestion2!.CorrectAnswers
+                        };
+                        questionsToReturn.Add(questionToReturn2);
+                        break;
+                    case (int)QuestionTypeId.TrueFalse:
+                        Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == question.Id;
+                        var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, null);
+                        var questionToReturn3 = new TrueFalseQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
+                            CorrectAnswer = specificQuestion3!.CorrectAnswer
+                        };
+                        questionsToReturn.Add(questionToReturn3);
+                        break;
+                    case (int)QuestionTypeId.ShortAnswer:
+                        Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == question.Id;
+                        var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, null);
+                        var questionToReturn4 = new ShortAnswerQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
+                            CorrectAnswer = specificQuestion4!.CorrectAnswer
+                        };
+                        questionsToReturn.Add(questionToReturn4);
+                        break;
+                    case (int)QuestionTypeId.FillInBlank:
+                        Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == question.Id;
+                        var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, null);
+                        var questionToReturn5 = new FillInBlankQuestionGetDto
+                        {
+                            Id = question.Id,
+                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
+                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
+                            CorrectAnswers = specificQuestion5!.CorrectAnswers
+                        };
+                        questionsToReturn.Add(questionToReturn5);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            var paginationMetadata = new PaginationMetadata
+            {
+                PageSize = questions.PageSize,
+                TotalCount = questions.TotalCount,
+                CurrentPage = questions.PageNumber,
+                TotalPages = questions.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            return Ok(questionsToReturn);
         }
 
         [CustomAuthorize(Roles = "Administrator")]
@@ -191,7 +311,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionTypes()
         {
-            var questionTypes = await _questionTypeRepository.GetAsync(null, null, null);
+            var questionTypes = await _questionTypeRepository.GetAsync(null, null, null, null);
             var questionTypesToReturn = questionTypes.Select(questionType => _mapper.Map<QuestionTypeGetDto>(questionType));
             return Ok(questionTypesToReturn);
         }
@@ -201,7 +321,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionLevels()
         {
-            var questionLevels = await _questionLevelRepository.GetAsync(null, null, null);
+            var questionLevels = await _questionLevelRepository.GetAsync(null, null, null, null);
             var questionLevelsToReturn = questionLevels.Select(questionLevel => _mapper.Map<QuestionLevelGetDto>(questionLevel));
             return Ok(questionLevelsToReturn);
         }
