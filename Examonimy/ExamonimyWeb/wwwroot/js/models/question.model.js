@@ -6,6 +6,7 @@ export class Question {
     questionType = new QuestionType();
     questionLevel = new QuestionLevel();
     questionContent = "";
+    author;
 
     constructor() { }
 }

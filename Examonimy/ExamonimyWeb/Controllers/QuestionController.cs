@@ -46,16 +46,14 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator")]
         [HttpGet("question")]
-        public async Task<IActionResult> Bank()
+        public async Task<IActionResult> Index()
         {
             var username = HttpContext.User.Identity!.Name;                  
-            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));          
-            var questionsToReturn = (await _questionRepository.GetAsync(null, null, null, new List<string> { "QuestionType", "QuestionLevel", "Course", "Author" })).Select(q => _mapper.Map<QuestionGetDto>(q));          
+            var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));    
             var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
             var viewModel = new QuestionBankViewModel
             {
-                User = userToReturn,
-                Questions = questionsToReturn,
+                User = userToReturn,               
                 QuestionTypes = questionTypesToReturn
             };
             return View(viewModel);
@@ -71,7 +69,7 @@ namespace ExamonimyWeb.Controllers
             {
                 searchPredicate = q => q.QuestionContent.ToUpper().Contains(requestParams.SearchQuery.ToUpper());
             }
-            var questions = await _questionRepository.GetAsync(requestParams, searchPredicate, null, new List<string> { "Course", "QuestionType", "QuestionLevel" });
+            var questions = await _questionRepository.GetAsync(requestParams, searchPredicate, null, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
             var questionsToReturn = new List<QuestionGetDto>();         
             foreach (var question in questions)
             {
@@ -88,11 +86,12 @@ namespace ExamonimyWeb.Controllers
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
                             QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
                             ChoiceA = specificQuestion1!.ChoiceA,
                             ChoiceB = specificQuestion1!.ChoiceB,
                             ChoiceC = specificQuestion1!.ChoiceC,
                             ChoiceD = specificQuestion1!.ChoiceD,
-                            CorrectAnswer = specificQuestion1.CorrectAnswer
+                            CorrectAnswer = specificQuestion1.CorrectAnswer,
                         };
                         questionsToReturn.Add(questionToReturn1);
                         break;
@@ -106,6 +105,7 @@ namespace ExamonimyWeb.Controllers
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
                             QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
                             ChoiceA = specificQuestion2!.ChoiceA,
                             ChoiceB = specificQuestion2!.ChoiceB,
                             ChoiceC = specificQuestion2!.ChoiceC,
@@ -123,7 +123,8 @@ namespace ExamonimyWeb.Controllers
                             Course = _mapper.Map<CourseGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
-                            QuestionContent = question.QuestionContent,                           
+                            QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswer = specificQuestion3!.CorrectAnswer
                         };
                         questionsToReturn.Add(questionToReturn3);
@@ -138,6 +139,7 @@ namespace ExamonimyWeb.Controllers
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
                             QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswer = specificQuestion4!.CorrectAnswer
                         };
                         questionsToReturn.Add(questionToReturn4);
@@ -152,6 +154,7 @@ namespace ExamonimyWeb.Controllers
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
                             QuestionContent = question.QuestionContent,
+                            Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswers = specificQuestion5!.CorrectAnswers
                         };
                         questionsToReturn.Add(questionToReturn5);

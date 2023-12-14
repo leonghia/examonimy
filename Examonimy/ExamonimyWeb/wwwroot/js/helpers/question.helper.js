@@ -1,4 +1,5 @@
-﻿import { MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../models/question-create.model.js";
+﻿import { MAX_LENGTH_FOR_QUESTION_CONTENT } from "../config.js";
+import { MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../models/question-create.model.js";
 
 export const QuestionTypeIDs = {
     MultipleChoiceWithOneCorrectAnswer: 1,
@@ -73,4 +74,16 @@ export const renderAnswerSheetForFillInBlankQuestion = (numbersOfBlank) => {
 
 export const countNumbersOfBlank = (questionContent = "") => {
     return (questionContent.match(/__/g) || []).length;
+}
+
+export const trimQuestionContentMarkup = (markup = "") => {
+    const endTagPosition = markup.indexOf("</");
+
+    if (endTagPosition > MAX_LENGTH_FOR_QUESTION_CONTENT) {
+        const openingTag = markup.substring(0, markup.indexOf(">") + 1);
+        return markup.substring(0, MAX_LENGTH_FOR_QUESTION_CONTENT).concat("......").concat(openingTag.replace(">", "/>"));
+    }
+
+    const temp = markup.substring(0, markup.indexOf(">") + 1).replace("<", "</");
+    return markup.substring(0, markup.indexOf(temp) + temp.length);
 }
