@@ -6,12 +6,17 @@ export class AdvancedPaginationComponent extends BaseComponent {
     #currentPage = 0;
     #totalPages = 0;
     #unitName = "";
+    #fromItemNumber = 1;
 
     #container;
+    #prevButton;
+    #nextButton;
+    #pageNumberButtonContainer;
 
     _events = {
         next: [],
-        prev: []
+        prev: [],
+        clickPage: []
     }
 
     constructor(container = new HTMLElement(), unitName = "", totalCount = 0, pageSize = 0, currentPage = 0, totalPages = 0) {
@@ -27,6 +32,45 @@ export class AdvancedPaginationComponent extends BaseComponent {
     connectedCallback() {
         this.#container.innerHTML = this.#render();
         this.#highlightCurrentPage();
+
+        this.#prevButton = this.#container.querySelector(".prev-btn");
+        this.#nextButton = this.#container.querySelector(".next-btn");
+        this.#pageNumberButtonContainer = this.#container.querySelector("#page-number-button-container");
+
+        this.#pageNumberButtonContainer.addEventListener("click", event => {
+            const clickedPageNumberButton = event.target.closest(".page-number-btn");
+            if (clickedPageNumberButton) {
+                const pageNumber = Number(clickedPageNumberButton.textContent);
+                this.#currentPage = pageNumber;
+                this.#fromItemNumber = this.#pageSize * (this.#currentPage - 1) + 1;
+                this._trigger("clickPage", {
+                    fromItemNumber: this.#fromItemNumber,
+                    pageNumber: this.#currentPage
+                });
+            }
+        });
+
+        this.#prevButton.addEventListener("click", () => {
+            if (this.#currentPage === 1)
+                return;
+            this.#currentPage--;
+            this.#fromItemNumber -= this.#pageSize;
+            this._trigger("prev", {
+                fromItemNumber: this.#fromItemNumber,
+                pageNumber: this.#currentPage
+            });
+        });
+
+        this.#nextButton.addEventListener("click", () => {
+            if (this.#currentPage === this.#totalPages)
+                return;
+            this.#currentPage++;
+            this.#fromItemNumber += this.#pageSize;
+            this._trigger("next", {
+                fromItemNumber: this.#fromItemNumber,
+                pageNumber: this.#currentPage
+            });
+        });
     } 
 
     #highlightCurrentPage() {
@@ -42,9 +86,9 @@ export class AdvancedPaginationComponent extends BaseComponent {
     }
 
     #render() {
-        let markupForPageNumbers;
+        let markupForPageNumberButtons;
         if ((this.#totalPages >= 9 && this.#currentPage <= 3) || (this.#totalPages >= 9 && this.#currentPage >= this.#totalPages - 2)) {
-            markupForPageNumbers = `
+            markupForPageNumberButtons = `
             <button id="page-${1}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">1</button>
             <button id="page-${2}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">2</button>
             <button id="page-${3}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">3</button>
@@ -55,7 +99,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
             `;
         }
         if (this.#totalPages >= 9 && this.#currentPage > 3 && this.#currentPage < this.#totalPages - 2) {
-            markupForPageNumbers = `
+            markupForPageNumberButtons = `
             <button id="page-${1}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">1</button>           
             <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">...</span>
             <button id="page-${this.#currentPage - 1}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">${this.#currentPage - 1}</button>
@@ -66,9 +110,9 @@ export class AdvancedPaginationComponent extends BaseComponent {
             `;
         }
         if (this.#totalPages < 9) {
-            markupForPageNumbers = "";
+            markupForPageNumberButtons = "";
             for (let i = 0; i < this.#totalPages; i++) {
-                markupForPageNumbers = markupForPageNumbers.concat(`
+                markupForPageNumberButtons = markupForPageNumberButtons.concat(`
                 <button id="page-${i + 1}-btn" type="button" class="page-number-btn rounded-md relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-600">${i + 1}</button>
                 `);
             }
@@ -82,8 +126,10 @@ export class AdvancedPaginationComponent extends BaseComponent {
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
             <p class="text-sm text-gray-700">
-                Đang hiển thị              
-                <span id="page-size" class="font-medium">${this.#pageSize}</span>
+                Đang hiển thị             
+                <span id="from-item-number" class="font-medium">${this.#fromItemNumber}</span>
+                đến
+                <span id="to-item-number" class="font-medium">${this.#fromItemNumber + this.#pageSize - 1 > this.#totalCount ? this.#totalCount : this.#fromItemNumber + this.#pageSize - 1}</span>
                 trong số
                 <span id="total-count" class="font-medium">${this.#totalCount}</span>
                 ${this.#unitName}
@@ -97,7 +143,9 @@ export class AdvancedPaginationComponent extends BaseComponent {
                         <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
                     </svg>
                 </button>
-                ${markupForPageNumbers}                           
+                <div id="page-number-button-container">
+                    ${markupForPageNumberButtons}
+                </div>                                          
                 <button type="button" class="next-btn rounded-md relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20">
                     <span class="sr-only">Next</span>
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

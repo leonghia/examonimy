@@ -17,10 +17,27 @@ const paginationContainer = document.querySelector("#pagination-container");
 let questions = [new Question()]
 const questionTableComponent = new QuestionTableComponent(questionTableContainer);
 const paginationComponent = new AdvancedPaginationComponent(paginationContainer, "câu hỏi");
+const pageSizeForQuestions = 10;
 
 // Function expressions
+const navigateHandler = async (data) => {
+    await init(data.pageNumber, data.fromItemNumber);
+}
 
+const init = async (pageNumber = 0, fromItemNumber = 0) => {
+    const getResponse = new GetResponse();
+    try {
+        Object.assign(getResponse, await fetchData("question", new RequestParams(null, pageSizeForQuestions, pageNumber)));
+        questionTableComponent.questions = getResponse.data;
+        questionTableComponent.fromItemNumber = fromItemNumber;
+        questionTableComponent.connectedCallback();
 
+        paginationComponent.setPaginationFields(getResponse.paginationMetadata.totalCount, getResponse.paginationMetadata.pageSize, getResponse.paginationMetadata.currentPage, getResponse.paginationMetadata.totalPages);
+        paginationComponent.connectedCallback();
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 // Event listeners
 questionTypeDropdownButton.addEventListener("click", () => {
@@ -41,15 +58,9 @@ questionTypeDropdown.addEventListener("click", event => {
 
 // On load
 (async () => {
-    const getResponse = new GetResponse();
-    try {
-        Object.assign(getResponse, await fetchData("question", new RequestParams()));       
-        questionTableComponent.questions = getResponse.data;
-        questionTableComponent.connectedCallback();
-
-        paginationComponent.setPaginationFields(getResponse.paginationMetadata.totalCount, getResponse.paginationMetadata.pageSize, getResponse.paginationMetadata.currentPage, getResponse.paginationMetadata.totalPages);
-        paginationComponent.connectedCallback();
-    } catch (err) {
-        console.error(err);
-    }
+    await init(1, 1);
 })();
+
+paginationComponent.subscribe("prev", navigateHandler);
+paginationComponent.subscribe("next", navigateHandler);
+paginationComponent.subscribe("clickPage", navigateHandler);

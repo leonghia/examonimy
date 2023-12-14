@@ -6,6 +6,7 @@ export class QuestionTableComponent {
     #container;
     #questions = [new Question()];
     #tableBody;
+    #fromItemNumber = 1;
 
     constructor(container = new HTMLElement(), question = [new Question()]) {
         this.#container = container;
@@ -22,12 +23,16 @@ export class QuestionTableComponent {
         this.#questions = value;
     }
 
+    set fromItemNumber(value = 0) {
+        this.#fromItemNumber = value;
+    }
+
     #populateQuestions(tableBody = new HTMLElement(), questions = [new Question()]) {
         tableBody.innerHTML = "";
         questions.forEach((q, i) => {
             tableBody.insertAdjacentHTML("beforeend", `
 <tr class="">
-    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${i + 1}</td>
+    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + i}</td>
     <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
         <div class="font-medium text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</div>
         <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author.fullName}</a></div>
