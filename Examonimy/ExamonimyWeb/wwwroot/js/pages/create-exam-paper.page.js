@@ -9,21 +9,28 @@ import { fetchData } from "../helpers/ajax.helper.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { QuestionSampleComponent } from "../components/question-sample.component.js";
 import { RequestParams } from "../models/request-params.model.js";
+import { ExamPaperQuestionCreate } from "../models/exam-paper-question-create.model.js";
+import { ExamPaperCreate } from "../models/exam-paper-create.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
 const paginationContainerForCourses = document.querySelector("#pagination-container"); 
 const stepperContainer = document.querySelector("#stepper-container");
 const numbersOfQuestionInput = document.querySelector("#numbers-of-question");
+const examPaperCodeInput = document.querySelector("#exam-paper-code");
 const questionSampleListContainer = document.querySelector("#question-sample-list-container");
 const questionListPaletteContainer = document.querySelector("#question-list-palette-container");
 const questionSampleListPreviewContainer = document.querySelector("#question-sample-list-preview-container");
+const coursePreviewElement = document.querySelector("#course-preview-el");
+const examPaperCodePreviewElement = document.querySelector("#exam-paper-code-preview-el");
+const numbersOfQuestionPreviewElement = document.querySelector("#numbers-of-question-preview-el");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
 const paginationComponentForCourses = new SimplePaginationComponent(paginationContainerForCourses);
 const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn học", "Nhập thông tin", "Thêm câu hỏi", "Xem trước"])
 const examPaper = new ExamPaper();
+let examPaperCreate;
 const pageSizeForCourses = 12;
 const pageSizeForQuestions = 10;
 const questionListPaletteComponent = new QuestionListPaletteComponent(questionListPaletteContainer);
@@ -41,13 +48,13 @@ const navigateCoursesHandler = async (pageNumberForCourses = 0) => {
     paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
 }
 
-const focusEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
+const greenEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
     emptyPlaceholder.classList.remove("border-gray-300");
     emptyPlaceholder.classList.add("border-green-500");
     emptyPlaceholder.classList.add("bg-green-50");
 }
 
-const unFocusEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
+const grayEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
     emptyPlaceholder.classList.remove("bg-green-50");
     emptyPlaceholder.classList.remove("border-green-500");
     emptyPlaceholder.classList.add("border-gray-300");
@@ -56,14 +63,14 @@ const unFocusEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
 questionSampleListContainer.addEventListener("dragenter", event => {
     event.preventDefault();
     if (event.target.matches(".empty-placeholder")) {
-        focusEmptyPlaceholder(event.target);
+        greenEmptyPlaceholder(event.target);
     }
 });
 
 questionSampleListContainer.addEventListener("dragleave", event => {
     event.preventDefault();
     if (event.target.matches(".empty-placeholder")) {
-        unFocusEmptyPlaceholder(event.target);
+        grayEmptyPlaceholder(event.target);
     }
 });
 
@@ -83,6 +90,7 @@ questionSampleListContainer.addEventListener("drop", event => {
         questionListPaletteComponent.unHighlightAllQuestions();
         questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(questionId);
 
+        // add the question to the map
         const questionNumber = Number(event.target.parentElement.dataset.questionNumber);
         examPaperQuestionMap.set(questionNumber, question);
 
@@ -93,13 +101,17 @@ questionSampleListContainer.addEventListener("drop", event => {
 
 questionSampleListContainer.addEventListener("click", event => {
     if (event.target.closest(".clear-btn")) {
-        questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(Number(event.target.closest(".empty-question").querySelector(".question-sample").dataset.questionId));
+        const questionId = Number(event.target.closest(".empty-question").querySelector(".question-sample").dataset.questionId);
+        questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(questionId);
         event.target.closest(".empty-question").querySelector(".question-sample-placeholder").innerHTML = "";
         event.target.closest(".empty-question").querySelector(".empty-placeholder").classList.remove("hidden");
         event.target.closest(".clear-btn").classList.add("hidden");
 
         // unfocus the empty placeholder
-        unFocusEmptyPlaceholder(event.target.closest(".empty-question").querySelector(".empty-placeholder"));       
+        grayEmptyPlaceholder(event.target.closest(".empty-question").querySelector(".empty-placeholder"));     
+
+        // remove the question from the map
+        examPaperQuestionMap.delete(questionId);
     }
 });
 
@@ -134,7 +146,7 @@ const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {
     document.querySelector("#course-code").textContent = courseCode;
 }
 
-const populateQuestionSampleListPreviewContainer = (examPaperQuestionMap = new Map()) => {
+const populateQuestionSampleListPreview = (examPaperQuestionMap = new Map()) => {
     for (let i = 0; i < examPaper.numbersOfQuestion; i++) {
         questionSampleListPreviewContainer.insertAdjacentHTML("beforeend", `
         <div class="bg-white rounded-lg p-6">
@@ -145,6 +157,12 @@ const populateQuestionSampleListPreviewContainer = (examPaperQuestionMap = new M
         new QuestionSampleComponent(questionSampleListPreviewContainer.querySelector(`#question-sample-preview-${i + 1}`), examPaperQuestionMap.get(i + 1)).connectedCallback();
     }
 } 
+
+const populateExamPaperDetailPreview = (examPaper = new ExamPaper()) => {
+    coursePreviewElement.textContent = examPaper.course.name;
+    examPaperCodePreviewElement.textContent = examPaper.examPaperCode;
+    numbersOfQuestionPreviewElement.textContent = examPaper.numbersOfQuestion;
+}
 
 const onClickStepperHandler = async (stepOrder = 0) => {
     if (stepOrder === 1)
@@ -161,14 +179,28 @@ const onClickStepperHandler = async (stepOrder = 0) => {
     }
         
     if (stepOrder === 3) {
+        // update state for examPaper
+        examPaper.examPaperCode = examPaper.course.courseCode + examPaperCodeInput.value;
         examPaper.numbersOfQuestion = Number(numbersOfQuestionInput.value);   
         populateEmptyQuestions(examPaper.numbersOfQuestion);
     }
 
-    if (stepOrder === 4) {
-        console.log(examPaperQuestionMap);
-        populateQuestionSampleListPreviewContainer(examPaperQuestionMap);
+    if (stepOrder === 4) {     
+        populateExamPaperDetailPreview(examPaper);
+        populateQuestionSampleListPreview(examPaperQuestionMap);
+        examPaperCreate = new ExamPaperCreate(examPaper.course.id, examPaper.examPaperCode, constructExamPaperQuestionsAsArray(examPaperQuestionMap));      
     }
+}
+
+const constructExamPaperQuestionsAsArray = (examPaperQuestionMap = new Map()) => {
+    const arr = new Array(examPaperQuestionMap.size);
+    const entries = Array.from(examPaperQuestionMap.entries());
+
+    for (let i = 0; i < entries.length; i++) {
+        arr[i] = new ExamPaperQuestionCreate(entries[i][1].id, entries[i][0]);
+    }
+
+    return arr;
 }
 
 // Event listeners
