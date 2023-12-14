@@ -18,6 +18,10 @@ export class QuestionTableComponent {
         this.#populateQuestions(this.#tableBody, this.#questions);
     }
 
+    set questions(value = [new Question()]) {
+        this.#questions = value;
+    }
+
     #populateQuestions(tableBody = new HTMLElement(), questions = [new Question()]) {
         tableBody.innerHTML = "";
         questions.forEach((q, i) => {
@@ -58,7 +62,7 @@ export class QuestionTableComponent {
 <table class="min-w-full">
     <thead class="bg-white">
         <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">Id</th>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Câu hỏi</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Dạng</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mức độ</th>
