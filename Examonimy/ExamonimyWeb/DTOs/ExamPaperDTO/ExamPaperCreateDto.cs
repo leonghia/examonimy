@@ -13,6 +13,6 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO
         public required int CourseId { get; set; }
 
         [Required]
-        public ICollection<ExamPaperQuestionCreateDto>? ExamPaperQuestions { get; set; }
+        public required ICollection<ExamPaperQuestionCreateDto> ExamPaperQuestions { get; set; }
     }
 }

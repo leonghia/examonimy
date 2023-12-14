@@ -40,7 +40,7 @@ namespace ExamonimyWeb.Controllers
             {
                 var examPaperGetDto = _mapper.Map<ExamPaperGetDto>(examPaper);
                 Expression<Func<ExamPaperQuestion, bool>> predicate = ePQ => ePQ.ExamPaperId == examPaper.Id;
-                examPaperGetDto.NumbersOfQuestions = await _examPaperQuestionRepository.CountAsync(predicate);
+                examPaperGetDto.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(predicate);
                 examPaperGetDtos.Add(examPaperGetDto);
 
             }
@@ -51,12 +51,47 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator")]
+        [HttpGet("api/exam-paper/{id}", Name = "GetExamPaperById")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Get([FromRoute] int id)
+        {
+            Expression<Func<ExamPaper, bool>> predicate = eP => eP.Id == id;
+            var examPaperEntity = await _examPaperRepository.GetAsync(predicate, new List<string> { "Course", "Author" });
+            if (examPaperEntity is null)
+                return NotFound();
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaperEntity);
+            Expression<Func<ExamPaperQuestion, bool>> examPaperQuestionPredicate = ePQ => ePQ.ExamPaperId == examPaperEntity.Id;
+            examPaperToReturn.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(examPaperQuestionPredicate);
+            return Ok(examPaperToReturn);
+        }
+
+        [CustomAuthorize(Roles = "Administrator")]
         [HttpGet("exam-paper/create")]
         public async Task<IActionResult> Create()
         {           
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!));
             var viewModel = new AuthorizedViewModel { User = userToReturn };
             return View(viewModel);
+        }
+
+        [CustomAuthorize(Roles = "Administrator")]
+        [HttpPost("api/exam-paper")]
+        [Consumes("application/json")]
+        [Produces("application/json", "application/problem+json")]
+        public async Task<IActionResult> Create([FromBody] ExamPaperCreateDto examPaperCreateDto)
+        {
+            var authorId = (await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!))!.Id;
+            var examPaperEntity = _mapper.Map<ExamPaper>(examPaperCreateDto);
+            examPaperEntity.AuthorId = authorId;
+            await _examPaperRepository.InsertAsync(examPaperEntity);
+            await _examPaperRepository.SaveAsync();           
+
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaperEntity);
+            examPaperToReturn.NumbersOfQuestion = examPaperEntity.ExamPaperQuestions!.Count;
+            Expression<Func<Course, bool>> coursePredicate = c => c.Id == examPaperEntity.CourseId;
+            examPaperToReturn.Course = _mapper.Map<CourseGetDto>(await _courseRepository.GetAsync(coursePredicate, null));
+
+            return CreatedAtRoute("GetExamPaperById", new { id = examPaperEntity.Id }, examPaperToReturn);
         }
     }
 }

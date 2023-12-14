@@ -1,11 +1,11 @@
 ﻿// Imports
 import { CourseGridComponent } from "../components/course-grid.component.js";
-import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite } from "../helpers/markup.helper.js";
+import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite, hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
-import { fetchData } from "../helpers/ajax.helper.js";
+import { fetchData, postData } from "../helpers/ajax.helper.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { QuestionSampleComponent } from "../components/question-sample.component.js";
 import { RequestParams } from "../models/request-params.model.js";
@@ -24,6 +24,8 @@ const questionSampleListPreviewContainer = document.querySelector("#question-sam
 const coursePreviewElement = document.querySelector("#course-preview-el");
 const examPaperCodePreviewElement = document.querySelector("#exam-paper-code-preview-el");
 const numbersOfQuestionPreviewElement = document.querySelector("#numbers-of-question-preview-el");
+const buttonContainer = document.querySelector("#button-container");
+const createExamPaperButton = document.querySelector("#create-exam-paper-btn");
 
 // States
 const courseGridComponent = new CourseGridComponent(courseContainer);
@@ -59,61 +61,6 @@ const grayEmptyPlaceholder = (emptyPlaceholder = new HTMLElement()) => {
     emptyPlaceholder.classList.remove("border-green-500");
     emptyPlaceholder.classList.add("border-gray-300");
 }
-
-questionSampleListContainer.addEventListener("dragenter", event => {
-    event.preventDefault();
-    if (event.target.matches(".empty-placeholder")) {
-        greenEmptyPlaceholder(event.target);
-    }
-});
-
-questionSampleListContainer.addEventListener("dragleave", event => {
-    event.preventDefault();
-    if (event.target.matches(".empty-placeholder")) {
-        grayEmptyPlaceholder(event.target);
-    }
-});
-
-questionSampleListContainer.addEventListener("dragover", event => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "copy";
-});
-
-questionSampleListContainer.addEventListener("drop", event => {
-    event.preventDefault();
-    if (event.target.matches(".empty-placeholder")) {
-        const questionId = Number(event.dataTransfer.getData("text/plain"));
-        var question = questionListPaletteComponent.questions.find(q => q.id === questionId);
-        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-sample-placeholder"), question);
-        questionSampleComponent.connectedCallback();
-        event.target.classList.add("hidden");
-        questionListPaletteComponent.unHighlightAllQuestions();
-        questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(questionId);
-
-        // add the question to the map
-        const questionNumber = Number(event.target.parentElement.dataset.questionNumber);
-        examPaperQuestionMap.set(questionNumber, question);
-
-        // show the clear button
-        event.target.parentElement.querySelector(".clear-btn").classList.remove("hidden");
-    }  
-});
-
-questionSampleListContainer.addEventListener("click", event => {
-    if (event.target.closest(".clear-btn")) {
-        const questionId = Number(event.target.closest(".empty-question").querySelector(".question-sample").dataset.questionId);
-        questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(questionId);
-        event.target.closest(".empty-question").querySelector(".question-sample-placeholder").innerHTML = "";
-        event.target.closest(".empty-question").querySelector(".empty-placeholder").classList.remove("hidden");
-        event.target.closest(".clear-btn").classList.add("hidden");
-
-        // unfocus the empty placeholder
-        grayEmptyPlaceholder(event.target.closest(".empty-question").querySelector(".empty-placeholder"));     
-
-        // remove the question from the map
-        examPaperQuestionMap.delete(questionId);
-    }
-});
 
 const populateEmptyQuestions = (numbersOfQuestion = 0) => {
     questionSampleListContainer.innerHTML = "";
@@ -169,6 +116,7 @@ const onClickStepperHandler = async (stepOrder = 0) => {
         changeHtmlBackgroundColorToWhite();
     else
         changeHtmlBackgroundColorToGray();
+
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(examPaper.course.courseCode);
         const res = await fetchData("question", new RequestParams(null, pageSizeForQuestions));
@@ -185,10 +133,13 @@ const onClickStepperHandler = async (stepOrder = 0) => {
         populateEmptyQuestions(examPaper.numbersOfQuestion);
     }
 
-    if (stepOrder === 4) {     
+    if (stepOrder === 4) {
         populateExamPaperDetailPreview(examPaper);
         populateQuestionSampleListPreview(examPaperQuestionMap);
-        examPaperCreate = new ExamPaperCreate(examPaper.course.id, examPaper.examPaperCode, constructExamPaperQuestionsAsArray(examPaperQuestionMap));      
+        examPaperCreate = new ExamPaperCreate(examPaper.course.id, examPaper.examPaperCode, constructExamPaperQuestionsAsArray(examPaperQuestionMap));
+        buttonContainer.classList.remove("hidden");
+    } else {
+        buttonContainer.classList.add("hidden");
     }
 }
 
@@ -203,8 +154,77 @@ const constructExamPaperQuestionsAsArray = (examPaperQuestionMap = new Map()) =>
     return arr;
 }
 
-// Event listeners
+const postExamPaper = async (examPaperCreate = new ExamPaperCreate()) => {
+    showSpinnerForButton(createExamPaperButton.querySelector(".button-text-el"), createExamPaperButton);
+    try {
+        await postData("exam-paper", examPaperCreate);      
+    } catch (err) {
+        console.error(err);
+    } finally {
+        hideSpinnerForButton(createExamPaperButton, createExamPaperButton.querySelector(".button-text-el"));
+    }
+}
 
+
+// Event listeners
+questionSampleListContainer.addEventListener("dragenter", event => {
+    event.preventDefault();
+    if (event.target.matches(".empty-placeholder")) {
+        greenEmptyPlaceholder(event.target);
+    }
+});
+
+questionSampleListContainer.addEventListener("dragleave", event => {
+    event.preventDefault();
+    if (event.target.matches(".empty-placeholder")) {
+        grayEmptyPlaceholder(event.target);
+    }
+});
+
+questionSampleListContainer.addEventListener("dragover", event => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+});
+
+questionSampleListContainer.addEventListener("drop", event => {
+    event.preventDefault();
+    if (event.target.matches(".empty-placeholder")) {
+        const questionId = Number(event.dataTransfer.getData("text/plain"));
+        var question = questionListPaletteComponent.questions.find(q => q.id === questionId);
+        const questionSampleComponent = new QuestionSampleComponent(event.target.parentElement.querySelector(".question-sample-placeholder"), question);
+        questionSampleComponent.connectedCallback();
+        event.target.classList.add("hidden");
+        questionListPaletteComponent.unHighlightAllQuestions();
+        questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(questionId);
+
+        // add the question to the map
+        const questionNumber = Number(event.target.parentElement.dataset.questionNumber);
+        examPaperQuestionMap.set(questionNumber, question);
+
+        // show the clear button
+        event.target.parentElement.querySelector(".clear-btn").classList.remove("hidden");
+    }
+});
+
+questionSampleListContainer.addEventListener("click", event => {
+    if (event.target.closest(".clear-btn")) {
+        const questionId = Number(event.target.closest(".empty-question").querySelector(".question-sample").dataset.questionId);
+        questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(questionId);
+        event.target.closest(".empty-question").querySelector(".question-sample-placeholder").innerHTML = "";
+        event.target.closest(".empty-question").querySelector(".empty-placeholder").classList.remove("hidden");
+        event.target.closest(".clear-btn").classList.add("hidden");
+
+        // unfocus the empty placeholder
+        grayEmptyPlaceholder(event.target.closest(".empty-question").querySelector(".empty-placeholder"));
+
+        // remove the question from the map
+        examPaperQuestionMap.delete(questionId);
+    }
+});
+
+createExamPaperButton.addEventListener("click", () => {
+    postExamPaper(examPaperCreate);
+});
 
 // On load
 changeHtmlBackgroundColorToWhite();
