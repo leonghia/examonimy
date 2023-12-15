@@ -33,7 +33,6 @@ const questionTableComponent = new QuestionTableComponent(questionTableContainer
 const paginationComponent = new AdvancedPaginationComponent(paginationContainer, "câu hỏi");
 const pageSizeForQuestions = 10;
 
-
 // Function expressions
 const navigateHandler = async (data) => {
     await init(null, data.pageNumber, data.fromItemNumber);
@@ -64,7 +63,7 @@ const init = async (searchQuery = null, pageNumber = 0, fromItemNumber = 0) => {
 questionTypeDropdownButton.addEventListener("click", () => {
     questionTypeDropdown.classList.toggle("hidden");
 });
-questionTypeDropdown.addEventListener("click", event => {
+questionTypeDropdown.addEventListener("click", event => {   
     const clicked = event.target.closest("input");
     if (!clicked)
         return;

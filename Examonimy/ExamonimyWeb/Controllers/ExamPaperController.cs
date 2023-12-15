@@ -21,7 +21,7 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
         private readonly IGenericRepository<Course> _courseRepository;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository) : base(mapper, examPaperRepository)
+        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository) : base(mapper, examPaperRepository, userManager)
         {
             _mapper = mapper;
             _examPaperRepository = examPaperRepository;

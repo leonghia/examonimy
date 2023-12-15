@@ -41,7 +41,7 @@ namespace ExamonimyWeb.Controllers
         };
 
 
-        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService, IGenericRepository<User> userRepository) : base(mapper, userRepository)
+        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService, IGenericRepository<User> userRepository) : base(mapper, userRepository, userManager)
         {
             _authService = authService;
             _mapper = mapper;

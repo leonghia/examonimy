@@ -4,6 +4,7 @@ namespace ExamonimyWeb.Models
 {
     public class AuthorizedViewModel
     {
-        public required UserGetDto User { get; set; }
+        public required UserGetDto User { get; set; }       
+        public string? ViewName { get; set; }
     }
 }
