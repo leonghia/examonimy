@@ -29,8 +29,9 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<TrueFalseQuestion> _trueFalseQuestionRepository;
         private readonly IGenericRepository<ShortAnswerQuestion> _shortAnswerQuestionRepository;
         private readonly IGenericRepository<FillInBlankQuestion> _fillInBlankQuestionRepository;
+        private readonly IGenericRepository<Course> _courseRepository;
 
-        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository) : base(mapper, questionRepository)
+        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository, IGenericRepository<Course> courseRepository) : base(mapper, questionRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -42,6 +43,7 @@ namespace ExamonimyWeb.Controllers
             _trueFalseQuestionRepository = trueFalseQuestionRepository;
             _shortAnswerQuestionRepository = shortAnswerQuestionRepository;
             _fillInBlankQuestionRepository = fillInBlankQuestionRepository;
+            _courseRepository = courseRepository;
         }
 
         [CustomAuthorize(Roles = "Administrator")]
@@ -51,10 +53,15 @@ namespace ExamonimyWeb.Controllers
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));    
             var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var questionLevelsToReturn = (await _questionLevelRepository.GetAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
+            var coursesTotalCount = await _courseRepository.CountAsync();
+            var coursesToReturn = (await _courseRepository.GetAsync(new RequestParams { PageNumber = 1, PageSize = coursesTotalCount}, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
             var viewModel = new QuestionBankViewModel
             {
                 User = userToReturn,               
-                QuestionTypes = questionTypesToReturn
+                QuestionTypes = questionTypesToReturn,
+                QuestionLevels = questionLevelsToReturn,
+                Courses = coursesToReturn
             };
             return View(viewModel);
         }

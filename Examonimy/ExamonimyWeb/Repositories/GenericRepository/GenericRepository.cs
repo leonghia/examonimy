@@ -17,9 +17,12 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> filterPredicate)
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? filterPredicate = null)
         {
-            return await _dbSet.CountAsync(filterPredicate);
+            if (filterPredicate is not null)
+                return await _dbSet.CountAsync(filterPredicate);
+            else
+                return await _dbSet.CountAsync();
         }
 
         public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties)

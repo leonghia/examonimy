@@ -9,8 +9,8 @@ export class SimplePaginationComponent extends BaseComponent {
     #prevButton;
     #paginationInfo;
     _events = {
-        onNext: [],
-        onPrev: []
+        next: [],
+        prev: []
     }
 
     constructor(container = new HTMLElement()) {
@@ -29,7 +29,7 @@ export class SimplePaginationComponent extends BaseComponent {
             if (this.#currentPage === this.#totalPages)
                 return;
             this.#currentPage++;
-            this._trigger("onNext", this.#currentPage);
+            this._trigger("next", this.#currentPage);
             this.populatePaginationInfo();
         });
 
@@ -37,7 +37,7 @@ export class SimplePaginationComponent extends BaseComponent {
             if (this.#currentPage === 1)
                 return;
             this.#currentPage--;
-            this._trigger("onPrev", this.#currentPage);
+            this._trigger("prev", this.#currentPage);
             this.populatePaginationInfo();
         });
     }

@@ -11,6 +11,6 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         Task InserRangeAsync(List<TEntity> entities);
         void Update(TEntity entity);
         Task SaveAsync();
-        Task<int> CountAsync(Expression<Func<TEntity, bool>> filterPredicate);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>>? filterPredicate = null);
     }
 }
