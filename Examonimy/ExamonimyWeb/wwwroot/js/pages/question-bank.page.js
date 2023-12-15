@@ -12,6 +12,7 @@ const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const selectedQuestionType = document.querySelector("#selected-question-type");
 const questionTableContainer = document.querySelector("#question-table-container");
 const paginationContainer = document.querySelector("#pagination-container");
+const createQuestionButtonContainer = document.querySelector("#create-question-btn-container");
 
 // States
 let questions = [new Question()]
@@ -27,13 +28,18 @@ const navigateHandler = async (data) => {
 const init = async (pageNumber = 0, fromItemNumber = 0) => {
     const getResponse = new GetResponse();
     try {
-        Object.assign(getResponse, await fetchData("question", new RequestParams(null, pageSizeForQuestions, pageNumber)));
-        questionTableComponent.questions = getResponse.data;
+        Object.assign(getResponse, await fetchData("question", new RequestParams(null, pageSizeForQuestions, pageNumber)));       
+        questionTableComponent.questions = getResponse.data;        
         questionTableComponent.fromItemNumber = fromItemNumber;
         questionTableComponent.connectedCallback();
 
-        paginationComponent.setPaginationFields(getResponse.paginationMetadata.totalCount, getResponse.paginationMetadata.pageSize, getResponse.paginationMetadata.currentPage, getResponse.paginationMetadata.totalPages);
-        paginationComponent.connectedCallback();
+        if (questionTableComponent.questions.length > 0) {
+            paginationComponent.setPaginationFields(getResponse.paginationMetadata.totalCount, getResponse.paginationMetadata.pageSize, getResponse.paginationMetadata.currentPage, getResponse.paginationMetadata.totalPages);
+            paginationComponent.connectedCallback();
+        } else {
+            createQuestionButtonContainer.classList.add("hidden");
+        }
+        
     } catch (err) {
         console.error(err);
     }
