@@ -11,6 +11,7 @@ import { CourseGridComponent } from "../components/course-grid.component.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { fetchData } from "../helpers/ajax.helper.js";
 import { StepperComponent } from "../components/stepper.component.js";
+import { RequestParams } from "../models/request-params.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -27,8 +28,6 @@ const answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer = document.query
 const answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers = document.querySelector('.answer-editor[data-question-type-id="2"]');
 const answerEditorForTrueFalseQuestion = document.querySelector('.answer-editor[data-question-type-id="3"]');
 const blankAnswerEditor = document.querySelector("#blank-answer-editor");
-const step3 = document.querySelector("#step-3");
-const step4 = document.querySelector("#step-4");
 const coursePreview = document.querySelector("#course-preview");
 const questionTypePreview = document.querySelector("#question-type-preview");
 const questionLevelPreview = document.querySelector("#question-level-preview");
@@ -535,8 +534,8 @@ const onClickCourseHandler = (course = new Course()) => {
     questionCreateDto.courseId = course.id;
 }
 
-const onNavigateCoursePageHandler = async (pageNumber = 0) => {
-    const res = await fetchData("course", pageSizeForCourses, pageNumber);
+const navigateCoursePageHandler = async (pageNumber = 0) => {
+    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumber));
     const courses = res.data;
     courseGridComponent.populateCourses(courses);
 }
@@ -626,8 +625,8 @@ courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("onClickStep3", onClickStep3Handler);
 stepperComponent.subscribe("onClickStep4", onClickStep4Hanlder);
-paginationComponentForCourses.subscribe("onNext", onNavigateCoursePageHandler);
-paginationComponentForCourses.subscribe("onPrev", onNavigateCoursePageHandler);
+paginationComponentForCourses.subscribe("next", navigateCoursePageHandler);
+paginationComponentForCourses.subscribe("prev", navigateCoursePageHandler);
 
 (async () => {
     populateCourses();
