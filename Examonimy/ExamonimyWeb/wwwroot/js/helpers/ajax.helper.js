@@ -24,6 +24,8 @@ export const fetchData = async (routeName = "", requestParams = new RequestParam
         const paginationMetadata = JSON.parse(res.headers.get(PAGINATION_METADATA_HEADER));
         getResponse.paginationMetadata.currentPage = paginationMetadata.currentPage;
         getResponse.paginationMetadata.totalPages = paginationMetadata.totalPages;
+        getResponse.paginationMetadata.pageSize = paginationMetadata.pageSize;
+        getResponse.paginationMetadata.totalCount = paginationMetadata.totalCount;
         return getResponse;
 
     } catch (err) {

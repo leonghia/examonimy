@@ -6,6 +6,7 @@ export class QuestionTableComponent {
     #container;
     #questions = [new Question()];
     #tableBody;
+    #fromItemNumber = 1;
 
     constructor(container = new HTMLElement(), question = [new Question()]) {
         this.#container = container;
@@ -18,12 +19,20 @@ export class QuestionTableComponent {
         this.#populateQuestions(this.#tableBody, this.#questions);
     }
 
+    set questions(value = [new Question()]) {
+        this.#questions = value;
+    }
+
+    set fromItemNumber(value = 0) {
+        this.#fromItemNumber = value;
+    }
+
     #populateQuestions(tableBody = new HTMLElement(), questions = [new Question()]) {
         tableBody.innerHTML = "";
         questions.forEach((q, i) => {
             tableBody.insertAdjacentHTML("beforeend", `
 <tr class="">
-    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${i + 1}</td>
+    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + i}</td>
     <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
         <div class="font-medium text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</div>
         <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author.fullName}</a></div>
@@ -58,7 +67,7 @@ export class QuestionTableComponent {
 <table class="min-w-full">
     <thead class="bg-white">
         <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">Id</th>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Câu hỏi</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Dạng</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mức độ</th>
