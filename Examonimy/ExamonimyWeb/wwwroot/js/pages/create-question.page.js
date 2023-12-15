@@ -325,7 +325,7 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
 }
 
 const populateCourses = async () => {
-    const coursePaginationMetadata = await fetchData("course", pageSizeForCourses, paginationComponentForCourses.currentPage);
+    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, paginationComponentForCourses.currentPage));
     courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;

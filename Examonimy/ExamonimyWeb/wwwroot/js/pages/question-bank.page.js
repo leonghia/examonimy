@@ -6,6 +6,7 @@ import { RequestParams } from "../models/request-params.model.js";
 import { QuestionTableComponent } from "../components/question-table.component.js";
 import { AdvancedPaginationComponent } from "../components/advanced-pagination.component.js";
 
+
 // DOM selectors
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
 const questionTypeDropdown = document.querySelector("#question-type-dropdown");
@@ -13,6 +14,9 @@ const selectedQuestionType = document.querySelector("#selected-question-type");
 const questionTableContainer = document.querySelector("#question-table-container");
 const paginationContainer = document.querySelector("#pagination-container");
 const createQuestionButtonContainer = document.querySelector("#create-question-btn-container");
+const searchForm = document.querySelector("#search-form");
+const searchInput = document.querySelector("#search-input");
+
 
 // States
 let questions = [new Question()]
@@ -20,15 +24,16 @@ const questionTableComponent = new QuestionTableComponent(questionTableContainer
 const paginationComponent = new AdvancedPaginationComponent(paginationContainer, "câu hỏi");
 const pageSizeForQuestions = 10;
 
+
 // Function expressions
 const navigateHandler = async (data) => {
-    await init(data.pageNumber, data.fromItemNumber);
+    await init(null, data.pageNumber, data.fromItemNumber);
 }
 
-const init = async (pageNumber = 0, fromItemNumber = 0) => {
+const init = async (searchQuery = null, pageNumber = 0, fromItemNumber = 0) => {
     const getResponse = new GetResponse();
     try {
-        Object.assign(getResponse, await fetchData("question", new RequestParams(null, pageSizeForQuestions, pageNumber)));       
+        Object.assign(getResponse, await fetchData("question", new RequestParams(searchQuery, pageSizeForQuestions, pageNumber)));       
         questionTableComponent.questions = getResponse.data;        
         questionTableComponent.fromItemNumber = fromItemNumber;
         questionTableComponent.connectedCallback();
@@ -44,6 +49,7 @@ const init = async (pageNumber = 0, fromItemNumber = 0) => {
         console.error(err);
     }
 }
+
 
 // Event listeners
 questionTypeDropdownButton.addEventListener("click", () => {
@@ -61,10 +67,15 @@ questionTypeDropdown.addEventListener("click", event => {
     selectedQuestionType.textContent = clicked.nextElementSibling.textContent;
 });
 
+searchForm.addEventListener("submit", event => {
+    event.preventDefault();
+    init(searchInput.value, 1, 1);
+});
+
 
 // On load
 (async () => {
-    await init(1, 1);
+    await init(null, 1, 1);
 })();
 
 paginationComponent.subscribe("prev", navigateHandler);
