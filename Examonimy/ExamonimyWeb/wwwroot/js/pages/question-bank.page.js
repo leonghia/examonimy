@@ -11,6 +11,15 @@ import { AdvancedPaginationComponent } from "../components/advanced-pagination.c
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
 const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const selectedQuestionType = document.querySelector("#selected-question-type");
+
+const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
+const questionLevelDropdown = document.querySelector("#question-level-dropdown");
+const selectedQuestionLevel = document.querySelector("#selected-question-level");
+
+const courseDropdownButton = document.querySelector("#course-dropdown-btn");
+const courseDropdown = document.querySelector("#course-dropdown");
+const selectedCourse = document.querySelector("#selected-course");
+
 const questionTableContainer = document.querySelector("#question-table-container");
 const paginationContainer = document.querySelector("#pagination-container");
 const createQuestionButtonContainer = document.querySelector("#create-question-btn-container");
@@ -53,13 +62,8 @@ const init = async (searchQuery = null, pageNumber = 0, fromItemNumber = 0) => {
 
 // Event listeners
 questionTypeDropdownButton.addEventListener("click", () => {
-    if (questionTypeDropdown.classList.contains("opacity-0")) {
-        questionTypeDropdown.classList.remove(..."opacity-0 pointer-events-none".split(" "));
-    } else {
-        questionTypeDropdown.classList.add(..."opacity-0 pointer-events-none".split(" "));
-    }
+    questionTypeDropdown.classList.toggle("hidden");
 });
-
 questionTypeDropdown.addEventListener("click", event => {
     const clicked = event.target.closest("input");
     if (!clicked)
@@ -67,6 +71,29 @@ questionTypeDropdown.addEventListener("click", event => {
     selectedQuestionType.textContent = clicked.nextElementSibling.textContent;
 });
 
+////////////////////////////////////////////////
+questionLevelDropdownButton.addEventListener("click", () => {
+    questionLevelDropdown.classList.toggle("hidden");
+});
+questionLevelDropdown.addEventListener("click", event => {
+    const clicked = event.target.closest("input");
+    if (!clicked)
+        return;
+    selectedQuestionLevel.textContent = clicked.nextElementSibling.textContent;
+});
+
+////////////////////////////////////////////////
+courseDropdownButton.addEventListener("click", () => {
+    courseDropdown.classList.toggle("hidden");
+});
+courseDropdown.addEventListener("click", event => {
+    const clicked = event.target.closest("input");
+    if (!clicked)
+        return;
+    selectedCourse.textContent = clicked.nextElementSibling.textContent;
+});
+
+///////////////////////////////////////////////
 searchForm.addEventListener("submit", event => {
     event.preventDefault();
     init(searchInput.value, 1, 1);
