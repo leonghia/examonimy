@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +16,13 @@ namespace ExamonimyWeb.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IGenericRepository<TEntity> _genericRepository;
+        private readonly IUserManager _userManager;
 
-        public GenericController(IMapper mapper, IGenericRepository<TEntity> genericRepository)
+        public GenericController(IMapper mapper, IGenericRepository<TEntity> genericRepository, IUserManager userManager)
         {
             _mapper = mapper;
             _genericRepository = genericRepository;
+            _userManager = userManager;
         }
 
         protected async Task<ActionResult> Get<TGetDto>(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
@@ -47,7 +51,12 @@ namespace ExamonimyWeb.Controllers
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
 
-        
+        protected async Task<User> GetContextUser()
+        {
+            var username = HttpContext.User.Identity!.Name;
+            var user = await _userManager.FindByUsernameAsync(username!);
+            return user!;
+        }
     }
 
 }

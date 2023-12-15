@@ -1,4 +1,4 @@
-﻿namespace ExamonimyWeb.Enums
+﻿namespace ExamonimyWeb.Utilities
 {
     public enum QuestionTypeId
     {

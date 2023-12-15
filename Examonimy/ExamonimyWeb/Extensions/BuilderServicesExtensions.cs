@@ -5,6 +5,7 @@ using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
+using ExamonimyWeb.Services.QuestionService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -107,10 +108,11 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
             services.AddScoped<IGenericRepository<ExamPaper>, GenericRepository<ExamPaper>>();
             services.AddScoped<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
-
+            
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IQuestionService, QuestionService>();
             
         }
     }
