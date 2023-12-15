@@ -9,6 +9,17 @@ export class RequestParams {
         this.pageSize = pageSize || 10;
         this.pageNumber = pageNumber || 1;
     }
+}
 
-    
+export class QuestionRequestParams extends RequestParams {
+    courseId = 0;
+    questionTypeId = 0;
+    questionLevelId = 0;
+
+    constructor(searchQuery = null, courseId = null, questionTypeId = null, questionLevelId = null, pageSize = null, pageNumber = null) {
+        super(searchQuery, pageSize, pageNumber);
+        this.courseId = courseId;
+        this.questionTypeId = questionTypeId;
+        this.questionLevelId = questionLevelId;
+    }
 }

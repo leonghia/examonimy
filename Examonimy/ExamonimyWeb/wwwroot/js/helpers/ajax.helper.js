@@ -6,11 +6,11 @@ import { RequestParams } from "../models/request-params.model.js";
 export const fetchData = async (routeName = "", requestParams = new RequestParams()) => {
     const getResponse = new GetResponse();
     const url = new URL(`${BASE_API_URL}/${routeName}`);
-    if (requestParams.searchQuery)
-        url.searchParams.set("searchQuery", requestParams.searchQuery);
-    url.searchParams.set("pageSize", requestParams.pageSize);
-    url.searchParams.set("pageNumber", requestParams.pageNumber);    
-
+    for (const [k, v] of Object.entries(requestParams)) {
+        if (v) {
+            url.searchParams.set(k, v);
+        }
+    }
     try {
         const res = await fetch(url);
 

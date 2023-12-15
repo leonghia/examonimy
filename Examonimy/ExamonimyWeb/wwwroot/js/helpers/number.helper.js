@@ -1,0 +1,1 @@
+﻿export const calculateFromItemNumber = (pageSize, pageNumber) => pageSize * (pageNumber - 1) + 1;

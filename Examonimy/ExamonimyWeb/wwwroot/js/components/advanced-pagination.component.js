@@ -43,10 +43,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
                 const pageNumber = Number(clickedPageNumberButton.textContent);
                 this.#currentPage = pageNumber;
                 this.#fromItemNumber = this.#pageSize * (this.#currentPage - 1) + 1;
-                this._trigger("clickPage", {
-                    fromItemNumber: this.#fromItemNumber,
-                    pageNumber: this.#currentPage
-                });
+                this._trigger("clickPage", this.#currentPage);
             }
         });
 
@@ -55,10 +52,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
                 return;
             this.#currentPage--;
             this.#fromItemNumber -= this.#pageSize;
-            this._trigger("prev", {
-                fromItemNumber: this.#fromItemNumber,
-                pageNumber: this.#currentPage
-            });
+            this._trigger("prev", this.#currentPage);
         });
 
         this.#nextButton.addEventListener("click", () => {
@@ -66,12 +60,13 @@ export class AdvancedPaginationComponent extends BaseComponent {
                 return;
             this.#currentPage++;
             this.#fromItemNumber += this.#pageSize;
-            this._trigger("next", {
-                fromItemNumber: this.#fromItemNumber,
-                pageNumber: this.#currentPage
-            });
+            this._trigger("next", this.#currentPage);
         });
     } 
+
+    disconnectedCallback() {
+        this.#container.innerHTML = "";
+    }
 
     #highlightCurrentPage() {
         this.#container.querySelector(`#page-${this.#currentPage}-btn`).classList.remove("text-gray-600");
