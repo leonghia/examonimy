@@ -15,14 +15,14 @@ namespace ExamonimyWeb.Configurations
                 new User
                 {
                     Id = 1,
-                    FullName = "Lã Trọng Nghĩa",
-                    Username = "nghiala1998",
-                    Email = "leonghiacnn@gmail.com",
+                    FullName = "Trịnh Quang Hòa",
+                    Username = "hoatq",
+                    Email = "hoatq@fpt.edu.vn",
                     RoleId = 1,
                     PasswordHash = PasswordHelper.HashPassword("aptech", out string salt1),
                     PasswordSalt = salt1,
-                    NormalizedUsername = "nghiala1998".ToUpperInvariant(),
-                    NormalizedEmail = "leonghiacnn@gmail.com".ToUpperInvariant()
+                    NormalizedUsername = "hoatq".ToUpperInvariant(),
+                    NormalizedEmail = "hoatq@fpt.edu.vn".ToUpperInvariant()
                 },
                 new User
                 {
@@ -30,7 +30,7 @@ namespace ExamonimyWeb.Configurations
                     FullName = "Trịnh Văn Phúc",
                     Username = "phuctrinh2004",
                     Email = "phuctv1112004@gmail.com",
-                    RoleId = 1,
+                    RoleId = 2,
                     PasswordHash = PasswordHelper.HashPassword("aptech", out string salt2),
                     PasswordSalt = salt2,
                     NormalizedUsername = "phuctrinh2004".ToUpperInvariant(),
@@ -42,7 +42,7 @@ namespace ExamonimyWeb.Configurations
                     FullName = "Nguyễn Thị Hương",
                     Username = "huongnguyen2004",
                     Email = "nguyenhuongg1104@gmail.com",
-                    RoleId = 1,
+                    RoleId = 2,
                     PasswordHash = PasswordHelper.HashPassword("aptech", out string salt3),
                     PasswordSalt = salt3,
                     NormalizedUsername = "huongnguyen2004".ToUpperInvariant(),
