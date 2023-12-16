@@ -5,11 +5,15 @@ using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Services.QuestionService;
+using ExamonimyWeb.Utilities;
 
 namespace ExamonimyWeb.Profiles
 {
     public class AutoMapperProfile : Profile
     {
+        
+
         public AutoMapperProfile()
         {
             CreateMap<UserRegisterDto, User>()
@@ -26,14 +30,17 @@ namespace ExamonimyWeb.Profiles
             CreateMap<ShortAnswerQuestionCreateDto, ShortAnswerQuestion>();
             CreateMap<FillInBlankQuestionCreateDto, FillInBlankQuestion>();
             CreateMap<Question, QuestionGetDto>();
-            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswer, MultipleChoiceQuestionWithOneCorrectAnswerGetDto>();
-            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>();
-            CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>();
+            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswer, MultipleChoiceQuestionWithOneCorrectAnswerGetDto>()
+                .ForMember(dest => dest.CorrectAnswer, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValueFromOneCorrectAnswer(src.CorrectAnswer)));
+            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>()
+                .ForMember(dest => dest.CorrectAnswers, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValuesFromMultipleCorrectAnswers(src.CorrectAnswers)));
+            CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>()
+                .ForMember(dest => dest.CorrectAnswer, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValueFromTrueFalse(src.CorrectAnswer)));
             CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>();
             CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>();
             CreateMap<ExamPaper, ExamPaperGetDto>();
             CreateMap<ExamPaperCreateDto, ExamPaper>();
-            CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();
+            CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();           
         }
     }
 }

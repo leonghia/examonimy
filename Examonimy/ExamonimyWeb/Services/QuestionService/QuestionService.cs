@@ -18,7 +18,7 @@ namespace ExamonimyWeb.Services.QuestionService
         private readonly IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> _multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
         private readonly IGenericRepository<TrueFalseQuestion> _trueFalseQuestionRepository;
         private readonly IGenericRepository<ShortAnswerQuestion> _shortAnswerQuestionRepository;
-        private readonly IGenericRepository<FillInBlankQuestion> _fillInBlankQuestionRepository;
+        private readonly IGenericRepository<FillInBlankQuestion> _fillInBlankQuestionRepository;      
 
         public IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> MultipleChoiceQuestionWithOneCorrectAnswerRepository => _multipleChoiceQuestionWithOneCorrectAnswerRepository;
 
@@ -38,40 +38,65 @@ namespace ExamonimyWeb.Services.QuestionService
             _multipleChoiceQuestionWithMultipleCorrectAnswersRepository = multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
             _trueFalseQuestionRepository = trueFalseQuestionRepository;
             _shortAnswerQuestionRepository = shortAnswerQuestionRepository;
-            _fillInBlankQuestionRepository = fillInBlankQuestionRepository;
+            _fillInBlankQuestionRepository = fillInBlankQuestionRepository;         
         }
 
-        public async Task<QuestionDetailViewModel?> GetQuestionDetailViewModel(Question question, UserGetDto user)
+        public async Task<QuestionViewModel?> GetQuestionViewModelAsync(Question question, User user)
         {
-            
+            var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
-                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, new List<string> { "Question" });                                 
-                    var mutipleChoiceQuestionWithOneCorrectAnswerToReturn = _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(multipleChoiceQuestionWithOneCorrectAnswer);
-                    return new QuestionDetailViewModel { User = user, ViewName = QuestionTypeNames.MultipleChoiceWithOneCorrectAnswer, Question = mutipleChoiceQuestionWithOneCorrectAnswerToReturn};
+                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);                   
+                    return new MultipleChoiceQuestionWithOneCorrectAnswerViewModel
+                    {
+                        User = _mapper.Map<UserGetDto>(user),
+                        GeneralDetail = _mapper.Map<QuestionGetDto>(question),
+                        SpecificDetail = _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(multipleChoiceQuestionWithOneCorrectAnswer),
+                        ViewName = QuestionTypeNames.MultipleChoiceWithOneCorrectAnswer
+                    };
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
-                    var multipleChoiceQuestionWithMultipleCorrectAnswers = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(q => q.QuestionId == question.Id, new List<string> { "Question" });                   
-                    var multipleChoiceQuestionWithMultipleCorrectAnswersToReturn = _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(multipleChoiceQuestionWithMultipleCorrectAnswers);
-                    return new QuestionDetailViewModel { User = user, ViewName = QuestionTypeNames.MultipleChoiceWithMultipleCorrectAnswers, Question = multipleChoiceQuestionWithMultipleCorrectAnswersToReturn };
+                    var multipleChoiceQuestionWithMultipleCorrectAnswers = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
+                    return new MultipleChoiceQuestionWithMultipleCorrectAnswersViewModel
+                    {
+                        User = _mapper.Map<UserGetDto>(user),
+                        GeneralDetail = _mapper.Map<QuestionGetDto>(question),
+                        SpecificDetail = _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(multipleChoiceQuestionWithMultipleCorrectAnswers),
+                        ViewName = QuestionTypeNames.MultipleChoiceWithMultipleCorrectAnswers
+                    };
                 case (int)QuestionTypeId.TrueFalse:
-                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, new List<string> { "Question" });                  
-                    var trueFalseQuestionToReturn = _mapper.Map<TrueFalseQuestionGetDto>(trueFalseQuestion);
-                    return new QuestionDetailViewModel { User = user, ViewName = QuestionTypeNames.TrueFalse, Question = trueFalseQuestionToReturn };
+                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);                
+                    return new TrueFalseQuestionViewModel
+                    {
+                        User = _mapper.Map<UserGetDto>(user),
+                        GeneralDetail = _mapper.Map<QuestionGetDto>(question),
+                        SpecificDetail = _mapper.Map<TrueFalseQuestionGetDto>(trueFalseQuestion),
+                        ViewName = QuestionTypeNames.TrueFalse
+                    };
                 case (int)QuestionTypeId.ShortAnswer:
-                    var shortAnswerQuestion = await _shortAnswerQuestionRepository.GetAsync(q => q.QuestionId == question.Id, new List<string> { "Question" });                  
-                    var shortAnswerQuestionToReturn = _mapper.Map<TrueFalseQuestionGetDto>(shortAnswerQuestion);
-                    return new QuestionDetailViewModel { User = user, ViewName = QuestionTypeNames.ShortAnswer, Question = shortAnswerQuestionToReturn };
+                    var shortAnswerQuestion = await _shortAnswerQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
+                    return new ShortAnswerQuestionViewModel
+                    {
+                        User = _mapper.Map<UserGetDto>(user),
+                        GeneralDetail = _mapper.Map<QuestionGetDto>(question),
+                        SpecificDetail = _mapper.Map<ShortAnswerQuestionGetDto>(shortAnswerQuestion),
+                        ViewName = QuestionTypeNames.ShortAnswer
+                    };
                 case (int)QuestionTypeId.FillInBlank:
-                    var fillInBlankQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, new List<string> { "Question" });                  
-                    var fillInBlankQuestionToReturn = _mapper.Map<TrueFalseQuestionGetDto>(fillInBlankQuestion);
-                    return new QuestionDetailViewModel { User = user, ViewName = QuestionTypeNames.FillInBlank, Question = fillInBlankQuestionToReturn };
+                    var fillInBlankQuestion = await _fillInBlankQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
+                    return new FillInBlankQuestionViewModel
+                    {
+                        User = _mapper.Map<UserGetDto>(user),
+                        GeneralDetail = _mapper.Map<QuestionGetDto>(question),
+                        SpecificDetail = _mapper.Map<FillInBlankQuestionGetDto>(fillInBlankQuestion),
+                        ViewName = QuestionTypeNames.FillInBlank
+                    };
                 default:
                     return null;
             }
         }
 
-        public async Task<IEnumerable<QuestionGetDto>> GetQuestionDetailsAsDtos(List<Question> questions)
+        public async Task<IEnumerable<QuestionGetDto>> GetQuestionsAsync(List<Question> questions)
         {
             var questionsToReturn = new List<QuestionGetDto>();
 
@@ -95,7 +120,7 @@ namespace ExamonimyWeb.Services.QuestionService
                             ChoiceB = specificQuestion1!.ChoiceB,
                             ChoiceC = specificQuestion1!.ChoiceC,
                             ChoiceD = specificQuestion1!.ChoiceD,
-                            CorrectAnswer = specificQuestion1.CorrectAnswer,
+                            CorrectAnswer = QuestionAnswerValueHelper.GetAnswerValueFromOneCorrectAnswer(specificQuestion1.CorrectAnswer),
                         };
                         questionsToReturn.Add(questionToReturn1);
                         break;
@@ -114,7 +139,7 @@ namespace ExamonimyWeb.Services.QuestionService
                             ChoiceB = specificQuestion2!.ChoiceB,
                             ChoiceC = specificQuestion2!.ChoiceC,
                             ChoiceD = specificQuestion2!.ChoiceD,
-                            CorrectAnswers = specificQuestion2!.CorrectAnswers
+                            CorrectAnswers = QuestionAnswerValueHelper.GetAnswerValuesFromMultipleCorrectAnswers(specificQuestion2!.CorrectAnswers)
                         };
                         questionsToReturn.Add(questionToReturn2);
                         break;
@@ -129,7 +154,7 @@ namespace ExamonimyWeb.Services.QuestionService
                             QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
-                            CorrectAnswer = specificQuestion3!.CorrectAnswer
+                            CorrectAnswer = QuestionAnswerValueHelper.GetAnswerValueFromTrueFalse(specificQuestion3!.CorrectAnswer)
                         };
                         questionsToReturn.Add(questionToReturn3);
                         break;
@@ -171,7 +196,7 @@ namespace ExamonimyWeb.Services.QuestionService
             return questionsToReturn;
         }
 
-        public async Task<Tuple<int, T>> CreateQuestion<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class
+        public async Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class
         {
             
             var questionToCreate = new Question

@@ -112,7 +112,7 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();
-            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IQuestionService, QuestionService>();           
             
         }
     }

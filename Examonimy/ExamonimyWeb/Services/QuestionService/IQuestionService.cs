@@ -13,8 +13,8 @@ namespace ExamonimyWeb.Services.QuestionService
         IGenericRepository<TrueFalseQuestion> TrueFalseQuestionRepository { get; }
         IGenericRepository<ShortAnswerQuestion> ShortAnswerQuestionRepository { get; }
         IGenericRepository<FillInBlankQuestion> FillInBlankQuestionRepository { get; }
-        Task<IEnumerable<QuestionGetDto>> GetQuestionDetailsAsDtos(List<Question> questions);
-        Task<QuestionDetailViewModel?> GetQuestionDetailViewModel(Question question, UserGetDto user);
-        Task<Tuple<int, T>> CreateQuestion<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
+        Task<IEnumerable<QuestionGetDto>> GetQuestionsAsync(List<Question> questions);
+        Task<QuestionViewModel?> GetQuestionViewModelAsync(Question question, User user);
+        Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
     }
 }

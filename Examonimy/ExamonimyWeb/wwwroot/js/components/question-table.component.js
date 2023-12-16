@@ -58,7 +58,7 @@ export class QuestionTableComponent {
 <tr class="">
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + i}</td>
     <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
-        <div class="font-medium text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</div>
+        <a href="/question/${q.id}" class="font-medium text-violet-700 hover:text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</a>
         <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author.fullName}</a></div>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionType.name}</td>

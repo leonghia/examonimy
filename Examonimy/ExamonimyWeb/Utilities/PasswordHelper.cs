@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace ExamonimyWeb.Helpers
+namespace ExamonimyWeb.Utilities
 {
     public static class PasswordHelper
     {

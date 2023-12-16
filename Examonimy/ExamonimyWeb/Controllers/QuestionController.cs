@@ -38,7 +38,7 @@ namespace ExamonimyWeb.Controllers
             _questionService = questionService;
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question")]
         public async Task<IActionResult> Index()
         {
@@ -58,7 +58,7 @@ namespace ExamonimyWeb.Controllers
             return View(viewModel);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/question")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] QuestionRequestParams? questionRequestParams)
@@ -87,7 +87,7 @@ namespace ExamonimyWeb.Controllers
             }
 
             var questions = await _questionRepository.GetAsync(questionRequestParams, searchPredicate, filterPredicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
-            var questionsToReturn = await _questionService.GetQuestionDetailsAsDtos(questions);         
+            var questionsToReturn = await _questionService.GetQuestionsAsync(questions);         
             
 
             var paginationMetadata = new PaginationMetadata
@@ -103,7 +103,7 @@ namespace ExamonimyWeb.Controllers
             return Ok(questionsToReturn);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/create")]
         public async Task<IActionResult> Create()
         {                 
@@ -115,7 +115,7 @@ namespace ExamonimyWeb.Controllers
             return View(authorizedViewModel);
         }
 
-        [CustomAuthorize]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/{id}", Name = "GetQuestionById")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
@@ -123,71 +123,69 @@ namespace ExamonimyWeb.Controllers
             var question = await _questionRepository.GetAsync(predicate, null);
             if (question is null)
                 return NotFound();
-            var user = _mapper.Map<UserGetDto>(await base.GetContextUser());
-            var viewModel = await _questionService.GetQuestionDetailViewModel(question, user);
+            var user = await base.GetContextUser();
+            var viewModel = await _questionService.GetQuestionViewModelAsync(question, user);
             if (viewModel is null)
                 return NotFound();
             return View(viewModel.ViewName, viewModel);
-        }     
+        }    
 
-        
-
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/multiplechoicewithonecorrectanswer")]
         public async Task<IActionResult> Create([FromBody] MultipleChoiceQuestionWithOneCorrectAnswerCreateDto multipleChoiceQuestionWithOneCorrectAnswerCreateDto)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;         
-            var tuple = await _questionService.CreateQuestion(multipleChoiceQuestionWithOneCorrectAnswerCreateDto, _questionService.MultipleChoiceQuestionWithOneCorrectAnswerRepository, authorId);
+            var tuple = await _questionService.CreateQuestionAsync(multipleChoiceQuestionWithOneCorrectAnswerCreateDto, _questionService.MultipleChoiceQuestionWithOneCorrectAnswerRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(tuple.Item2));
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/multiplechoicewithmultiplecorrectanswers")]
         public async Task<IActionResult> Create([FromBody] MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestion(multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, _questionService.MultipleChoiceQuestionWithMultipleCorrectAnswersRepository, authorId);
+            var tuple = await _questionService.CreateQuestionAsync(multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, _questionService.MultipleChoiceQuestionWithMultipleCorrectAnswersRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(tuple.Item2));
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/truefalse")]
         public async Task<IActionResult> Create([FromBody] TrueFalseQuestionCreateDto trueFalseQuestionCreateDto)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestion(trueFalseQuestionCreateDto, _questionService.TrueFalseQuestionRepository, authorId);
+            var tuple = await _questionService.CreateQuestionAsync(trueFalseQuestionCreateDto, _questionService.TrueFalseQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<TrueFalseQuestionGetDto>(tuple.Item2));
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/shortanswer")]
         public async Task<IActionResult> Create([FromBody] ShortAnswerQuestionCreateDto shortAnswerQuestionCreateDto)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await  _questionService.CreateQuestion(shortAnswerQuestionCreateDto, _questionService.ShortAnswerQuestionRepository, authorId);
+            var tuple = await  _questionService.CreateQuestionAsync(shortAnswerQuestionCreateDto, _questionService.ShortAnswerQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<ShortAnswerQuestionGetDto>(tuple.Item2));
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/fillinblank")]
         public async Task<IActionResult> Create([FromBody] FillInBlankQuestionCreateDto fillInBlankQuestionCreateDto)
         {
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestion(fillInBlankQuestionCreateDto, _questionService.FillInBlankQuestionRepository, authorId);
+            var tuple = await _questionService.CreateQuestionAsync(fillInBlankQuestionCreateDto, _questionService.FillInBlankQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<FillInBlankQuestionGetDto>(tuple.Item2));
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/question/type")]
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionTypes()
@@ -197,7 +195,7 @@ namespace ExamonimyWeb.Controllers
             return Ok(questionTypesToReturn);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/question/level")]
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionLevels()

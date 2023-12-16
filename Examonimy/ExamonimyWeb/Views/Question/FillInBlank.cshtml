@@ -1,0 +1,72 @@
+﻿@using ExamonimyWeb.Utilities;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Chi tiết câu hỏi";
+    Layout = "_TeacherLayout";
+    var answerValues = QuestionAnswerValueHelper.GetAnswerValuesFromFillInBlankCorrectAnswers(Model.SpecificDetail.CorrectAnswers);
+}
+@model FillInBlankQuestionViewModel
+<div>
+    @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
+    <div class="mt-10 flex justify-end">
+        <a href="/question" class="text-violet-700 hover:text-violet-600 font-semibold inline-flex">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+            </svg>
+            Quay về
+        </a>
+    </div>
+    <div id="question-preview-container" class="mt-10 p-10 bg-white rounded-lg mx-auto w-1/2">
+
+        <!-- Course info preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
+            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.Course.Name</p>
+        </div>
+
+        <!-- Question type preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
+            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.QuestionType.Name</p>
+        </div>
+
+        <!-- Question level preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
+            <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.QuestionLevel.Name</p>
+        </div>
+
+        <!-- Question content preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
+            <div class="mt-4">
+                <div class="prose max-w-none text-gray-700">
+                    @Html.Raw(QuestionContentMarkupHelper.GetFormattedFillInBlankQuestionContentMarkup(Model.GeneralDetail.QuestionContent))
+                </div>             
+            </div>
+        </div>
+
+        <!-- Answer preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
+            <div id="answer-preview" class="prose max-w-none mt-4 flex items-center gap-x-3">
+                <div class="space-y-4">
+                    @for (var i = 0; i < answerValues.Length; i++)
+                    {
+                        <div class="relative flex items-start">
+                            <div class="leading-6 flex">
+                                <span class="mr-2 inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
+                                    <span class="text-white font-semibold text-sm">@(i + 1)</span>
+                                </span>
+                                <div class="prose-p:m-0">@Html.Raw(answerValues[i])</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

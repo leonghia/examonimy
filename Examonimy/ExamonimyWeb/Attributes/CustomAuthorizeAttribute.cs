@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Diagnostics;
 
 namespace ExamonimyWeb.Attributes
 {
@@ -19,11 +17,23 @@ namespace ExamonimyWeb.Attributes
             }
 
             var user = context.HttpContext.User;
-
-            if (Roles is not null && !user.IsInRole(Roles))
+            if (Roles is not null)
             {
-                context.Result = new ForbidResult();
-                return;
+                var isInRole = false;
+                var rolesArr = Roles.Split(",");
+                foreach (var role in rolesArr)
+                {
+                    if (user.IsInRole(role))
+                    {
+                        isInRole = true;
+                        break;
+                    }
+                }
+                if (!isInRole)
+                {
+                    context.Result = new ForbidResult();
+                    return;
+                }
             }
         }
     }

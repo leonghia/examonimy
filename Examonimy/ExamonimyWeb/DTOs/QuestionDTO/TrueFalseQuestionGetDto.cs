@@ -1,9 +1,7 @@
 ﻿namespace ExamonimyWeb.DTOs.QuestionDTO
 {
     public class TrueFalseQuestionGetDto : QuestionGetDto
-    {
-              
-        
-        public required bool CorrectAnswer { get; set; }
+    {               
+        public required char CorrectAnswer { get; set; }
     }
 }
