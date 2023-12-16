@@ -10,7 +10,8 @@ namespace ExamonimyWeb.Configurations
         {
             builder.HasData(
                 new Role { Id = 1, Name = "Administrator" },
-                new Role { Id = 2, Name = "Student" }
+                new Role { Id = 2, Name = "Teacher" },
+                new Role { Id = 3, Name = "Student" }
                 );
         }
     }
