@@ -5,7 +5,6 @@ using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Services.QuestionService;
 using ExamonimyWeb.Utilities;
 
 namespace ExamonimyWeb.Profiles

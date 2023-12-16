@@ -1,12 +1,11 @@
 ﻿using ExamonimyWeb.DTOs.QuestionDTO;
-using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
 
-namespace ExamonimyWeb.Services.QuestionService
+namespace ExamonimyWeb.Managers.QuestionManager
 {
-    public interface IQuestionService
+    public interface IQuestionManager
     {
         IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> MultipleChoiceQuestionWithOneCorrectAnswerRepository { get; }
         IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> MultipleChoiceQuestionWithMultipleCorrectAnswersRepository { get; }

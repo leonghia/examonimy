@@ -65,14 +65,14 @@ export class QuestionTableComponent {
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionLevel.name}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.course.name}</td>
     <td class="relative whitespace-nowrap py-4 px-3">
-        <a href="#" class="flex items-center gap-2 text-green-600 hover:text-green-800">          
+        <a href="/question/edit/${q.id}" class="flex items-center gap-2 text-green-600 hover:text-green-800">          
             <span class="text-right text-sm font-medium">Sửa</span>
         </a>
     </td>
     <td class="relative whitespace-nowrap py-4 pr-3 pl-3 sm:pr-6">
-        <a href="#" class="flex items-center gap-2 text-red-600 hover:text-red-800">         
+        <button type="button" class="delete-btn flex items-center gap-2 text-red-600 hover:text-red-800">         
             <span class="text-right text-sm font-medium">Xóa</span>
-        </a>
+        </button>
     </td>
 </tr>
             `);

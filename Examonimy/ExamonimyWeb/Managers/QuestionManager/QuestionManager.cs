@@ -8,9 +8,9 @@ using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using System.Linq.Expressions;
 
-namespace ExamonimyWeb.Services.QuestionService
+namespace ExamonimyWeb.Managers.QuestionManager
 {
-    public class QuestionService : IQuestionService
+    public class QuestionManager : IQuestionManager
     {
         private readonly IMapper _mapper;
         private readonly IGenericRepository<Question> _questionRepository;
@@ -18,7 +18,7 @@ namespace ExamonimyWeb.Services.QuestionService
         private readonly IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> _multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
         private readonly IGenericRepository<TrueFalseQuestion> _trueFalseQuestionRepository;
         private readonly IGenericRepository<ShortAnswerQuestion> _shortAnswerQuestionRepository;
-        private readonly IGenericRepository<FillInBlankQuestion> _fillInBlankQuestionRepository;      
+        private readonly IGenericRepository<FillInBlankQuestion> _fillInBlankQuestionRepository;
 
         public IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> MultipleChoiceQuestionWithOneCorrectAnswerRepository => _multipleChoiceQuestionWithOneCorrectAnswerRepository;
 
@@ -30,7 +30,7 @@ namespace ExamonimyWeb.Services.QuestionService
 
         public IGenericRepository<FillInBlankQuestion> FillInBlankQuestionRepository => _fillInBlankQuestionRepository;
 
-        public QuestionService(IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository)
+        public QuestionManager(IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository)
         {
             _mapper = mapper;
             _questionRepository = questionRepository;
@@ -38,7 +38,7 @@ namespace ExamonimyWeb.Services.QuestionService
             _multipleChoiceQuestionWithMultipleCorrectAnswersRepository = multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
             _trueFalseQuestionRepository = trueFalseQuestionRepository;
             _shortAnswerQuestionRepository = shortAnswerQuestionRepository;
-            _fillInBlankQuestionRepository = fillInBlankQuestionRepository;         
+            _fillInBlankQuestionRepository = fillInBlankQuestionRepository;
         }
 
         public async Task<QuestionViewModel?> GetQuestionViewModelAsync(Question question, User user)
@@ -47,7 +47,7 @@ namespace ExamonimyWeb.Services.QuestionService
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
-                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);                   
+                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new MultipleChoiceQuestionWithOneCorrectAnswerViewModel
                     {
                         User = _mapper.Map<UserGetDto>(user),
@@ -65,7 +65,7 @@ namespace ExamonimyWeb.Services.QuestionService
                         ViewName = QuestionTypeNames.MultipleChoiceWithMultipleCorrectAnswers
                     };
                 case (int)QuestionTypeId.TrueFalse:
-                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);                
+                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new TrueFalseQuestionViewModel
                     {
                         User = _mapper.Map<UserGetDto>(user),
@@ -198,7 +198,7 @@ namespace ExamonimyWeb.Services.QuestionService
 
         public async Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class
         {
-            
+
             var questionToCreate = new Question
             {
                 CourseId = questionCreateDto.CourseId,
@@ -208,7 +208,7 @@ namespace ExamonimyWeb.Services.QuestionService
                 AuthorId = authorId
             };
 
-            
+
 
             await _questionRepository.InsertAsync(questionToCreate);
             await _questionRepository.SaveAsync();
@@ -217,6 +217,6 @@ namespace ExamonimyWeb.Services.QuestionService
             await specificQuestionRepository.InsertAsync(specificQuestionToCreate);
             await specificQuestionRepository.SaveAsync();
             return Tuple.Create(questionToCreate.Id, specificQuestionToCreate);
-        }      
+        }
     }
 }

@@ -4,10 +4,10 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
-using ExamonimyWeb.Services.QuestionService;
 using ExamonimyWeb.Utilities;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +25,9 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<QuestionType> _questionTypeRepository;
         private readonly IGenericRepository<QuestionLevel> _questionLevelRepository;       
         private readonly IGenericRepository<Course> _courseRepository;
-        private readonly IQuestionService _questionService;
+        private readonly IQuestionManager _questionManager;
 
-        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<Course> courseRepository, IQuestionService questionService) : base(mapper, questionRepository, userManager)
+        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<Course> courseRepository, IQuestionManager questionManager) : base(mapper, questionRepository, userManager)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -35,7 +35,7 @@ namespace ExamonimyWeb.Controllers
             _questionTypeRepository = questionTypeRepository;
             _questionLevelRepository = questionLevelRepository;          
             _courseRepository = courseRepository;
-            _questionService = questionService;
+            _questionManager = questionManager;
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -87,7 +87,7 @@ namespace ExamonimyWeb.Controllers
             }
 
             var questions = await _questionRepository.GetAsync(questionRequestParams, searchPredicate, filterPredicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
-            var questionsToReturn = await _questionService.GetQuestionsAsync(questions);         
+            var questionsToReturn = await _questionManager.GetQuestionsAsync(questions);         
             
 
             var paginationMetadata = new PaginationMetadata
@@ -124,7 +124,7 @@ namespace ExamonimyWeb.Controllers
             if (question is null)
                 return NotFound();
             var user = await base.GetContextUser();
-            var viewModel = await _questionService.GetQuestionViewModelAsync(question, user);
+            var viewModel = await _questionManager.GetQuestionViewModelAsync(question, user);
             if (viewModel is null)
                 return NotFound();
             return View(viewModel.ViewName, viewModel);
@@ -137,7 +137,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;         
-            var tuple = await _questionService.CreateQuestionAsync(multipleChoiceQuestionWithOneCorrectAnswerCreateDto, _questionService.MultipleChoiceQuestionWithOneCorrectAnswerRepository, authorId);
+            var tuple = await _questionManager.CreateQuestionAsync(multipleChoiceQuestionWithOneCorrectAnswerCreateDto, _questionManager.MultipleChoiceQuestionWithOneCorrectAnswerRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(tuple.Item2));
         }
 
@@ -148,7 +148,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestionAsync(multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, _questionService.MultipleChoiceQuestionWithMultipleCorrectAnswersRepository, authorId);
+            var tuple = await _questionManager.CreateQuestionAsync(multipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, _questionManager.MultipleChoiceQuestionWithMultipleCorrectAnswersRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(tuple.Item2));
         }
 
@@ -159,7 +159,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestionAsync(trueFalseQuestionCreateDto, _questionService.TrueFalseQuestionRepository, authorId);
+            var tuple = await _questionManager.CreateQuestionAsync(trueFalseQuestionCreateDto, _questionManager.TrueFalseQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<TrueFalseQuestionGetDto>(tuple.Item2));
         }
 
@@ -170,7 +170,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await  _questionService.CreateQuestionAsync(shortAnswerQuestionCreateDto, _questionService.ShortAnswerQuestionRepository, authorId);
+            var tuple = await  _questionManager.CreateQuestionAsync(shortAnswerQuestionCreateDto, _questionManager.ShortAnswerQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<ShortAnswerQuestionGetDto>(tuple.Item2));
         }
 
@@ -181,7 +181,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
             var authorId = (await base.GetContextUser()).Id;
-            var tuple = await _questionService.CreateQuestionAsync(fillInBlankQuestionCreateDto, _questionService.FillInBlankQuestionRepository, authorId);
+            var tuple = await _questionManager.CreateQuestionAsync(fillInBlankQuestionCreateDto, _questionManager.FillInBlankQuestionRepository, authorId);
             return CreatedAtRoute("GetQuestionById", new { id = tuple.Item1 }, _mapper.Map<FillInBlankQuestionGetDto>(tuple.Item2));
         }
 
@@ -203,6 +203,32 @@ namespace ExamonimyWeb.Controllers
             var questionLevels = await _questionLevelRepository.GetAsync(null, null, null, null);
             var questionLevelsToReturn = questionLevels.Select(questionLevel => _mapper.Map<QuestionLevelGetDto>(questionLevel));
             return Ok(questionLevelsToReturn);
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("question/edit/{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id)
+        {
+            Expression<Func<Question, bool>> predicate = q => q.Id == id;
+            var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author", "Course", "QuestionType", "QuestionLevel" });
+            if (question is null)
+                return NotFound();
+            var user = await base.GetContextUser();
+            if (question.Author!.Id != user.Id)
+                return Forbid();
+            var coursesToReturn = (await _courseRepository.GetAsync(new RequestParams { PageSize = 12 }, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
+            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var questionLevelsToReturn = (await _questionLevelRepository.GetAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
+            var questionToReturn = _mapper.Map<QuestionGetDto>(question);
+            var editQuestionViewModel = new EditQuestionViewModel
+            {
+                User = _mapper.Map<UserGetDto>(user),
+                Courses = coursesToReturn,
+                QuestionTypes = questionTypesToReturn,
+                QuestionLevels = questionLevelsToReturn,
+                Question = questionToReturn
+            };
+            return View("Edit", editQuestionViewModel);
         }
     }
 }
