@@ -40,7 +40,7 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> RenderIndexView()
         {
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));    
@@ -55,7 +55,7 @@ namespace ExamonimyWeb.Controllers
                 QuestionLevels = questionLevelsToReturn,
                 Courses = coursesToReturn
             };
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -105,7 +105,7 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/create")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> RenderCreateView()
         {                 
             var userGetDto = _mapper.Map<UserGetDto>(await base.GetContextUser());
             var authorizedViewModel = new AuthorizedViewModel
@@ -117,9 +117,9 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/{id}", Name = "GetQuestionById")]
-        public async Task<IActionResult> Single([FromRoute] int id)
+        public async Task<IActionResult> RenderSingleView([FromRoute] int id)
         {
-            if (!await _questionManager.ExistAsync(id))
+            if (!await _questionManager.CheckExistAsync(id))
                 return NotFound();
             var user = await base.GetContextUser();
             var viewModel = await _questionManager.GetQuestionViewModelAsync(id, user);           
@@ -130,10 +130,10 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("api/question/{id}")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            if (!await _questionManager.ExistAsync(id))
+            if (!await _questionManager.CheckExistAsync(id))
                 return NotFound();
             var user = await base.GetContextUser();
-            if (!await _questionManager.IsAuthor(id, user.Id))
+            if (!await _questionManager.IsAuthorAsync(id, user.Id))
                 return Forbid();
             var questionToReturn = await _questionManager.GetSpecificQuestionDtoAsync(id);
             return Ok(questionToReturn);
@@ -216,7 +216,7 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/edit/{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id)
+        public async Task<IActionResult> RenderUpdateView([FromRoute] int id)
         {
             Expression<Func<Question, bool>> predicate = q => q.Id == id;
             var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author", "Course", "QuestionType", "QuestionLevel" });
@@ -236,6 +236,22 @@ namespace ExamonimyWeb.Controllers
                 Question = questionToReturn
             };
             return View("Edit", editQuestionViewModel);
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/question/{id}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] QuestionUpdateDto questionUpdateDto)
+        {
+            var exist = await _questionManager.CheckExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (isAuthor)
+                return Forbid();
+            await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
+            return NoContent();
         }
     }
 }

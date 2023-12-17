@@ -8,7 +8,7 @@
 @model EditQuestionViewModel
 <div>
     @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])  
-    <div class="mb-10 flex justify-center">
+    <div class="mb-20 flex justify-center">
         <div class="w-1/2">
             <div id="question-detail-section" class="flex items-center gap-x-10 mb-12">
                 <div class="basis-72">
@@ -70,6 +70,10 @@
             </div>
             <div id="question-specific-section"></div>
         </div>      
+    </div>
+    <div class="flex justify-end items-center">
+        <a href="/question" class="font-semibold text-violet-700 hover:text-violet-600 mr-8">Hủy</a>
+        <button type="button" id="save-btn" class="rounded-md bg-violet-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"><span class="save-btn-text">Lưu câu hỏi</span></button>
     </div>
 </div>
 

@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Chi tiết câu hỏi";
     Layout = "_TeacherLayout";
-    var answerValues = QuestionAnswerValueHelper.GetAnswerValuesFromFillInBlankCorrectAnswers(Model.Question.CorrectAnswers);
+    var answerValues = Model.Question.CorrectAnswers.ToArray();
 }
 @model FillInBlankQuestionViewModel
 <div>

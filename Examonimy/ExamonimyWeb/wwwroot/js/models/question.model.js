@@ -53,7 +53,7 @@ export class ShortAnswerQuestion extends Question {
 
 export class FillInBlankQuestion extends Question {
 
-    correctAnswers = "";
+    correctAnswers = [""];
 
     constructor() {
         super();
