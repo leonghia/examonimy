@@ -4,23 +4,23 @@ import { BaseComponent } from "./base.component.js";
 export class CourseGridComponent extends BaseComponent {
 
     
-    #courseContainer;
-    #courses;
+    #container;
+    #courses = [new Course()];
     _events = {
-        onClickCourse: []
+        click: []
     }
 
     constructor(courseContainer = new HTMLElement(), courses = [new Course()]) {
         super();
-        this.#courseContainer = courseContainer;
+        this.#container = courseContainer;
         this.#courses = courses;
         
     }
 
     connectedCallback() {
-        this.#courseContainer.innerHTML = this.#render();
+        this.#container.innerHTML = this.#render();
 
-        this.#courseContainer.addEventListener("click", event => {
+        this.#container.addEventListener("click", event => {
             const clickedCourse = event.target.closest(".course-label");
             if (!clickedCourse)
                 return;
@@ -30,24 +30,35 @@ export class CourseGridComponent extends BaseComponent {
             const courseCode = clickedCourse.dataset.courseCode;
             const course = new Course(courseId, courseName, courseCode);
 
-            this._trigger("onClickCourse", course);        
+            this._trigger("click", course);        
         });
     }
 
     populateCourses(courses = [new Course()]) {
         this.#courses = courses;
-        this.#courseContainer.innerHTML = this.#render();
+        this.#container.innerHTML = this.#render();
     }
 
     set courses(data) {
         this.#courses = data;
     }
 
+    highlightCourseById(courseId) {
+        const courseLabelEl = this.#container.querySelector(`#course-label-${courseId}`);
+        if (!courseLabelEl)
+            return;
+        this.#highlightCourse(courseLabelEl);
+    }
+
+    get courses() {
+        return this.#courses;
+    }
+
     #render() {      
         return this.#courses.reduce((accumulator, course) => {
             return accumulator + `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label data-id="${course.id}" data-course-code="${course.courseCode}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
+        <label id="course-label-${course.id}" data-id="${course.id}" data-course-code="${course.courseCode}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
                     <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
@@ -68,8 +79,8 @@ export class CourseGridComponent extends BaseComponent {
         `}, "");
     }
 
-    #highlightCourse(clickedCourse = new HTMLElement()) {
-        const courseLabels = Array.from(this.#courseContainer.querySelectorAll(".course-label"));
+    #highlightCourse(courseLabelElement = new HTMLElement()) {
+        const courseLabels = Array.from(this.#container.querySelectorAll(".course-label"));
         courseLabels.forEach(courseLabel => {
             courseLabel.classList.remove(..."border-violet-600 ring-2 ring-violet-600".split(" "));           
             const checkboxSvg = courseLabel.querySelector(".course-checkbox");
@@ -78,10 +89,10 @@ export class CourseGridComponent extends BaseComponent {
             labelBorder.classList.remove(..."border-2 border-violet-600".split(" "));
             labelBorder.classList.add("border-transparent");
         });      
-        clickedCourse.classList.add(..."border-violet-600 ring-2 ring-violet-600".split(" "));     
-        const checkboxSvg = clickedCourse.querySelector(".course-checkbox");
+        courseLabelElement.classList.add(..."border-violet-600 ring-2 ring-violet-600".split(" "));     
+        const checkboxSvg = courseLabelElement.querySelector(".course-checkbox");
         checkboxSvg.classList.remove("invisible");
-        const labelBorder = clickedCourse.querySelector(".course-border");
+        const labelBorder = courseLabelElement.querySelector(".course-border");
         labelBorder.classList.remove("border-transparent");
         labelBorder.classList.add(..."border-2 border-violet-600".split(" "));  
     }

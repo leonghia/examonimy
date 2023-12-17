@@ -6,7 +6,8 @@ namespace ExamonimyWeb.Repositories.GenericRepository
     public interface IGenericRepository<TEntity> where TEntity : class
     {
         Task<PagedList<TEntity>> GetAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties);
-        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties);      
+        Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties);
+        Task<TEntity?> GetByIdAsync(object id);
         Task InsertAsync(TEntity entity);
         Task InserRangeAsync(List<TEntity> entities);
         void Update(TEntity entity);

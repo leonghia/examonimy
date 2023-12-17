@@ -117,18 +117,27 @@ namespace ExamonimyWeb.Controllers
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("question/{id}", Name = "GetQuestionById")]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> Single([FromRoute] int id)
         {
-            Expression<Func<Question, bool>> predicate = q => q.Id == id;
-            var question = await _questionRepository.GetAsync(predicate, null);
-            if (question is null)
+            if (!await _questionManager.ExistAsync(id))
                 return NotFound();
             var user = await base.GetContextUser();
-            var viewModel = await _questionManager.GetQuestionViewModelAsync(question, user);
-            if (viewModel is null)
-                return NotFound();
+            var viewModel = await _questionManager.GetQuestionViewModelAsync(id, user);           
             return View(viewModel.ViewName, viewModel);
-        }    
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("api/question/{id}")]
+        public async Task<IActionResult> Get([FromRoute] int id)
+        {
+            if (!await _questionManager.ExistAsync(id))
+                return NotFound();
+            var user = await base.GetContextUser();
+            if (!await _questionManager.IsAuthor(id, user.Id))
+                return Forbid();
+            var questionToReturn = await _questionManager.GetSpecificQuestionDtoAsync(id);
+            return Ok(questionToReturn);
+        }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/question/multiplechoicewithonecorrectanswer")]
@@ -215,15 +224,13 @@ namespace ExamonimyWeb.Controllers
                 return NotFound();
             var user = await base.GetContextUser();
             if (question.Author!.Id != user.Id)
-                return Forbid();
-            var coursesToReturn = (await _courseRepository.GetAsync(new RequestParams { PageSize = 12 }, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
+                return Forbid();           
             var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
             var questionLevelsToReturn = (await _questionLevelRepository.GetAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
             var questionToReturn = _mapper.Map<QuestionGetDto>(question);
             var editQuestionViewModel = new EditQuestionViewModel
             {
-                User = _mapper.Map<UserGetDto>(user),
-                Courses = coursesToReturn,
+                User = _mapper.Map<UserGetDto>(user),               
                 QuestionTypes = questionTypesToReturn,
                 QuestionLevels = questionLevelsToReturn,
                 Question = questionToReturn

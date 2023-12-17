@@ -4,6 +4,6 @@ namespace ExamonimyWeb.Models
 {
     public class MultipleChoiceQuestionWithOneCorrectAnswerViewModel : QuestionViewModel
     {
-        public required MultipleChoiceQuestionWithOneCorrectAnswerGetDto SpecificDetail { get; set; }
+        public required MultipleChoiceQuestionWithOneCorrectAnswerGetDto Question { get; set; }
     }
 }

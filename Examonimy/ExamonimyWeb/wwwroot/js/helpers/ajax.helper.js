@@ -33,6 +33,19 @@ export const fetchData = async (routeName = "", requestParams = new RequestParam
     }
 }
 
+export const fetchDataById = async (routeName = "", id = 0) => {
+    try {
+        const res = await fetch(`${BASE_API_URL}/${routeName}/${id}`);
+        if (!res.ok) {
+            throw res;
+        }
+        const data = await res.json();
+        return data;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 export const postData = async (routeName = "", dataToPost) => {
     const url = `${BASE_API_URL}/${routeName}`;
 

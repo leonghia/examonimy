@@ -21,19 +21,19 @@
         <!-- Course info preview -->
         <div class="mb-6">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
-            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.Course.Name</p>
+            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.Course.Name</p>
         </div>
 
         <!-- Question type preview -->
         <div class="mb-6">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
-            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.QuestionType.Name</p>
+            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionType.Name</p>
         </div>
 
         <!-- Question level preview -->
         <div class="mb-6">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
-            <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.GeneralDetail.QuestionLevel.Name</p>
+            <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionLevel.Name</p>
         </div>
 
         <!-- Question content preview -->
@@ -41,7 +41,7 @@
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
             <div class="mt-4">
                 <div class="prose max-w-none text-gray-700">
-                    @Html.Raw(Model.GeneralDetail.QuestionContent)
+                    @Html.Raw(Model.Question.QuestionContent)
                 </div>
                 <fieldset class="mt-4">
                     <legend class="sr-only">Phương án</legend>
@@ -72,7 +72,7 @@
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
             <div id="answer-preview" class="prose max-w-none mt-4 flex items-center gap-x-3 text-sm font-medium">
                 <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-                    <span class="text-white">@Model.SpecificDetail.CorrectAnswer</span>
+                    <span class="text-white">@Model.Question.CorrectAnswer</span>
                 </span>
             </div>
         </div>

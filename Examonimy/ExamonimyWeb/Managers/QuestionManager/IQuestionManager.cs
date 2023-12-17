@@ -13,7 +13,10 @@ namespace ExamonimyWeb.Managers.QuestionManager
         IGenericRepository<ShortAnswerQuestion> ShortAnswerQuestionRepository { get; }
         IGenericRepository<FillInBlankQuestion> FillInBlankQuestionRepository { get; }
         Task<IEnumerable<QuestionGetDto>> GetQuestionsAsync(List<Question> questions);
-        Task<QuestionViewModel?> GetQuestionViewModelAsync(Question question, User user);
+        Task<QuestionGetDto> GetSpecificQuestionDtoAsync(int id);
+        Task<bool> ExistAsync(int questionId);
+        Task<bool> IsAuthor(int questionId, int userId);
+        Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser);
         Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
     }
 }

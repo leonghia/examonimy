@@ -88,5 +88,10 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             await _dbSet.AddRangeAsync(entities);
         }
+
+        public async Task<TEntity?> GetByIdAsync(object id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
     }
 }

@@ -4,6 +4,6 @@ namespace ExamonimyWeb.Models
 {
     public class FillInBlankQuestionViewModel : QuestionViewModel
     {
-        public required FillInBlankQuestionGetDto SpecificDetail { get; set; }
+        public required FillInBlankQuestionGetDto Question { get; set; }
     }
 }

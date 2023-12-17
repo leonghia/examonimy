@@ -7,60 +7,17 @@
 }
 @model EditQuestionViewModel
 <div>
-    @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
-    <div id="course-section" class="mb-10">
-        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", null))
-        <div id="course-grid-container" class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-4 sm:gap-x-4">
-            @foreach (var course in Model.Courses)
-            {
-                if (course.Id == Model.Question.Course.Id)
-                {
-                    <label data-course-id="@course.Id" data-course-code="@course.CourseCode" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none border-violet-600 ring-2 ring-violet-600">
-                        <span class="flex flex-1">
-                            <span class="flex flex-col">
-                                <span class="course-name block text-sm font-medium text-violet-800">@course.Name</span>
-                                <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có đề thi nào được tạo</span>
-                                <span class="mt-6 text-sm font-medium text-gray-900">0 đề thi</span>
-                            </span>
-                        </span>                       
-                        <svg class="course-checkbox h-5 w-5 text-violet-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path>
-                        </svg>                       
-                        <span class="course-border pointer-events-none absolute -inset-px rounded-lg border-2 border-violet-600" aria-hidden="true"></span>
-                    </label>
-                }
-                else
-                {
-                    <label data-course-id="@course.Id" data-course-code="@course.CourseCode" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">
-                        <span class="flex flex-1">
-                            <span class="flex flex-col">
-                                <span class="course-name block text-sm font-medium text-violet-800">@course.Name</span>
-                                <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có đề thi nào được tạo</span>
-                                <span class="mt-6 text-sm font-medium text-gray-900">0 đề thi</span>
-                            </span>
-                        </span>
-                        <svg class="course-checkbox h-5 w-5 text-violet-600 invisible" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="course-border pointer-events-none absolute -inset-px rounded-lg border-transparent" aria-hidden="true"></span>
-                    </label>
-                }               
-            }
-        </div>
-        <div id="pagination-container-for-course-grid">
-
-        </div>
-    </div>
+    @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])  
     <div class="mb-10 flex justify-center">
         <div class="w-1/2">
-            <div id="question-detail-section" class="mt-8 flex items-center gap-x-10">
+            <div id="question-detail-section" class="flex items-center gap-x-10 mb-12">
                 <div class="basis-72">
                     <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
                     <div class="relative mt-2 dropdown-container">
-                        <button type="button" id="question-type-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6">
+                        <button type="button" id="question-type-dropdown-btn" class="dropdown-btn pointer-events-none relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-400 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6">
                             <span class="selected-item block truncate">@Model.Question.QuestionType.Name</span>
                             <span class="absolute inset-y-0 right-0 flex items-center pr-2">
-                                <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <svg class="h-5 w-5 text-gray-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
                                 </svg>
                             </span>
@@ -107,9 +64,15 @@
                     </div>
                 </div>
             </div>
+            <div id="question-content-section" class="mb-10">
+                <label for="question-content" class="block text-sm leading-6 text-gray-700 font-medium mb-4">Nội dung câu hỏi</label>
+                <textarea id="question-content-editor"></textarea>
+            </div>
+            <div id="question-specific-section"></div>
         </div>      
     </div>
 </div>
 
+<script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 <script src="~/js/pages/edit-question.page.js" type="module"></script>
 

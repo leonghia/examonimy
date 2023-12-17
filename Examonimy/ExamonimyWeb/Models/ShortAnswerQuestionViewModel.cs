@@ -4,6 +4,6 @@ namespace ExamonimyWeb.Models
 {
     public class ShortAnswerQuestionViewModel : QuestionViewModel
     {
-        public required ShortAnswerQuestionGetDto SpecificDetail { get; set; }
+        public required ShortAnswerQuestionGetDto Question { get; set; }
     }
 }
