@@ -14,7 +14,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
         IGenericRepository<FillInBlankQuestion> FillInBlankQuestionRepository { get; }
         Task<IEnumerable<QuestionGetDto>> GetQuestionsAsync(List<Question> questions);
         Task<QuestionGetDto> GetSpecificQuestionDtoAsync(int id);
-        Task<bool> CheckExistAsync(int questionId);
+        Task<bool> DoesQuestionExistAsync(int questionId);
         Task<bool> IsAuthorAsync(int questionId, int userId);
         Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser);
         Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;

@@ -1,13 +1,14 @@
 ﻿// Imports
-import { fetchDataById } from "../helpers/ajax.helper.js";
+import { fetchDataById, putData } from "../helpers/ajax.helper.js";
 import { changeHtmlBackgroundColorToWhite, selectDropdownItem, toggleDropdown } from "../helpers/markup.helper.js";
-import { MultipleChoiceQuestionWithOneCorrectAnswerUpdate, QuestionUpdate } from "../models/question-update.model.js";
+import { FillInBlankQuestionUpdate, MultipleChoiceQuestionWithOneCorrectAnswerUpdate, QuestionUpdate, ShortAnswerQuestionUpdate, TrueFalseQuestionUpdate } from "../models/question-update.model.js";
 import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
 import { FillInBlankQuestion, MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithOneCorrectAnswer, Question, QuestionType, ShortAnswerQuestion, TrueFalseQuestion } from "../models/question.model.js";
 import { QuestionTypeIDs } from "../helpers/question.helper.js";
 import { AnswerRadioMultipleChoiceComponent } from "../components/answer-radio-multiple-choice.component.js";
 import { AnswerCheckboxMultipleChoiceComponent } from "../components/answer-checkbox-multiple-choice.component.js";
 import { AnswerRadioTrueFalseComponent } from "../components/answer-radio-true-false.component.js";
+import { BASE_URL } from "../config.js";
 
 // DOM selectors
 const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
@@ -180,6 +181,7 @@ questionLevelDropdown.addEventListener("click", event => {
 });
 
 saveButton.addEventListener("click", async () => {
+    let routeName = "question";
     switch (question.questionType.id) {
         case QuestionTypeIDs.MultipleChoiceWithOneCorrectAnswer:
             questionUpdate = new MultipleChoiceQuestionWithOneCorrectAnswerUpdate();
@@ -190,9 +192,54 @@ saveButton.addEventListener("click", async () => {
             questionUpdate.correctAnswer = question.correctAnswer;
             questionUpdate.questionLevelId = question.questionLevel.id;
             questionUpdate.questionContent = tinymce.get("question-content-editor").getContent();
+            routeName = routeName.concat("/multiplechoicewithonecorrectanswer");
+            break;
+        case QuestionTypeIDs.MultipleChoiceWithMultipleCorrectAnswers:
+            questionUpdate = new MultipleChoiceQuestionWithOneCorrectAnswerUpdate();
+            questionUpdate.choiceA = tinymce.get("choice-a-editor").getContent();
+            questionUpdate.choiceB = tinymce.get("choice-b-editor").getContent();
+            questionUpdate.choiceC = tinymce.get("choice-c-editor").getContent();
+            questionUpdate.choiceD = tinymce.get("choice-d-editor").getContent();
+            questionUpdate.correctAnswers = question.correctAnswers;
+            questionUpdate.questionLevelId = question.questionLevel.id;
+            questionUpdate.questionContent = tinymce.get("question-content-editor").getContent();
+            routeName = routeName.concat("/multiplechoicewithmultiplecorrectanswers");
+            break;
+        case QuestionTypeIDs.TrueFalse:
+            questionUpdate = new TrueFalseQuestionUpdate();
+            questionUpdate.correctAnswer = question.correctAnswer;
+            questionUpdate.questionLevelId = question.questionLevel.id;
+            questionUpdate.questionContent = tinymce.get("question-content-editor").getContent();
+            routeName = routeName.concat("/truefalse");
+            break;
+        case QuestionTypeIDs.ShortAnswer:
+            questionUpdate = new ShortAnswerQuestionUpdate();
+            questionUpdate.correctAnswer = tineymce.get("answer-editor").getContent();
+            questionUpdate.questionLevelId = question.questionLevel.id;
+            questionUpdate.questionContent = tinymce.get("question-content-editor").getContent();
+            routeName = routeName.concat("/shortanswer");
+            break;
+        case QuestionTypeIDs.FillInBlank:
+            questionUpdate = new FillInBlankQuestionUpdate();
+            const correctAnswers = [];
+            const blankAnswers = Array.from(document.querySelectorAll(".blank-answer"));
+            for (let i = 0; i < blankAnswers.length; i++) {
+                const textareaId = `blank-${i + 1}`;
+                correctAnswers.push(tinymce.get(textareaId).getContent());
+            }
+            questionUpdate.correctAnswers = correctAnswers;
+            questionUpdate.questionLevelId = question.questionLevel.id;
+            questionUpdate.questionContent = tinymce.get("question-content-editor").getContent();
+            routeName = routeName.concat("/fillinblank");
             break;
         default:
             break;
+    }
+    try {
+        const res = await putData(routeName, questionId, questionUpdate);
+        window.location.href = `${BASE_URL}/question/${questionId}`;
+    } catch (err) {
+        console.error(err);
     }
 });
 

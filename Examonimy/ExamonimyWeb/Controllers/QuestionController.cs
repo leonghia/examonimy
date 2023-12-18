@@ -119,7 +119,7 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("question/{id}", Name = "GetQuestionById")]
         public async Task<IActionResult> RenderSingleView([FromRoute] int id)
         {
-            if (!await _questionManager.CheckExistAsync(id))
+            if (!await _questionManager.DoesQuestionExistAsync(id))
                 return NotFound();
             var user = await base.GetContextUser();
             var viewModel = await _questionManager.GetQuestionViewModelAsync(id, user);           
@@ -130,7 +130,7 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("api/question/{id}")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            if (!await _questionManager.CheckExistAsync(id))
+            if (!await _questionManager.DoesQuestionExistAsync(id))
                 return NotFound();
             var user = await base.GetContextUser();
             if (!await _questionManager.IsAuthorAsync(id, user.Id))
@@ -239,16 +239,80 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
-        [HttpPut("api/question/{id}")]
+        [HttpPut("api/question/multiplechoicewithonecorrectanswer/{id}")]
         [Consumes("application/json")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] QuestionUpdateDto questionUpdateDto)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] MultipleChoiceQuestionWithOneCorrectAnswerUpdateDto questionUpdateDto)
         {
-            var exist = await _questionManager.CheckExistAsync(id);
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();
             var contextUser = await base.GetContextUser();
             var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
-            if (isAuthor)
+            if (!isAuthor)
+                return Forbid();
+            await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/question/multiplechoicewithmultiplecorrectanswers/{id}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] MultipleChoiceQuestionWithMultipleCorrectAnswersUpdateDto questionUpdateDto)
+        {
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor)
+                return Forbid();
+            await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/question/truefalse/{id}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TrueFalseQuestionUpdateDto questionUpdateDto)
+        {
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor)
+                return Forbid();
+            await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/question/shortanswer/{id}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ShortAnswerQuestionUpdateDto questionUpdateDto)
+        {
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor)
+                return Forbid();
+            await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/question/fillinblank/{id}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] FillInBlankQuestionUpdateDto questionUpdateDto)
+        {
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor)
                 return Forbid();
             await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
             return NoContent();

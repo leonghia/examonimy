@@ -251,7 +251,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             }
         }
 
-        public async Task<bool> CheckExistAsync(int questionId)
+        public async Task<bool> DoesQuestionExistAsync(int questionId)
         {
             return (await _questionRepository.GetByIdAsync(questionId)) is not null;
         }

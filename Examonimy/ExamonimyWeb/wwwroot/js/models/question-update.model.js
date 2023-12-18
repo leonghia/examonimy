@@ -18,3 +18,15 @@ export class MultipleChoiceQuestionWithMultipleCorrectAnswersUpdate extends Ques
     choiceD = "";
     correctAnswers = [""];
 }
+
+export class TrueFalseQuestionUpdate extends QuestionUpdate {
+    correctAnswer = "";
+}
+
+export class ShortAnswerQuestionUpdate extends QuestionUpdate {
+    correctAnswer = "";
+}
+
+export class FillInBlankQuestionUpdate extends QuestionUpdate {
+    correctAnswers = [""];
+}

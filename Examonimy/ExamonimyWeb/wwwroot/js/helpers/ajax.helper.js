@@ -72,3 +72,26 @@ export const postData = async (routeName = "", dataToPost) => {
     }
     
 }
+
+export const putData = async (routeName = "", id = 0, dataToPut) => {
+    const url = `${BASE_API_URL}/${routeName}/${id}`;
+    try {
+        const res = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dataToPut)
+        });
+
+        if (!res.ok) {
+            const problemDetails = new ProblemDetails();
+            Object.assign(problemDetails, await res.json());
+            throw problemDetails;
+        }
+
+
+    } catch (err) {
+        console.error(err);
+    }
+}
