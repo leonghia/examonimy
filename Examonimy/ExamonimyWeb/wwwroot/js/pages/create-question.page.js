@@ -621,7 +621,7 @@ createQuestionButton.addEventListener("click", async () => {
 
 // On load
 changeHtmlBackgroundColorToWhite();
-courseGridComponent.subscribe("onClickCourse", onClickCourseHandler);
+courseGridComponent.subscribe("click", onClickCourseHandler);
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("onClickStep3", onClickStep3Handler);
 stepperComponent.subscribe("onClickStep4", onClickStep4Hanlder);

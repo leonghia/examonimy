@@ -2,4 +2,109 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    ViewData["Title"] = "Chi tiết câu hỏi";
+    Layout = "_TeacherLayout";
 }
+@model MultipleChoiceQuestionWithMultipleCorrectAnswersViewModel
+<div>
+    @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
+    <div class="mt-10 flex justify-end">
+        <a href="/question" class="text-violet-700 hover:text-violet-600 font-semibold inline-flex">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+            </svg>
+            Quay về
+        </a>
+    </div>
+    <div id="question-preview-container" class="mt-10 p-10 bg-white rounded-lg mx-auto w-1/2 space-y-6">
+        <!-- CTA buttons -->
+        <div class="flex items-center justify-end">
+            <a href="/question/edit/@Model.Question.Id" class="mr-6 text-sm font-semibold text-green-700 hover:text-green-600">Sửa</a>
+            <button type="button" id="delete-btn" class="text-sm font-semibold text-red-700 hover:text-red-600">Xóa</button>
+            <div id="modal-container"></div>
+        </div>
+        <!-- Course info preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
+            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.Course.Name</p>
+        </div>
+
+        <!-- Question type preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
+            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionType.Name</p>
+        </div>
+
+        <!-- Question level preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
+            <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionLevel.Name</p>
+        </div>
+
+        <!-- Question content preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Câu hỏi", ""))
+            <div class="mt-4">
+                <div class="prose max-w-none text-gray-700">
+                    @Html.Raw(Model.Question.QuestionContent)
+                </div>
+                <fieldset class="mt-4">
+                    <legend class="sr-only">Phương án</legend>
+                    <div class="space-y-5">
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="ml-3 leading-6 flex">
+                                <label class="font-medium text-gray-900 mr-1">A.</label>
+                                <div class="prose-p:m-0 text-gray-700">@Html.Raw(Model.Question.ChoiceA)</div>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="ml-3 leading-6 flex">
+                                <label class="font-medium text-gray-900 mr-1">B.</label>
+                                <div class="prose-p:m-0 text-gray-700">@Html.Raw(Model.Question.ChoiceB)</div>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="ml-3 leading-6 flex">
+                                <label class="font-medium text-gray-900 mr-1">C.</label>
+                                <div class="prose-p:m-0 text-gray-700">@Html.Raw(Model.Question.ChoiceC)</div>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input name="choices" type="checkbox" class="pointer-events-none rounded h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="ml-3 leading-6 flex">
+                                <label class="font-medium text-gray-900 mr-1">D.</label>
+                                <div class="prose-p:m-0 text-gray-700">@Html.Raw(Model.Question.ChoiceD)</div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <!-- Answer preview -->
+        <div class="mb-6">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Đáp án", ""))
+            <div id="answer-preview" class="prose max-w-none mt-4 flex items-center gap-x-3 text-sm font-medium">
+                @foreach (var correctAnswer in Model.Question.CorrectAnswers)
+                {
+                    <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-600">
+                        <span class="text-white">@correctAnswer</span>
+                    </span>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="~/js/pages/question-single.page.js" type="module"></script>

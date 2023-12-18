@@ -1,10 +1,7 @@
 ﻿namespace ExamonimyWeb.DTOs.QuestionDTO
 {
     public class MultipleChoiceQuestionWithOneCorrectAnswerGetDto : QuestionGetDto
-    {
-                     
-
-        
+    {         
         public required string ChoiceA { get; set; }
 
         
@@ -17,6 +14,6 @@
         public required string ChoiceD { get; set; }
 
         
-        public required byte CorrectAnswer { get; set; }
+        public required char CorrectAnswer { get; set; }
     }
 }

@@ -63,7 +63,10 @@ export const toggleDropdown = (dropdown = new HTMLElement()) => {
     dropdown.classList.toggle("pointer-events-none");
 }
 
-export const selectDropdownItem = (clicked = new HTMLElement()) => {
+export const selectDropdownItem = (event) => {
+    const clicked = (event.target.closest(".dropdown-item"));
+    if (!clicked)
+        return;
     const dropdownItemName = clicked.querySelector(".dropdown-item-name");
     const dropdownContainer = clicked.closest(".dropdown-container");
     dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;

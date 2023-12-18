@@ -1,6 +1,8 @@
 ﻿import { trimQuestionContentMarkup } from "../helpers/question.helper.js";
 import { Question } from "../models/question.model.js";
-
+import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
+import { deleteData } from "../helpers/ajax.helper.js";
+import { BASE_URL } from "../config.js";
 export class QuestionTableComponent {
 
     #container;
@@ -22,6 +24,32 @@ export class QuestionTableComponent {
         } else {
             this.#populateQuestions(this.#tableBody, this.#questions);
         }
+
+        this.#tableBody.addEventListener("click", event => {
+            const clickedDeleteButton = event.target.closest(".delete-btn");
+            if (clickedDeleteButton) {
+                const modalContainer = clickedDeleteButton.parentElement.querySelector(".modal-container");
+                let confirmModalComponent = new ConfirmModalComponent(modalContainer, {
+                    title: "Xóa câu hỏi",
+                    description: "Bạn có chắc chắn muốn xóa câu hỏi này không? Câu hỏi sau khi bị xóa sẽ không thể khôi phục lại.",
+                    ctaText: "Xác nhận"
+                });
+                confirmModalComponent.connectedCallback();
+                confirmModalComponent.subscribe("cancel", () => {
+                    confirmModalComponent.disconnectedCallback();
+                    confirmModalComponent = undefined;
+                });
+                confirmModalComponent.subscribe("confirm", async () => {
+                    const questionId = Number(clickedDeleteButton.dataset.questionId);
+                    try {
+                        await deleteData("question", questionId);
+                        window.location.reload();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                })
+            }
+        });
     }
 
     set questions(value = [new Question()]) {
@@ -44,16 +72,7 @@ export class QuestionTableComponent {
           <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
           </svg>
-          <h3 class="mt-2 text-sm font-semibold text-gray-900">Chưa có câu hỏi</h3>
-          <p class="mt-1 text-sm text-gray-500">Bắt đầu bằng việc tạo một câu hỏi mới.</p>
-          <div class="mt-6">
-            <a href="/question/create" class="inline-flex items-center rounded-md bg-violet-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
-              <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-              </svg>
-              Tạo câu hỏi
-            </a>
-          </div>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">Không có câu hỏi nào</h3>               
         </div>
     </td>
 </tr>
@@ -67,28 +86,22 @@ export class QuestionTableComponent {
 <tr class="">
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + i}</td>
     <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
-        <div class="font-medium text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</div>
+        <a href="/question/${q.id}" class="font-medium text-violet-700 hover:text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</a>
         <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author.fullName}</a></div>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionType.name}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionLevel.name}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.course.name}</td>
     <td class="relative whitespace-nowrap py-4 px-3">
-        <a href="#" class="flex items-center gap-2 text-green-500 hover:text-green-800">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-            </svg>
+        <a href="/question/edit/${q.id}" class="flex items-center gap-2 text-green-600 hover:text-green-800">          
             <span class="text-right text-sm font-medium">Sửa</span>
         </a>
     </td>
     <td class="relative whitespace-nowrap py-4 pr-3 pl-3 sm:pr-6">
-        <a href="#" class="flex items-center gap-2 text-red-500 hover:text-red-800">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />
-            </svg>
+        <button type="button" data-question-id="${q.id}" class="delete-btn flex items-center gap-2 text-red-600 hover:text-red-800">         
             <span class="text-right text-sm font-medium">Xóa</span>
-        </a>
+        </button>
+        <div class="modal-container whitespace-normal"></div>
     </td>
 </tr>
             `);

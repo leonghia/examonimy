@@ -465,6 +465,11 @@ namespace ExamonimyWeb.Migrations
                         new
                         {
                             Id = 2,
+                            Name = "Teacher"
+                        },
+                        new
+                        {
+                            Id = 3,
                             Name = "Student"
                         });
                 });
@@ -566,15 +571,15 @@ namespace ExamonimyWeb.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "leonghiacnn@gmail.com",
-                            FullName = "Lã Trọng Nghĩa",
-                            NormalizedEmail = "LEONGHIACNN@GMAIL.COM",
-                            NormalizedUsername = "NGHIALA1998",
-                            PasswordHash = "391A2E69E9329F0A3AB2E3D62C3D64E8244DF930930F39C2622C7754261A4720CB700C29ACDD04E9E89AB16B8EB4E259322AC0301329EB87D5B2BCDE823D1F93",
-                            PasswordSalt = "AC3E6AED4BEC05912F01C3427A387E899E2AB635424DD5014F28F997B4917D761C838A9C94FD732C440ED635342B3BF607076ED621C745726AC44AB5856297F0",
+                            Email = "hoatq@fpt.edu.vn",
+                            FullName = "Trịnh Quang Hòa",
+                            NormalizedEmail = "HOATQ@FPT.EDU.VN",
+                            NormalizedUsername = "HOATQ",
+                            PasswordHash = "3DE4B9595AB74AD7812DE0A961E12034C27DE2389246507D66972BB68E4C4AF5C7ACFFEE31F2BB4964F4D744E9D730AC47C6DFB53BE9D2C5863D07BEDF49207C",
+                            PasswordSalt = "8CEEBAC27561894CBEC7BD790F66F070433EB7D67815E7DD79E70C23D0CECA4F50872701E70C52B085D8CF2EA13B13C7CE77EC005F45EE44884E14180EAB6101",
                             ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
-                            RoleId = 1,
-                            Username = "nghiala1998"
+                            RoleId = 2,
+                            Username = "hoatq"
                         },
                         new
                         {
@@ -583,10 +588,10 @@ namespace ExamonimyWeb.Migrations
                             FullName = "Trịnh Văn Phúc",
                             NormalizedEmail = "PHUCTV1112004@GMAIL.COM",
                             NormalizedUsername = "PHUCTRINH2004",
-                            PasswordHash = "36AE25668DAED2238A99B4720199D450A3346146CB9340F3479F05ED5E0F744A4DB654211C0F36CB121F323AF0FAE4800343C46F1DB84768C638DF5A187B8A13",
-                            PasswordSalt = "536679D3AA38172A5AAF59E081F3F7E9553BC1310ECF50C8373A7AEDBDF14ACD2DB0A3A89CAFD61A682187051CBE6A97FCAD757FBAE0C9EEDE624504EDA9692A",
+                            PasswordHash = "FFE89A4976DADBB643B988DD320A89FBA90186E67185C65014674150312E2EF142DC70128500EBAAF193E6DBBABC30BDF2C13B468AE04B70CC573AEA93EA1CBC",
+                            PasswordSalt = "478823C8496A845A84F7169983F2274768410B044B534624C5455847E59B4DEA4BC30B3E1214278A88D57ED8D587E7933BC3E272560E50E9BF79374BEA5E10A7",
                             ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
-                            RoleId = 1,
+                            RoleId = 3,
                             Username = "phuctrinh2004"
                         },
                         new
@@ -596,10 +601,10 @@ namespace ExamonimyWeb.Migrations
                             FullName = "Nguyễn Thị Hương",
                             NormalizedEmail = "NGUYENHUONGG1104@GMAIL.COM",
                             NormalizedUsername = "HUONGNGUYEN2004",
-                            PasswordHash = "6317B1D7F11DA0E61045335C5C83D062112BA0EEE43219061EF2BC1541BCCD2852744022B1C296E714B49F777FDF84E51DB05B909E6502DB304321132A99BA76",
-                            PasswordSalt = "8D16ADB8FBAE825F2D8DA8CCF17FB0DC42DF1D86AFF8BFF00A316007A100381783D81F8C3EF02C3AF90BC328B6A76EEFB855085D20EFB50C896C7584E227A7B7",
+                            PasswordHash = "3F454F2A5B1DFC75E9857FBC161248D0B253DF34D6A6A0438AB5221A9BCC9ABB7CE694B45844335996E566A3099DCB95D49A026ACF3DE8B4BF5861B82437964E",
+                            PasswordSalt = "B63C8F247FBDA298C5ACDDD4D4A04CFC3443B68E0C24125152171A8FDDEDF7D267A32F5673B7A4C35D586A9C9249D53BA2903365FADA567C81F3C7D167417D25",
                             ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
-                            RoleId = 1,
+                            RoleId = 3,
                             Username = "huongnguyen2004"
                         },
                         new
@@ -609,10 +614,10 @@ namespace ExamonimyWeb.Migrations
                             FullName = "Trịnh Đình Quốc",
                             NormalizedEmail = "DRAOGON10A3@GMAIL.COM",
                             NormalizedUsername = "QUOCTRINH2004",
-                            PasswordHash = "B60B5C3A436010ACA88D81006A2364C14DABADC47B687F126ECA6BEB2CDC54FF836E170E647EE2850305FF73807B3554C3A43F1B398E8979E097286C2C5BBCE9",
-                            PasswordSalt = "583757789C9A553ED1059C48FD33F7D45F96E9C33105223A4E80E5D2BB7294517F566DFAE8FF5EC386C79F98472A89A3E0324E5C5D108CDC97817DCCAD5CC4EB",
+                            PasswordHash = "B625F65BF141FD751A825DDD5F30191BC991E151080FFD936CB5AF068C8E139B39C7790116EA28A1D2607860026020417B5940203B33547B8AE5D14C3C40EE5E",
+                            PasswordSalt = "D176E4990D830E111546DDDAB84BB4BA162E0E9330FFF7C68DB58B75B662EA10B03ADB5A48EF644E2ED514FE669EF7D4049731016B01914FDF463D3147CCF3B4",
                             ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
-                            RoleId = 2,
+                            RoleId = 3,
                             Username = "quoctrinh2004"
                         },
                         new
@@ -622,10 +627,10 @@ namespace ExamonimyWeb.Migrations
                             FullName = "Nguyễn Hữu Hùng",
                             NormalizedEmail = "N2H1706@GMAIL.COM",
                             NormalizedUsername = "HUNGNGUYEN1998",
-                            PasswordHash = "65D2AF359B7FE0FB96EEAB639162FDFE459EFD24EF5CB67A02F2977DCC97591F51EAE398F1944B7D48972B82A5990E4403B94B9E1D396F980D99B299B08CD25E",
-                            PasswordSalt = "992AD4C77398715DE957FBA0729BFBD157B3CD48153B02C7B954C90EE60895ED0A5F8CE79361FB67D18722F98042145D2D4C3FE08B36BD535E5956BAC3D06DCC",
+                            PasswordHash = "63D07A66A6A2E4E21DD596E7CDB3BF41A98AB650D126A711DA3A0964BA4F2E5E44D6E2BDE5E7CFCF8E8EC3E140AE696F7B78EE8ED1E8CDC1A71ABCDFC7E74718",
+                            PasswordSalt = "72DD616EFAB58FBF1CD612E190B2D1BBC3B7D70D7E75872DFA07C47E7A01884A0063F3418CF4483C8BBC86DF2C617B057BBA6187B3E5148D9540F6D170BE4823",
                             ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
-                            RoleId = 2,
+                            RoleId = 3,
                             Username = "hungnguyen1998"
                         });
                 });

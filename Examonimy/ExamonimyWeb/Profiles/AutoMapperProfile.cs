@@ -5,11 +5,14 @@ using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Utilities;
 
 namespace ExamonimyWeb.Profiles
 {
     public class AutoMapperProfile : Profile
     {
+        
+
         public AutoMapperProfile()
         {
             CreateMap<UserRegisterDto, User>()
@@ -26,14 +29,48 @@ namespace ExamonimyWeb.Profiles
             CreateMap<ShortAnswerQuestionCreateDto, ShortAnswerQuestion>();
             CreateMap<FillInBlankQuestionCreateDto, FillInBlankQuestion>();
             CreateMap<Question, QuestionGetDto>();
-            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswer, MultipleChoiceQuestionWithOneCorrectAnswerGetDto>();
-            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>();
-            CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>();
-            CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>();
-            CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>();
+            CreateMap<MultipleChoiceQuestionWithOneCorrectAnswer, MultipleChoiceQuestionWithOneCorrectAnswerGetDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Question!.Course))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType))
+                .ForMember(dest => dest.QuestionLevel, opt => opt.MapFrom(src => src.Question!.QuestionLevel))
+                .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author))
+                .ForMember(dest => dest.CorrectAnswer, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValueFromByte(src.CorrectAnswer)));
+            CreateMap<MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Question!.Course))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType))
+                .ForMember(dest => dest.QuestionLevel, opt => opt.MapFrom(src => src.Question!.QuestionLevel))
+                .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author))
+                .ForMember(dest => dest.CorrectAnswers, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValuesFromStringForChoices(src.CorrectAnswers)));
+            CreateMap<TrueFalseQuestion, TrueFalseQuestionGetDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Question!.Course))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType))
+                .ForMember(dest => dest.QuestionLevel, opt => opt.MapFrom(src => src.Question!.QuestionLevel))
+                .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author))
+                .ForMember(dest => dest.CorrectAnswer, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValueFromBool(src.CorrectAnswer)));
+            CreateMap<ShortAnswerQuestion, ShortAnswerQuestionGetDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Question!.Course))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType))
+                .ForMember(dest => dest.QuestionLevel, opt => opt.MapFrom(src => src.Question!.QuestionLevel))
+                .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author));
+            CreateMap<FillInBlankQuestion, FillInBlankQuestionGetDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Course, opt => opt.MapFrom(src => src.Question!.Course))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType))
+                .ForMember(dest => dest.QuestionLevel, opt => opt.MapFrom(src => src.Question!.QuestionLevel))
+                .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
+                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author))
+                .ForMember(dest => dest.CorrectAnswers, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValuesFromStringForBlanks(src.CorrectAnswers)));
             CreateMap<ExamPaper, ExamPaperGetDto>();
             CreateMap<ExamPaperCreateDto, ExamPaper>();
-            CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();
+            CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();        
         }
     }
 }

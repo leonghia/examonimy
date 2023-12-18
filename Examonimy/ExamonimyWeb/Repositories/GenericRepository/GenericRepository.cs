@@ -23,7 +23,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 return await _dbSet.CountAsync(filterPredicate);
             else
                 return await _dbSet.CountAsync();
-        }
+        }       
 
         public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties)
         {
@@ -87,6 +87,16 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         public async Task InserRangeAsync(List<TEntity> entities)
         {
             await _dbSet.AddRangeAsync(entities);
+        }
+
+        public async Task<TEntity?> GetByIdAsync(object id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
+        public void Delete(TEntity entity)
+        {
+            _dbSet.Remove(entity);
         }
     }
 }

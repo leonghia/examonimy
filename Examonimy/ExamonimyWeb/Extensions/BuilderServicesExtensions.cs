@@ -1,15 +1,13 @@
-﻿using ExamonimyWeb.Attributes;
-using ExamonimyWeb.DatabaseContexts;
+﻿using ExamonimyWeb.DatabaseContexts;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
-using ExamonimyWeb.Services.QuestionService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -112,7 +110,7 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();
-            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IQuestionManager, QuestionManager>();           
             
         }
     }

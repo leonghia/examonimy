@@ -3,14 +3,14 @@ import { GetResponse } from "../models/get-response.model.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 
-export const fetchData = async (routeName = "", requestParams = new RequestParams()) => {
+export const fetchData = async (route = "", requestParams = new RequestParams()) => {
     const getResponse = new GetResponse();
-    const url = new URL(`${BASE_API_URL}/${routeName}`);
-    if (requestParams.searchQuery)
-        url.searchParams.set("searchQuery", requestParams.searchQuery);
-    url.searchParams.set("pageSize", requestParams.pageSize);
-    url.searchParams.set("pageNumber", requestParams.pageNumber);    
-
+    const url = new URL(`${BASE_API_URL}/${route}`);
+    for (const [k, v] of Object.entries(requestParams)) {
+        if (v) {
+            url.searchParams.set(k, v);
+        }
+    }
     try {
         const res = await fetch(url);
 
@@ -33,8 +33,21 @@ export const fetchData = async (routeName = "", requestParams = new RequestParam
     }
 }
 
-export const postData = async (routeName = "", dataToPost) => {
-    const url = `${BASE_API_URL}/${routeName}`;
+export const fetchDataById = async (route = "", id = 0) => {
+    try {
+        const res = await fetch(`${BASE_API_URL}/${route}/${id}`);
+        if (!res.ok) {
+            throw res;
+        }
+        const data = await res.json();
+        return data;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export const postData = async (route = "", dataToPost) => {
+    const url = `${BASE_API_URL}/${route}`;
 
     try {
         const res = await fetch(url, {
@@ -58,4 +71,44 @@ export const postData = async (routeName = "", dataToPost) => {
         console.error(err);
     }
     
+}
+
+export const putData = async (route = "", id = 0, dataToPut) => {
+    const url = `${BASE_API_URL}/${route}/${id}`;
+    try {
+        const res = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dataToPut)
+        });
+
+        if (!res.ok) {
+            const problemDetails = new ProblemDetails();
+            Object.assign(problemDetails, await res.json());
+            throw problemDetails;
+        }
+
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export const deleteData = async (route = "", id = 0) => {
+    const url = `${BASE_API_URL}/${route}/${id}`;
+    try {
+        const res = await fetch(url, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            const problemDetails = new ProblemDetails();
+            Object.assign(problemDetails, await res.json());
+            throw problemDetails;
+        }
+    } catch (err) {
+        console.error(err);
+    }
 }

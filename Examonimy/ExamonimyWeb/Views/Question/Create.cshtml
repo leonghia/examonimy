@@ -2,8 +2,8 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewData["Title"] = "Create new question";
-    Layout = "_AdminSidebar";
+    ViewData["Title"] = "Tạo câu hỏi mới";
+    Layout = "_TeacherLayout";
 }
 <div>
     @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
@@ -41,18 +41,7 @@
                                         <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
                                     </svg>
                                 </span>
-                            </button>
-
-                            <!--
-                              Select popover, show/hide based on select state.
-
-                              Entering: ""
-                                From: ""
-                                To: ""
-                              Leaving: "transition ease-in duration-100"
-                                From: "opacity-100"
-                                To: "opacity-0"
-                            -->
+                            </button>                          
                             <ul id="question-type-dropdown" class="dropdown cursor-pointer opacity-0 pointer-events-none absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
                             </ul>
                         </div>
@@ -67,18 +56,7 @@
                                         <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
                                     </svg>
                                 </span>
-                            </button>
-
-                            <!--
-                              Select popover, show/hide based on select state.
-
-                              Entering: ""
-                                From: ""
-                                To: ""
-                              Leaving: "transition ease-in duration-100"
-                                From: "opacity-100"
-                                To: "opacity-0"
-                            -->
+                            </button>                           
                             <ul id="question-level-dropdown" class="dropdown cursor-pointer pointer-events-none opacity-0 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md shadow-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
                             </ul>
                         </div>
