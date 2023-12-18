@@ -1,6 +1,8 @@
 ﻿import { trimQuestionContentMarkup } from "../helpers/question.helper.js";
 import { Question } from "../models/question.model.js";
-
+import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
+import { deleteData } from "../helpers/ajax.helper.js";
+import { BASE_URL } from "../config.js";
 export class QuestionTableComponent {
 
     #container;
@@ -22,6 +24,32 @@ export class QuestionTableComponent {
         } else {
             this.#populateQuestions(this.#tableBody, this.#questions);
         }
+
+        this.#tableBody.addEventListener("click", event => {
+            const clickedDeleteButton = event.target.closest(".delete-btn");
+            if (clickedDeleteButton) {
+                const modalContainer = clickedDeleteButton.parentElement.querySelector(".modal-container");
+                let confirmModalComponent = new ConfirmModalComponent(modalContainer, {
+                    title: "Xóa câu hỏi",
+                    description: "Bạn có chắc chắn muốn xóa câu hỏi này không? Câu hỏi sau khi bị xóa sẽ không thể khôi phục lại.",
+                    ctaText: "Xác nhận"
+                });
+                confirmModalComponent.connectedCallback();
+                confirmModalComponent.subscribe("cancel", () => {
+                    confirmModalComponent.disconnectedCallback();
+                    confirmModalComponent = undefined;
+                });
+                confirmModalComponent.subscribe("confirm", async () => {
+                    const questionId = Number(clickedDeleteButton.dataset.questionId);
+                    try {
+                        await deleteData("question", questionId);
+                        window.location.reload();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                })
+            }
+        });
     }
 
     set questions(value = [new Question()]) {
@@ -70,9 +98,10 @@ export class QuestionTableComponent {
         </a>
     </td>
     <td class="relative whitespace-nowrap py-4 pr-3 pl-3 sm:pr-6">
-        <button type="button" class="delete-btn flex items-center gap-2 text-red-600 hover:text-red-800">         
+        <button type="button" data-question-id="${q.id}" class="delete-btn flex items-center gap-2 text-red-600 hover:text-red-800">         
             <span class="text-right text-sm font-medium">Xóa</span>
         </button>
+        <div class="modal-container whitespace-normal"></div>
     </td>
 </tr>
             `);

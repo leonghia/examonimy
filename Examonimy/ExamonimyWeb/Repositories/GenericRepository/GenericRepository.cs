@@ -93,5 +93,10 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             return await _dbSet.FindAsync(id);
         }
+
+        public void Delete(TEntity entity)
+        {
+            _dbSet.Remove(entity);
+        }
     }
 }

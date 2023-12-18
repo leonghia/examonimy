@@ -19,5 +19,6 @@ namespace ExamonimyWeb.Managers.QuestionManager
         Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser);
         Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
         Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto);
+        Task DeleteThenSaveAsync(int id);
     }
 }

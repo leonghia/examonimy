@@ -20,7 +20,8 @@
         <!-- CTA buttons -->
         <div class="flex items-center justify-end">
             <a href="/question/edit/@Model.Question.Id" class="mr-6 text-sm font-semibold text-green-700 hover:text-green-600">Sửa</a>
-            <a href="/question/delete/@Model.Question.Id" class="text-sm font-semibold text-red-700 hover:text-red-600">Xóa</a>
+            <button type="button" id="delete-btn" class="text-sm font-semibold text-red-700 hover:text-red-600">Xóa</button>
+            <div id="modal-container"></div>
         </div>
         <!-- Course info preview -->
         <div class="mb-6">
@@ -60,3 +61,4 @@
 
     </div>
 </div>
+<script src="~/js/pages/question-single.page.js" type="module"></script>

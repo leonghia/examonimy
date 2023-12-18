@@ -3,9 +3,9 @@ import { GetResponse } from "../models/get-response.model.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 import { RequestParams } from "../models/request-params.model.js";
 
-export const fetchData = async (routeName = "", requestParams = new RequestParams()) => {
+export const fetchData = async (route = "", requestParams = new RequestParams()) => {
     const getResponse = new GetResponse();
-    const url = new URL(`${BASE_API_URL}/${routeName}`);
+    const url = new URL(`${BASE_API_URL}/${route}`);
     for (const [k, v] of Object.entries(requestParams)) {
         if (v) {
             url.searchParams.set(k, v);
@@ -33,9 +33,9 @@ export const fetchData = async (routeName = "", requestParams = new RequestParam
     }
 }
 
-export const fetchDataById = async (routeName = "", id = 0) => {
+export const fetchDataById = async (route = "", id = 0) => {
     try {
-        const res = await fetch(`${BASE_API_URL}/${routeName}/${id}`);
+        const res = await fetch(`${BASE_API_URL}/${route}/${id}`);
         if (!res.ok) {
             throw res;
         }
@@ -46,8 +46,8 @@ export const fetchDataById = async (routeName = "", id = 0) => {
     }
 }
 
-export const postData = async (routeName = "", dataToPost) => {
-    const url = `${BASE_API_URL}/${routeName}`;
+export const postData = async (route = "", dataToPost) => {
+    const url = `${BASE_API_URL}/${route}`;
 
     try {
         const res = await fetch(url, {
@@ -73,8 +73,8 @@ export const postData = async (routeName = "", dataToPost) => {
     
 }
 
-export const putData = async (routeName = "", id = 0, dataToPut) => {
-    const url = `${BASE_API_URL}/${routeName}/${id}`;
+export const putData = async (route = "", id = 0, dataToPut) => {
+    const url = `${BASE_API_URL}/${route}/${id}`;
     try {
         const res = await fetch(url, {
             method: "PUT",
@@ -91,6 +91,23 @@ export const putData = async (routeName = "", id = 0, dataToPut) => {
         }
 
 
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export const deleteData = async (route = "", id = 0) => {
+    const url = `${BASE_API_URL}/${route}/${id}`;
+    try {
+        const res = await fetch(url, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            const problemDetails = new ProblemDetails();
+            Object.assign(problemDetails, await res.json());
+            throw problemDetails;
+        }
     } catch (err) {
         console.error(err);
     }

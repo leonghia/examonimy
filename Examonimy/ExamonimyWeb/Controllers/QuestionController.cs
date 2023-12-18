@@ -317,5 +317,20 @@ namespace ExamonimyWeb.Controllers
             await _questionManager.UpdateThenSaveAsync(id, questionUpdateDto);
             return NoContent();
         }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpDelete("api/question/{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var exist = await _questionManager.DoesQuestionExistAsync(id);
+            if (!exist)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _questionManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor)
+                return Forbid();
+            await _questionManager.DeleteThenSaveAsync(id);
+            return NoContent();
+        }
     }
 }

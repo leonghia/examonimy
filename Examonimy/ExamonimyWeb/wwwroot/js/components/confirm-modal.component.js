@@ -1,18 +1,25 @@
 ﻿import { BaseComponent } from "./base.component.js";
+import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
 
 export class ConfirmModalComponent extends BaseComponent {
     #container;
     #option = {
         title: "",
         description: "",
-        ctaText: ""
+        ctaText: "",
+        href: ""
     }
 
     _events = {
-        cancel: []
+        cancel: [],
+        confirm: []
     }
 
-    constructor(container = new HTMLElement(), option = { title: "", description: "", ctaText: "" }) {
+    #cancelButton;
+    #confirmButton;
+
+    constructor(container = new HTMLElement(), option = { title: "", description: "", ctaText: "", href: "" }) {
         super();
         this.#container = container;
         this.#option = option;
@@ -20,6 +27,25 @@ export class ConfirmModalComponent extends BaseComponent {
 
     connectedCallback() {
         this.#container.innerHTML = this.#render();
+        this.#cancelButton = this.#container.querySelector("#cancel-btn");
+        this.#confirmButton = this.#container.querySelector("#confirm-btn");
+
+        this.#confirmButton.addEventListener("click", async () => {
+            const spinnerOption = new SpinnerOption();
+            spinnerOption.fill = "fill-red-600";
+            showSpinnerForButton(this.#confirmButton.querySelector("#button-text"), this.#confirmButton, spinnerOption);
+            await this._trigger("confirm");
+            hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector("#button-text"), spinnerOption);
+        });
+
+        this.#cancelButton.addEventListener("click", () => {
+            this.#container.innerHTML = "";
+            this._trigger("cancel");
+        });
+    }  
+
+    disconnectedCallback() {
+        this.#container.innerHTML = "";
     }
 
     #render() {
@@ -66,8 +92,8 @@ export class ConfirmModalComponent extends BaseComponent {
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">${this.#option.ctaText}</button>
-          <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Hủy</button>
+          <button type="button" id="confirm-btn" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"><span id="button-text">${this.#option.ctaText}</span></button>
+          <button type="button" id="cancel-btn" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Hủy</button>
         </div>
       </div>
     </div>

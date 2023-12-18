@@ -45,9 +45,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
-            var question = await _questionRepository.GetByIdAsync(questionId);
-            if (question is null)
-                throw new ArgumentException(null, nameof(questionId));
+            var question = await _questionRepository.GetByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
@@ -221,9 +219,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<QuestionGetDto> GetSpecificQuestionDtoAsync(int id)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
-            var question = await _questionRepository.GetByIdAsync(id);
-            if (question is null)
-                throw new ArgumentException(null, nameof(id));
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
@@ -259,17 +255,13 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<bool> IsAuthorAsync(int questionId, int userId)
         {
             Expression<Func<Question, bool>> predicate = q => q.Id == questionId;
-            var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author" });
-            if (question is null)
-                throw new ArgumentException(null, nameof(questionId));
+            var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(questionId));
             return question.Author!.Id == userId;
         }
 
         public async Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto)
         {
-            var question = await _questionRepository.GetByIdAsync(id);
-            if (question is null)
-                throw new ArgumentException(null, nameof(id));
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
             question.QuestionLevelId = questionUpdateDto.QuestionLevelId;
             question.QuestionContent = questionUpdateDto.QuestionContent;
             _questionRepository.Update(question);
@@ -277,9 +269,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
-                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetByIdAsync(id);
-                    if (specificQuestion1 is null)
-                        throw new ArgumentException(null, nameof(id));
+                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp1 = questionUpdateDto as MultipleChoiceQuestionWithOneCorrectAnswerUpdateDto;
                     specificQuestion1.ChoiceA = temp1!.ChoiceA;
                     specificQuestion1.ChoiceB = temp1.ChoiceB;
@@ -290,9 +280,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     await _multipleChoiceQuestionWithOneCorrectAnswerRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
-                    var specificQueston2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetByIdAsync(id);
-                    if (specificQueston2 is null)
-                        throw new ArgumentException(null, nameof(id));
+                    var specificQueston2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp2 = questionUpdateDto as MultipleChoiceQuestionWithMultipleCorrectAnswersUpdateDto;
                     specificQueston2.ChoiceA = temp2!.ChoiceA;
                     specificQueston2.ChoiceB = temp2.ChoiceB;
@@ -303,27 +291,21 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.TrueFalse:
-                    var specificQuestion3 = await _trueFalseQuestionRepository.GetByIdAsync(id);
-                    if (specificQuestion3 is null)
-                        throw new ArgumentException(null, nameof(id));
+                    var specificQuestion3 = await _trueFalseQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp3 = questionUpdateDto as TrueFalseQuestionUpdateDto;
                     specificQuestion3.CorrectAnswer = QuestionAnswerValueHelper.GetAnswerValueFromCharForTrueFalse(temp3!.CorrectAnswer);
                     _trueFalseQuestionRepository.Update(specificQuestion3);
                     await _trueFalseQuestionRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.ShortAnswer:
-                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetByIdAsync(id);
-                    if (specificQuestion4 is null)
-                        throw new ArgumentException(null, nameof(id));
+                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp4 = questionUpdateDto as ShortAnswerQuestionUpdateDto;
                     specificQuestion4.CorrectAnswer = temp4!.CorrectAnswer;
                     _shortAnswerQuestionRepository.Update(specificQuestion4);
                     await _shortAnswerQuestionRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.FillInBlank:
-                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetByIdAsync(id);
-                    if (specificQuestion5 is null)
-                        throw new ArgumentException(null, nameof(id));
+                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp5 = questionUpdateDto as FillInBlankQuestionUpdateDto;
                     specificQuestion5.CorrectAnswers = QuestionAnswerValueHelper.GetAnswerValuesFromListOfStringForBlanks(temp5!.CorrectAnswers.ToList());
                     _fillInBlankQuestionRepository.Update(specificQuestion5);
@@ -332,6 +314,13 @@ namespace ExamonimyWeb.Managers.QuestionManager
                 default:
                     throw new SwitchExpressionException(question.QuestionTypeId);
             };           
+        }
+
+        public async Task DeleteThenSaveAsync(int id)
+        {
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+            _questionRepository.Delete(question);
+            await _questionRepository.SaveAsync();
         }
     }
 }
