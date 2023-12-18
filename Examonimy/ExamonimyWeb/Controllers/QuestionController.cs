@@ -112,7 +112,7 @@ namespace ExamonimyWeb.Controllers
             {
                 User = userGetDto
             };
-            return View(authorizedViewModel);
+            return View("Create", authorizedViewModel);
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]

@@ -3,7 +3,7 @@ import { Question } from "../models/question.model.js";
 import { SimplePaginationComponent } from "./simple-pagination.component.js";
 import { trimMarkup } from "../helpers/markup.helper.js";
 import { fetchData } from "../helpers/ajax.helper.js";
-import { QuestionPreviewComponent } from "./question-preview.component.js";
+import { QuestionDetailComponent } from "./question-detail.component.js";
 import { RequestParams } from "../models/request-params.model.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
@@ -18,7 +18,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #questionListContainerForPalette;
     #questionPreviewContainer;
     #questionPreviewWrapper;
-    #questionPreviewComponent = new QuestionPreviewComponent();
+    #questionPreviewComponent = new QuestionDetailComponent();
     #backLink;
     #disabledQuestionIds = [0];
     #searchForm;
@@ -41,15 +41,15 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#searchForm = this.#container.querySelector("#search-form");
         this.#searchInput = this.#container.querySelector("#search-input");
 
-        this.#questionPreviewComponent = new QuestionPreviewComponent(this.#questionPreviewWrapper);
+        this.#questionPreviewComponent = new QuestionDetailComponent(this.#questionPreviewWrapper);
 
         this.#paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
         this.#paginationComponent.currentPage = this.#currentPage;
         this.#paginationComponent.totalPages = this.#totalPages;
         this.#paginationComponent.connectedCallback();
 
-        this.#paginationComponent.subscribe("onNext", this.navigateHandler.bind(this));
-        this.#paginationComponent.subscribe("onPrev", this.navigateHandler.bind(this));       
+        this.#paginationComponent.subscribe("next", this.navigateHandler.bind(this));
+        this.#paginationComponent.subscribe("prev", this.navigateHandler.bind(this));       
 
         this.#questionListContainerForPalette.addEventListener("click", event => {
             const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
@@ -115,7 +115,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         const index = this.#disabledQuestionIds.indexOf(questionId);
         if (index > -1) {
             this.#disabledQuestionIds.splice(index, 1);
-            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.remove(..."opacity-20 pointer-events-none".split(" "));
+            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId)?.classList.remove(..."opacity-20 pointer-events-none".split(" "));
         }
     }
 

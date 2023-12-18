@@ -30,9 +30,9 @@ namespace ExamonimyWeb.Controllers
             _courseRepository = courseRepository;
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("exam-paper")]
-        public async Task<IActionResult> Bank()
+        public async Task<IActionResult> RenderIndexView()
         {
             var examPapers = await _examPaperRepository.GetAsync(null, null, null, null);
             var examPaperGetDtos = new List<ExamPaperGetDto>();
@@ -47,10 +47,10 @@ namespace ExamonimyWeb.Controllers
             var user = await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!);
             var userGetDto = _mapper.Map<UserGetDto>(user);
             var viewModel = new ExamPaperBankViewModel { User = userGetDto, ExamPapers = examPaperGetDtos };
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper/{id}", Name = "GetExamPaperById")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromRoute] int id)
@@ -65,16 +65,16 @@ namespace ExamonimyWeb.Controllers
             return Ok(examPaperToReturn);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("exam-paper/create")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> RenderCreateView()
         {           
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!));
             var viewModel = new AuthorizedViewModel { User = userToReturn };
-            return View(viewModel);
+            return View("Create", viewModel);
         }
 
-        [CustomAuthorize(Roles = "Administrator")]
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpPost("api/exam-paper")]
         [Consumes("application/json")]
         [Produces("application/json", "application/problem+json")]
