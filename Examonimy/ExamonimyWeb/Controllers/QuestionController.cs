@@ -61,7 +61,7 @@ namespace ExamonimyWeb.Controllers
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/question")]
         [Produces("application/json")]
-        public async Task<IActionResult> Get([FromQuery] QuestionRequestParams? questionRequestParams)
+        public async Task<IActionResult> Get([FromQuery] RequestParamsForQuestion? questionRequestParams)
         {
             Expression<Func<Question, bool>>? searchPredicate = null; 
             if (questionRequestParams?.SearchQuery is not null)
@@ -112,7 +112,7 @@ namespace ExamonimyWeb.Controllers
             {
                 User = userGetDto
             };
-            return View(authorizedViewModel);
+            return View("Create", authorizedViewModel);
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]

@@ -1,6 +1,6 @@
 ﻿namespace ExamonimyWeb.Utilities
 {
-    public class QuestionRequestParams : RequestParams
+    public class RequestParamsForQuestion : RequestParams
     {
         public int? QuestionTypeId { get; set; }
         public int? QuestionLevelId { get; set; }

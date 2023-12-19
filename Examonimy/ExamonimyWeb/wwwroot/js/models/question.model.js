@@ -28,7 +28,7 @@ export class MultipleChoiceQuestionWithMultipleCorrectAnswers extends Question {
     choiceB = "";
     choiceC = "";
     choiceD = "";
-    correctAnswers = "";
+    correctAnswers = [""];
 
     constructor() {
         super();
@@ -36,7 +36,7 @@ export class MultipleChoiceQuestionWithMultipleCorrectAnswers extends Question {
 }
 
 export class TrueFalseQuestion extends Question {
-    correctAnswer = false;
+    correctAnswer = "";
 
     constructor() {
         super();

@@ -50,6 +50,10 @@ export class SimplePaginationComponent extends BaseComponent {
         this.#totalPages = value;
     }
 
+    get totalPages() {
+        return this.#totalPages;
+    }
+
     populatePaginationInfo() {              
         this.#paginationInfo.textContent = `Trang ${this.#currentPage} / ${this.#totalPages}`;
     }

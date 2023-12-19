@@ -333,10 +333,10 @@ const populateCourses = async () => {
 }
 
 const selectQuestionType = (event = new Event()) => {
+    selectDropdownItem(event);
     const clicked = event.target.closest(".dropdown-item");
     if (!clicked)
         return;
-    selectDropdownItem(clicked);
 
     // render the option editor
     const questionTypeId = Number(clicked.dataset.questionTypeId);
@@ -361,10 +361,10 @@ const selectQuestionType = (event = new Event()) => {
 }
 
 const selectQuestionLevel = (event = new Event()) => {
+    selectDropdownItem(event);
     const clicked = event.target.closest(".dropdown-item");
     if (!clicked)
-        return;
-    selectDropdownItem(clicked);
+        return;   
     // update the question level id of questionCreateDto state
     question.questionLevel = new QuestionLevel(Number(clicked.dataset.questionLevelId), clicked.querySelector(".dropdown-item-name").textContent);
     questionCreateDto.questionLevelId = question.questionLevel.id;

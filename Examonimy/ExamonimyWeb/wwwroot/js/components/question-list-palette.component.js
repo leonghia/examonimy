@@ -3,7 +3,7 @@ import { Question } from "../models/question.model.js";
 import { SimplePaginationComponent } from "./simple-pagination.component.js";
 import { trimMarkup } from "../helpers/markup.helper.js";
 import { fetchData } from "../helpers/ajax.helper.js";
-import { QuestionPreviewComponent } from "./question-preview.component.js";
+import { QuestionDetailComponent } from "./question-detail.component.js";
 import { RequestParams } from "../models/request-params.model.js";
 
 export class QuestionListPaletteComponent extends BaseComponent {
@@ -18,12 +18,13 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #questionListContainerForPalette;
     #questionPreviewContainer;
     #questionPreviewWrapper;
-    #questionPreviewComponent = new QuestionPreviewComponent();
+    #questionPreviewComponent = new QuestionDetailComponent();
     #backLink;
     #disabledQuestionIds = [0];
     #searchForm;
     #searchInput;
     #paginationComponent = new SimplePaginationComponent(null);
+    #courseName = "";
 
     constructor(container = new HTMLElement()) {
         super();
@@ -41,15 +42,17 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#searchForm = this.#container.querySelector("#search-form");
         this.#searchInput = this.#container.querySelector("#search-input");
 
-        this.#questionPreviewComponent = new QuestionPreviewComponent(this.#questionPreviewWrapper);
+        this.#questionPreviewComponent = new QuestionDetailComponent(this.#questionPreviewWrapper);
 
         this.#paginationComponent = new SimplePaginationComponent(this.#paginationContainer);
         this.#paginationComponent.currentPage = this.#currentPage;
         this.#paginationComponent.totalPages = this.#totalPages;
-        this.#paginationComponent.connectedCallback();
+        if (this.#paginationComponent.totalPages > 0) {
+            this.#paginationComponent.connectedCallback();    
+        }   
 
-        this.#paginationComponent.subscribe("onNext", this.navigateHandler.bind(this));
-        this.#paginationComponent.subscribe("onPrev", this.navigateHandler.bind(this));       
+        this.#paginationComponent.subscribe("next", this.navigateHandler.bind(this));
+        this.#paginationComponent.subscribe("prev", this.navigateHandler.bind(this));       
 
         this.#questionListContainerForPalette.addEventListener("click", event => {
             const clickedQuestionPreviewButton = event.target.closest(".preview-question-btn");
@@ -115,7 +118,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         const index = this.#disabledQuestionIds.indexOf(questionId);
         if (index > -1) {
             this.#disabledQuestionIds.splice(index, 1);
-            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.remove(..."opacity-20 pointer-events-none".split(" "));
+            Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId)?.classList.remove(..."opacity-20 pointer-events-none".split(" "));
         }
     }
 
@@ -133,7 +136,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#totalPages = getResponse.paginationMetadata.totalPages;
         this.#paginationComponent.currentPage = this.#currentPage;
         this.#paginationComponent.totalPages = this.#totalPages;
-        this.#paginationComponent.populatePaginationInfo();
+        this.#paginationComponent.populatePaginationInfo();                
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
         this.disableQuestions();
     }
@@ -154,7 +157,11 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#totalPages = value;
     }
 
-    #renderQuestions() {      
+    set courseName(value) {
+        this.#courseName = value;
+    }  
+
+    #renderQuestions() {
         return this.#questions.reduce((accumulator, currentValue) => {
             return accumulator + `
 <!-- Active: "bg-gray-200" -->
@@ -184,16 +191,31 @@ export class QuestionListPaletteComponent extends BaseComponent {
     </div>
 </li>
             `;
-        }, "");
+        }, "")
+    }
+
+    #renderEmptyState() {
+        return `
+<tr>
+    <td colspan="6">
+        <div class="text-center py-12">        
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="mx-auto h-12 w-12 text-gray-400">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-700">Không có câu hỏi nào</h3>               
+        </div>
+    </td>
+</tr>
+        `;
     }
 
     #render() {
-        var questionListMarkup = this.#renderQuestions();
+        
 
         return `
 <div class="mx-auto transform divide-y divide-gray-100 overflow-hidden rounded-lg bg-white transition-all">   
     <div>
-        <p class="mb-4 mt-4 px-5 text-sm font-semibold text-gray-500">Môn học: ${this.#questions[0].course.name}</p>
+        <p class="mb-4 mt-4 px-5 text-sm font-semibold text-gray-500">Môn học: ${this.#courseName}</p>
     </div>
     <form id="search-form" method="GET" action="" class="relative">
         <button type="submit" class="absolute left-4 top-3.5">
@@ -220,7 +242,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
     </div>
     <!-- Results, show/hide based on command palette state -->
     <ul id="question-list-container-for-palette" class="max-h-96 scroll-py-3 overflow-y-auto p-3 divide-y divide-gray-100">
-        ${questionListMarkup}
+        ${this.#questions.length ? this.#renderQuestions()  : this.#renderEmptyState() }
     </ul>
 
     <!-- Empty state, show/hide based on command palette state -->

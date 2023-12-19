@@ -6,9 +6,9 @@ export class StepperComponent extends BaseComponent {
     #steps;
     #container;
     _events = {
-        onClick: [],
-        onClickStep3: [],
-        onClickStep4: []
+        click: [],
+        clickStep3: [],
+        clickStep4: []
     }
 
     constructor(container = new HTMLElement(), steps = [""]) {
@@ -51,15 +51,15 @@ export class StepperComponent extends BaseComponent {
             const segments = Array.from(document.querySelectorAll(".segment"));
             toggleSegment(segments, order);
 
-            this._trigger("onClick", order);
+            this._trigger("click", order);
         });
 
         step3.addEventListener("click", () => {
-            this._trigger("onClickStep3");
+            this._trigger("clickStep3");
         });
 
         step4.addEventListener("click", () => {
-            this._trigger("onClickStep4");
+            this._trigger("clickStep4");
         });
     }
 

@@ -44,7 +44,7 @@
         <!-- Segment 2 (Fill in details) -->
         <div id="segment-2" data-order="2" class="segment flex justify-center hidden">
             <div class="basis-1/2">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập thông tin", "Vui lòng nhập các thông tin cần thiết như mã đề thi và số lượng câu hỏi."))
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Nhập thông tin", "Vui lòng nhập các thông tin cần thiết cho đề thi."))
                 <div id="detail-container" class="mt-8 bg-white rounded-lg p-8">
                     <div class="flex items-center gap-x-8 mb-8">
                         <!-- Exam paper code -->
@@ -55,14 +55,7 @@
                                 <input type="text" name="examPaperCode" id="exam-paper-code" class="block w-full bg-gray-100 min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 border-gray-200 placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                             <p class="mt-2 text-sm text-red-600 hidden" id="-error">Mã đề thi này đã bị trùng.</p>
-                        </div>
-                        <!-- Numbers of questions -->
-                        <div class="basis-1/2">
-                            <label for="number-of-question" class="block text-sm font-medium leading-6 text-gray-900">Số lượng câu hỏi</label>
-                            <div class="mt-2">
-                                <input type="number" name="numbersOfQuestion" id="numbers-of-question" class="block w-full bg-gray-100 rounded-md border-0 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>                                              
+                        </div>                                                                 
                     </div>                                   
                 </div>
             </div>
@@ -73,8 +66,38 @@
         <div id="segment-3" data-order="3" class="segment flex gap-x-12 hidden">
             <div class="basis-1/2">
                 @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Thêm câu hỏi", "Vui lòng thêm danh sách câu hỏi bằng cách kéo thả từ ngân hàng câu hỏi bên phải vào trong đề thi."))
-                <div id="question-sample-list-container" class="mt-8 flex flex-col gap-y-10">                                   
-                                      
+                <div id="question-preview-list-container" class="my-8 flex flex-col gap-y-10">      
+                    <div data-question-number="1" class="empty-question bg-white rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="font-bold text-base text-gray-900">Câu <span class="question-number">1</span></p>
+                            <button type="button" class="hidden clear-btn rounded bg-red-50 hover:bg-red-100 px-2 py-1" title="Gỡ câu hỏi">                              
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-red-600">
+                                    <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="empty-placeholder relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-0 focus:ring-indigo-500 focus:ring-offset-2">
+                            <svg class="empty-icon pointer-events-none mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v20c0 4.418 7.163 8 16 8 1.381 0 2.721-.087 4-.252M8 14c0 4.418 7.163 8 16 8s16-3.582 16-8M8 14c0-4.418 7.163-8 16-8s16 3.582 16 8m0 0v14m0-4c0 4.418-7.163 8-16 8S8 28.418 8 24m32 10v6m0 0v6m0-6h6m-6 0h-6" />
+                            </svg>
+                            <span class="empty-text pointer-events-none mt-2 block text-sm font-semibold text-gray-400">Chưa có nội dung</span>
+                        </div>
+                        <div class="question-sample-placeholder">
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <button type="button" id="add-empty-question-btn" class="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-0 ring-inset ring-gray-300 hover:bg-gray-50">
+                            <svg class="-ml-1 -mr-0.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                            Thêm câu hỏi
+                        </button>
+                    </div>
                 </div>
             </div>   
             <div class="basis-1/2">
@@ -109,7 +132,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="question-sample-list-preview-container" class="flex flex-col gap-y-8">
+                    <div id="final-question-list-preview" class="flex flex-col gap-y-8">
                     </div>
                 </div>
             </div>
