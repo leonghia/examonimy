@@ -23,3 +23,14 @@ export class QuestionRequestParams extends RequestParams {
         this.questionLevelId = questionLevelId;
     }
 }
+
+export class ExamPaperRequestParams extends RequestParams {
+    courseId = 0;
+    status = 0;
+
+    constructor(courseId = null, status = null, searchQuery = null, pageSize = null, pageNumber = null) {
+        super(searchQuery, pageSize, pageNumber);
+        this.courseId = courseId;
+        this.status = status;
+    }
+}

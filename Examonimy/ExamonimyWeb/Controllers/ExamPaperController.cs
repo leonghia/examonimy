@@ -4,10 +4,12 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
+using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
@@ -37,19 +39,17 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("exam-paper")]
         public async Task<IActionResult> RenderIndexView()
         {
-            var examPapers = await _examPaperRepository.GetAsync(null, null, null, null);
-            var examPaperGetDtos = new List<ExamPaperGetDto>();
-            foreach (var examPaper in examPapers)
-            {
-                var examPaperGetDto = _mapper.Map<ExamPaperGetDto>(examPaper);
-                Expression<Func<ExamPaperQuestion, bool>> predicate = ePQ => ePQ.ExamPaperId == examPaper.Id;
-                examPaperGetDto.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(predicate);
-                examPaperGetDtos.Add(examPaperGetDto);
 
+            var contextUser = await base.GetContextUser();
+            var userToReturn = _mapper.Map<UserGetDto>(contextUser);
+            var coursesCount = await _courseRepository.CountAsync(null);
+            var coursesToReturn = (await _courseRepository.GetAsync(new RequestParams { PageSize = coursesCount }, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
+            var statusesToReturn = new List<ExamPaperStatusModel>();
+            foreach (ExamPaperStatus e in Enum.GetValues(typeof(ExamPaperStatus)))
+            {
+                statusesToReturn.Add(new ExamPaperStatusModel { ExamPaperStatus = (int)e, ExamPaperStatusAsString = e.ToVietnameseString() });
             }
-            var user = await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!);
-            var userGetDto = _mapper.Map<UserGetDto>(user);
-            var viewModel = new ExamPaperBankViewModel { User = userGetDto, ExamPapers = examPaperGetDtos };
+            var viewModel = new ExamPaperBankViewModel { User = userToReturn, Courses = coursesToReturn, Statuses = statusesToReturn };
             return View("Index", viewModel);
         }
 
@@ -63,10 +63,14 @@ namespace ExamonimyWeb.Controllers
             {
                 searchPredicate = eP => eP.ExamPaperCode.ToUpperInvariant().Contains(requestParamsForExamPaper.SearchQuery.ToUpperInvariant());
             }
-            Expression<Func<ExamPaper, bool>>? filterPredicate = null;
+            var filterPredicate = PredicateBuilder.New<ExamPaper>(true);
             if (requestParamsForExamPaper.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
             {
-                filterPredicate = eP => eP.CourseId == requestParamsForExamPaper.CourseId;
+                filterPredicate = filterPredicate.And(eP => eP.CourseId == requestParamsForExamPaper.CourseId);
+            }
+            if (requestParamsForExamPaper.Status is not null)
+            {
+                filterPredicate = filterPredicate.And(eP => eP.Status == requestParamsForExamPaper.Status);
             }
             var examPapers = await _examPaperRepository.GetAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course" });
             var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
@@ -74,6 +78,7 @@ namespace ExamonimyWeb.Controllers
             for (var i = 0; i < examPapersToReturn.Length; i++)
             {
                 examPapersToReturn[i].NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(examPaperQuestion => examPaperQuestion.ExamPaperId == examPapersToReturn[i].Id);
+                examPapersToReturn[i].StatusAsString = examPapersToReturn[i].Status.ToVietnameseString();
             }    
 
             var paginationMetadata = new PaginationMetadata
@@ -120,6 +125,7 @@ namespace ExamonimyWeb.Controllers
         {
             var contextUser = await base.GetContextUser();
             var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
+            examPaper.Status = (byte)ExamPaperStatus.Pending;
             examPaper.AuthorId = contextUser.Id;
             await _examPaperRepository.InsertAsync(examPaper);
             await _examPaperRepository.SaveAsync();

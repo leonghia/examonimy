@@ -1,4 +1,5 @@
-﻿import { ExamPaper } from "../models/exam-paper.model.js";
+﻿import { ExamPaperStatusBadgeBackgroundColorMappings, ExamPaperStatusBadgeFillColorMappings, ExamPaperStatusBadgeTextColorMappings } from "../helpers/exam-paper.helper.js";
+import { ExamPaper } from "../models/exam-paper.model.js";
 
 export class ExamPaperTableComponent {
     #container;
@@ -13,27 +14,34 @@ export class ExamPaperTableComponent {
 
     connectedCallback() {
         this.#container.innerHTML = this.#render();
+        this.#tableBody = this.#container.querySelector("tbody");
     }
 
-    
+    populateTableBody() {
+        this.#tableBody.innerHTML = this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState();
+    }
 
-    #render() {
+    set examPapers(value) {
+        this.#examPapers = value;
+    }
+
+    #renderEmptyState() {
         return `
-<table class="min-w-full">
-    <thead class="bg-white">
-        <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
-            <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100 bg-white">
-        ${this.#examPapers.reduce((accumulator, examPaper, currentIndex) => {
+<tr>
+    <td colspan="8">
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-gray-900">Không có đề thi nào</h3>               
+        </div>
+    </td>
+</tr>
+        `;
+    }
+
+    #renderExamPapers() {
+        return this.#examPapers.reduce((accumulator, examPaper, currentIndex) => {
             return accumulator + `
 <tr class="">
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + currentIndex}</td>
@@ -56,11 +64,11 @@ export class ExamPaperTableComponent {
         </div>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        <span class="inline-flex items-center gap-x-1.5 rounded-md bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
-            <svg class="h-1.5 w-1.5 fill-yellow-500" viewBox="0 0 6 6" aria-hidden="true">
+        <span class="inline-flex items-center gap-x-1.5 rounded-md ${ExamPaperStatusBadgeBackgroundColorMappings[examPaper.status]} px-2 py-1 text-xs font-medium ${ExamPaperStatusBadgeTextColorMappings[examPaper.status]}">
+            <svg class="h-1.5 w-1.5 ${ExamPaperStatusBadgeFillColorMappings[examPaper.status]}" viewBox="0 0 6 6" aria-hidden="true">
                 <circle cx="3" cy="3" r="3" />
             </svg>
-            Chờ duyệt
+            ${examPaper.statusAsString}
         </span>
     </td>
     <td class="relative whitespace-nowrap py-4 px-3 text-center">
@@ -76,7 +84,26 @@ export class ExamPaperTableComponent {
     </td>
 </tr>
             `;
-        }, "")}
+        }, "")
+    }
+
+    #render() {
+        return `
+<table class="min-w-full">
+    <thead class="bg-white">
+        <tr>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
+            <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 bg-white">
+        ${this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState()}
     </tbody>
 </table>
         `;

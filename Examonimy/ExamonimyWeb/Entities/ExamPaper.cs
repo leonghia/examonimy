@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ExamonimyWeb.Utilities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamonimyWeb.Entities
@@ -24,5 +25,7 @@ namespace ExamonimyWeb.Entities
         
         public ICollection<Question>? Questions { get; set; }
         public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
+
+        public ExamPaperStatus? Status { get; set; } = ExamPaperStatus.Pending;
     }
 }

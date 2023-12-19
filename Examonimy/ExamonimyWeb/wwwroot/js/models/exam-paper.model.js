@@ -6,4 +6,6 @@ export class ExamPaper {
     examPaperCode = "";
     numbersOfQuestion = 0;
     author;
+    status = 0;
+    statusAsString = "";
 }

@@ -5,6 +5,7 @@
     Layout = "_TeacherLayout";
     ViewData["Title"] = "Ngân hàng đề thi";
 }
+@model ExamPaperBankViewModel
 <div>
     @await Html.PartialAsync("_PageHeadingPartial", "Ngân hàng đề thi")
     <div class="flex items-center justify-between">
@@ -20,6 +21,70 @@
                 <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-violet-700 hover:bg-violet-800 focus:ring-4 focus:outline-none focus:ring-violet-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-violet-600 dark:hover:bg-violet-700 dark:focus:ring-violet-800">Tìm kiếm</button>
             </div>
         </form>     
+    </div>
+    <div class="flex items-center justify-end">
+        <div class="hidden sm:flex sm:items-baseline sm:space-x-8">           
+            <div class="relative inline-block text-left dropdown-container">
+                <div>
+                    <button type="button" id="status-dropdown-btn" class="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900" aria-expanded="false">
+                        <span>Trạng thái</span>
+                        <span id="selected-status" class="selected-item ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">Tất cả</span>
+                        <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="status-dropdown" class="hidden absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-sm focus:outline-none">
+                    <form class="space-y-4">
+                        <div class="flex items-center dropdown-item">
+                            <input id="status-all" name="status" value="all" type="radio" class="h-4 w-4 border-gray-300 text-violet-600 focus:ring-violet-500">
+                            <label for="status-all" class="dropdown-item-name ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Tất cả</label>
+                        </div>        
+                        @foreach(var status in Model.Statuses)
+                        {
+                            <div class="flex items-center dropdown-item">
+                                <input id="status-@status.ExamPaperStatus" name="status" value="@status.ExamPaperStatus" type="radio" class="h-4 w-4 border-gray-300 text-violet-600 focus:ring-violet-500">
+                                <label for="status-@status.ExamPaperStatus" class="dropdown-item-name ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">@status.ExamPaperStatusAsString</label>
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+            <div class="relative inline-block text-left dropdown-container">
+                <div>
+                    <button type="button" id="course-dropdown-btn" class="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900" aria-expanded="false">
+                        <span>Môn học</span>
+                        <span id="selected-course" class="selected-item ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">Tất cả</span>
+                        <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="course-dropdown" class="max-h-96 overflow-y-scroll hidden absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-sm focus:outline-none">
+                    <form class="space-y-4">  
+                        <div class="flex items-center dropdown-item">
+                            <input id="course-all" name="course" value="all" type="radio" class="h-4 w-4 border-gray-300 text-violet-600 focus:ring-violet-500">
+                            <label for="course-all" class="dropdown-item-name ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">Tất cả</label>
+                        </div>
+                        @foreach (var course in Model.Courses)
+                        {
+                            <div class="flex items-center dropdown-item">
+                                <input id="course-@course.Id" name="course" value="@course.Id" type="radio" class="h-4 w-4 border-gray-300 text-violet-600 focus:ring-violet-500">
+                                <label for="course-@course.Id" class="dropdown-item-name ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900">@course.Name</label>
+                            </div>
+                        }                     
+                    </form>
+                </div>
+            </div>
+            <div class="relative inline-block text-left">
+                <button type="button" id="filter-btn" class="inline-flex items-center gap-x-1.5 rounded-md bg-violet-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
+                    Lọc
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="-mr-0.5 h-4 w-4">
+                        <path fill-rule="evenodd" d="M3.792 2.938A49.069 49.069 0 0112 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 011.541 1.836v1.044a3 3 0 01-.879 2.121l-6.182 6.182a1.5 1.5 0 00-.439 1.061v2.927a3 3 0 01-1.658 2.684l-1.757.878A.75.75 0 019.75 21v-5.818a1.5 1.5 0 00-.44-1.06L3.13 7.938a3 3 0 01-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
     <div class="mb-10">
         <div class="mt-8 flow-root">
@@ -89,3 +154,5 @@
         </a>
     </td>
 </tr> *@
+
+

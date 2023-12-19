@@ -3,5 +3,6 @@
     public class RequestParamsForExamPaper : RequestParams
     {
         public int? CourseId { get; set; }
+        public ExamPaperStatus? Status { get; set; }
     }
 }
