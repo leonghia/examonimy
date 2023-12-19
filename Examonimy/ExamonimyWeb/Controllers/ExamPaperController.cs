@@ -7,8 +7,10 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -51,12 +53,42 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("api/exam-paper")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Get([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
+        {
+            Expression<Func<ExamPaper, bool>>? searchPredicate = null;
+            if (requestParamsForExamPaper.SearchQuery is not null)
+            {
+                searchPredicate = eP => eP.ExamPaperCode.ToUpperInvariant().Contains(requestParamsForExamPaper.SearchQuery.ToUpperInvariant());
+            }
+            Expression<Func<ExamPaper, bool>>? filterPredicate = null;
+            if (requestParamsForExamPaper.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
+            {
+                filterPredicate = eP => eP.CourseId == requestParamsForExamPaper.CourseId;
+            }
+            var examPapers = await _examPaperRepository.GetAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course" });
+            var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP));
+
+            var paginationMetadata = new PaginationMetadata
+            {
+                TotalCount = examPapers.TotalCount,
+                PageSize = examPapers.PageSize,
+                CurrentPage = examPapers.PageNumber,
+                TotalPages = examPapers.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            return Ok(examPapersToReturn);
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper/{id}", Name = "GetExamPaperById")]
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromRoute] int id)
-        {
-            Expression<Func<ExamPaper, bool>> predicate = eP => eP.Id == id;
-            var examPaperEntity = await _examPaperRepository.GetAsync(predicate, new List<string> { "Course", "Author" });
+        {           
+            var examPaperEntity = await _examPaperRepository.GetAsync(eP => eP.Id == id, new List<string> { "Course", "Author" });
             if (examPaperEntity is null)
                 return NotFound();
             var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaperEntity);
@@ -80,18 +112,14 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json", "application/problem+json")]
         public async Task<IActionResult> Create([FromBody] ExamPaperCreateDto examPaperCreateDto)
         {
-            var authorId = (await _userManager.FindByUsernameAsync(HttpContext.User.Identity!.Name!))!.Id;
-            var examPaperEntity = _mapper.Map<ExamPaper>(examPaperCreateDto);
-            examPaperEntity.AuthorId = authorId;
-            await _examPaperRepository.InsertAsync(examPaperEntity);
-            await _examPaperRepository.SaveAsync();           
-
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaperEntity);
-            examPaperToReturn.NumbersOfQuestion = examPaperEntity.ExamPaperQuestions!.Count;
-            Expression<Func<Course, bool>> coursePredicate = c => c.Id == examPaperEntity.CourseId;
-            examPaperToReturn.Course = _mapper.Map<CourseGetDto>(await _courseRepository.GetAsync(coursePredicate, null));
-
-            return CreatedAtRoute("GetExamPaperById", new { id = examPaperEntity.Id }, examPaperToReturn);
+            var contextUser = await base.GetContextUser();
+            var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
+            examPaper.AuthorId = contextUser.Id;
+            await _examPaperRepository.InsertAsync(examPaper);
+            await _examPaperRepository.SaveAsync();
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
+            examPaperToReturn.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(ePQ => ePQ.ExamPaperId == examPaper.Id);
+            return CreatedAtRoute("GetExamPaperById", new { id = examPaper.Id }, examPaperToReturn);
         }
     }
 }
