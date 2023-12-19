@@ -9,6 +9,7 @@ using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Text.Json;
 
@@ -68,7 +69,12 @@ namespace ExamonimyWeb.Controllers
                 filterPredicate = eP => eP.CourseId == requestParamsForExamPaper.CourseId;
             }
             var examPapers = await _examPaperRepository.GetAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course" });
-            var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP));
+            var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
+
+            for (var i = 0; i < examPapersToReturn.Length; i++)
+            {
+                examPapersToReturn[i].NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(examPaperQuestion => examPaperQuestion.ExamPaperId == examPapersToReturn[i].Id);
+            }    
 
             var paginationMetadata = new PaginationMetadata
             {

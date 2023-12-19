@@ -5,4 +5,5 @@ export class ExamPaper {
     course = new Course();
     examPaperCode = "";
     numbersOfQuestion = 0;
+    author;
 }
