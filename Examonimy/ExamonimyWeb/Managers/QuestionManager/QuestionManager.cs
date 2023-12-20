@@ -247,6 +247,37 @@ namespace ExamonimyWeb.Managers.QuestionManager
             }
         }
 
+        public async Task<QuestionWithoutAnswerGetDto> GetSpecificQuestionWithoutAnswerDtoAsync(int questionId)
+        {
+            var question = await _questionRepository.GetByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
+            var includedProps = new List<string> { "Question.QuestionType" };
+            switch (question.QuestionTypeId)
+            {
+                case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
+                    Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == questionId;
+                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, includedProps);
+                    return _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerWithoutAnswerGetDto>(specificQuestion1);
+                case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
+                    Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == questionId;
+                    var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, includedProps);
+                    return _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersWithoutAnswerGetDto>(specificQuestion2);
+                case (int)QuestionTypeId.TrueFalse:
+                    Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == questionId;
+                    var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, includedProps);
+                    return _mapper.Map<TrueFalseQuestionWithoutAnswerGetDto>(specificQuestion3);
+                case (int)QuestionTypeId.ShortAnswer:
+                    Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == questionId;
+                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, includedProps);
+                    return _mapper.Map<ShortAnswerQuestionWithoutAnswerGetDto>(specificQuestion4);
+                case (int)QuestionTypeId.FillInBlank:
+                    Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == questionId;
+                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, includedProps);
+                    return _mapper.Map<FillInBlankQuestionWithoutAnswerGetDto>(specificQuestion5);
+                default:
+                    throw new SwitchExpressionException(question.QuestionTypeId);
+            }
+        }
+
         public async Task<bool> DoesQuestionExistAsync(int questionId)
         {
             return (await _questionRepository.GetByIdAsync(questionId)) is not null;

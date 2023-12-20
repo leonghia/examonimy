@@ -21,15 +21,17 @@ export const fetchData = async (route = "", requestParams = new RequestParams())
         }
 
         getResponse.data = await res.json();
-        const paginationMetadata = JSON.parse(res.headers.get(PAGINATION_METADATA_HEADER));
-        getResponse.paginationMetadata.currentPage = paginationMetadata.currentPage;
-        getResponse.paginationMetadata.totalPages = paginationMetadata.totalPages;
-        getResponse.paginationMetadata.pageSize = paginationMetadata.pageSize;
-        getResponse.paginationMetadata.totalCount = paginationMetadata.totalCount;
+        if (res.headers.get(PAGINATION_METADATA_HEADER)) {
+            const paginationMetadata = JSON.parse(res.headers.get(PAGINATION_METADATA_HEADER));
+            getResponse.paginationMetadata.currentPage = paginationMetadata.currentPage;
+            getResponse.paginationMetadata.totalPages = paginationMetadata.totalPages;
+            getResponse.paginationMetadata.pageSize = paginationMetadata.pageSize;
+            getResponse.paginationMetadata.totalCount = paginationMetadata.totalCount;
+        }       
         return getResponse;
 
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }
 
@@ -42,7 +44,7 @@ export const fetchDataById = async (route = "", id = 0) => {
         const data = await res.json();
         return data;
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }
 
@@ -68,7 +70,7 @@ export const postData = async (route = "", dataToPost) => {
         return bodyData;
 
     } catch (err) {
-        console.error(err);
+        throw err;
     }
     
 }
@@ -92,7 +94,7 @@ export const putData = async (route = "", id = 0, dataToPut) => {
 
 
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }
 
@@ -109,6 +111,6 @@ export const deleteData = async (route = "", id = 0) => {
             throw problemDetails;
         }
     } catch (err) {
-        console.error(err);
+        throw err;
     }
 }

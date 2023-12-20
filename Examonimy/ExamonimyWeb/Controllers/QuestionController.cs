@@ -44,10 +44,10 @@ namespace ExamonimyWeb.Controllers
         {
             var username = HttpContext.User.Identity!.Name;                  
             var userToReturn = _mapper.Map<UserGetDto>(await _userManager.FindByUsernameAsync(username!));    
-            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
-            var questionLevelsToReturn = (await _questionLevelRepository.GetAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
+            var questionTypesToReturn = (await _questionTypeRepository.GetPagedListAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var questionLevelsToReturn = (await _questionLevelRepository.GetPagedListAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
             var coursesTotalCount = await _courseRepository.CountAsync();
-            var coursesToReturn = (await _courseRepository.GetAsync(new RequestParams { PageNumber = 1, PageSize = coursesTotalCount}, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
+            var coursesToReturn = (await _courseRepository.GetPagedListAsync(new RequestParams { PageNumber = 1, PageSize = coursesTotalCount}, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
             var viewModel = new QuestionBankViewModel
             {
                 User = userToReturn,               
@@ -86,7 +86,7 @@ namespace ExamonimyWeb.Controllers
                 filterPredicate = filterPredicate.And(q => q.QuestionLevelId == questionRequestParams.QuestionLevelId);
             }
 
-            var questions = await _questionRepository.GetAsync(questionRequestParams, searchPredicate, filterPredicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
+            var questions = await _questionRepository.GetPagedListAsync(questionRequestParams, searchPredicate, filterPredicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
             var questionsToReturn = await _questionManager.GetQuestionsAsync(questions);         
             
 
@@ -199,7 +199,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionTypes()
         {
-            var questionTypes = await _questionTypeRepository.GetAsync(null, null, null, null);
+            var questionTypes = await _questionTypeRepository.GetPagedListAsync(null, null, null, null);
             var questionTypesToReturn = questionTypes.Select(questionType => _mapper.Map<QuestionTypeGetDto>(questionType));
             return Ok(questionTypesToReturn);
         }
@@ -209,7 +209,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetQuestionLevels()
         {
-            var questionLevels = await _questionLevelRepository.GetAsync(null, null, null, null);
+            var questionLevels = await _questionLevelRepository.GetPagedListAsync(null, null, null, null);
             var questionLevelsToReturn = questionLevels.Select(questionLevel => _mapper.Map<QuestionLevelGetDto>(questionLevel));
             return Ok(questionLevelsToReturn);
         }
@@ -225,8 +225,8 @@ namespace ExamonimyWeb.Controllers
             var user = await base.GetContextUser();
             if (question.Author!.Id != user.Id)
                 return Forbid();           
-            var questionTypesToReturn = (await _questionTypeRepository.GetAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
-            var questionLevelsToReturn = (await _questionLevelRepository.GetAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
+            var questionTypesToReturn = (await _questionTypeRepository.GetPagedListAsync(null, null, null, null)).Select(qT => _mapper.Map<QuestionTypeGetDto>(qT));
+            var questionLevelsToReturn = (await _questionLevelRepository.GetPagedListAsync(null, null, null, null)).Select(qL => _mapper.Map<QuestionLevelGetDto>(qL));
             var questionToReturn = _mapper.Map<QuestionGetDto>(question);
             var editQuestionViewModel = new EditQuestionViewModel
             {
