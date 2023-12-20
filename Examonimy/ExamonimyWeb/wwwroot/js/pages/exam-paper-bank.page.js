@@ -13,7 +13,8 @@ const statusDropdown = document.querySelector("#status-dropdown");
 const courseDropdownButton = document.querySelector("#course-dropdown-btn");
 const courseDropdown = document.querySelector("#course-dropdown");
 const filterButton = document.querySelector("#filter-btn");
-
+const searchForm = document.querySelector("#search-form");
+const searchInput = document.querySelector("#search-input");
 
 // States
 let examPaperTableComponent = new ExamPaperTableComponent(tableContainer);
@@ -76,6 +77,13 @@ courseDropdown.addEventListener("click", event => {
 filterButton.addEventListener("click", () => {
     handler(requestParams);
 });
+
+searchForm.addEventListener("click", event => {
+    event.preventDefault();
+    requestParams.searchQuery = searchInput.value;
+    handler(requestParams);
+});
+
 
 // On load
 init(requestParams);

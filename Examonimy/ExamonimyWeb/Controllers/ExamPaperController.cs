@@ -61,7 +61,7 @@ namespace ExamonimyWeb.Controllers
             Expression<Func<ExamPaper, bool>>? searchPredicate = null;
             if (requestParamsForExamPaper.SearchQuery is not null)
             {
-                searchPredicate = eP => eP.ExamPaperCode.ToUpperInvariant().Contains(requestParamsForExamPaper.SearchQuery.ToUpperInvariant());
+                searchPredicate = eP => eP.ExamPaperCode.ToUpper().Contains(requestParamsForExamPaper.SearchQuery.ToUpper());
             }
             var filterPredicate = PredicateBuilder.New<ExamPaper>(true);
             if (requestParamsForExamPaper.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
