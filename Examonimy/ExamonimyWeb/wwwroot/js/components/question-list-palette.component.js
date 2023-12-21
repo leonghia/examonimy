@@ -113,8 +113,9 @@ export class QuestionListPaletteComponent extends BaseComponent {
         if (!this.#disabledQuestionIds.includes(questionId)) {
             this.#disabledQuestionIds.push(questionId);
             Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.add(..."opacity-20 pointer-events-none".split(" "));
+            return this.#questions.find(q => q.id === questionId);
         }
-            
+        return null;   
     }
 
     removeQuestionIdFromDisabledListThenEnableIt(questionId = 0) {
@@ -142,11 +143,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#paginationComponent.populatePaginationInfo();                
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
         this.#disableQuestions();
-    }
-
-    get questions() {
-        return this.#questions;
-    }
+    }   
 
     set questions(value = [new Question()]) {
         this.#questions = value;

@@ -15,10 +15,12 @@
         </div>
     </div>
     <div id="question-bank-container" class="basis-1/2" data-course-id="@Model.CourseId">
-        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Ngân hàng câu hỏi", "Đây là ngân hàng câu hỏi mà bạn có thể kéo thả vào trong đề thi.")) 
-        <div id="question-list-palette-container">
+        <div class="sticky top-24">
+            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Ngân hàng câu hỏi", "Đây là ngân hàng câu hỏi mà bạn có thể kéo thả vào trong đề thi."))
+            <div id="question-list-palette-container">
 
-        </div>
+            </div>
+        </div>      
     </div>
 </div>
 

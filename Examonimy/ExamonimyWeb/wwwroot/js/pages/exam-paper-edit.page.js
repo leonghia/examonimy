@@ -1,6 +1,6 @@
 ﻿// Imports
 import { fetchData } from "../helpers/ajax.helper.js";
-import { QuestionRequestParams, RequestParams } from "../models/request-params.model.js";
+import { QuestionRequestParams } from "../models/request-params.model.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
 import { Question } from "../models/question.model.js";
@@ -24,7 +24,12 @@ const deleteQuestionHandler = (questionId = 0) => {
     questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(questionId);
 }
 
-
+const dropQuestionHandler = (data = {questionId: 0, questionNumber: 0}) => {
+    var question = questionListPaletteComponent.questions.find(q => q.id === data.questionId);
+    examPaperQuestionListComponent.insert(data.questionNumber, question);
+    questionListPaletteComponent.unHighlightAllQuestions();
+    questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(data.questionId);
+}
 
 // Event listeners
 
@@ -38,6 +43,7 @@ const deleteQuestionHandler = (questionId = 0) => {
         examPaperQuestionListComponent = new ExamPaperQuestionListComponent(examPaperQuestionListContainer, examPaperQuestions);
         examPaperQuestionListComponent.connectedCallback();      
         examPaperQuestionListComponent.subscribe("delete", deleteQuestionHandler);
+        examPaperQuestionListComponent.subscribe("drop", dropQuestionHandler);
 
 
         res = await fetchData("question", new QuestionRequestParams(null, courseId));
