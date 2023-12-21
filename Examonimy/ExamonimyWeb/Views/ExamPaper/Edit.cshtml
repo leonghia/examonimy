@@ -5,6 +5,21 @@
     ViewData["Title"] = "Chỉnh sửa đề thi";
     Layout = "_TeacherLayout";
 }
+@model ExamPaperEditViewModel
 @await Html.PartialAsync("_PageHeadingPartial", "Chỉnh sửa đề thi")
+<div class="flex justify-between gap-x-20">
+    <div id="exam-paper-container" class="basis-1/2" data-exam-paper-id="@Model.ExamPaperId">
+        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Danh sách câu hỏi", "Bạn có thể chỉnh sửa danh sách câu hỏi bằng cách kéo thả từ ngân hàng câu hỏi bên phải."))  
+        <div id="exam-paper-question-list-container">
+
+        </div>
+    </div>
+    <div id="question-bank-container" class="basis-1/2" data-course-id="@Model.CourseId">
+        @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Ngân hàng câu hỏi", "Đây là ngân hàng câu hỏi mà bạn có thể kéo thả vào trong đề thi.")) 
+        <div id="question-list-palette-container">
+
+        </div>
+    </div>
+</div>
 
 <script src="~/js/pages/exam-paper-edit.page.js" type="module"></script>

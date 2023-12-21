@@ -10,12 +10,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
         private readonly IGenericRepository<Question> _questionRepository;
         private readonly IQuestionManager _questionManager;
+        private readonly IGenericRepository<ExamPaper> _examPaperRepository;
 
-        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Question> questionRepository, IQuestionManager questionManager)
+        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Question> questionRepository, IQuestionManager questionManager, IGenericRepository<ExamPaper> examPaperRepository)
         {
             _examPaperQuestionRepository = examPaperQuestionRepository;
             _questionRepository = questionRepository;
             _questionManager = questionManager;
+            _examPaperRepository = examPaperRepository;
         }
 
         public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId)
@@ -34,6 +36,12 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             }
             examPaperQuestionsToReturn.Sort((a, b) => a.Number.CompareTo(b.Number));
             return examPaperQuestionsToReturn;
+        }
+
+        public async Task<bool> IsAuthorAsync(int examPaperId, int userId)
+        {
+            var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));                       
+            return examPaper.Author!.Id == userId;
         }
     }
 }

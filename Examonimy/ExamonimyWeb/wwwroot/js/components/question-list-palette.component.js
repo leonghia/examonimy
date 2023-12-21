@@ -26,9 +26,10 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #paginationComponent = new SimplePaginationComponent(null);
     #courseName = "";
 
-    constructor(container = new HTMLElement()) {
+    constructor(container = new HTMLElement(), questions = [new Question()]) {
         super();
         this.#container = container;
+        this.#questions = questions;
     }
 
     connectedCallback() {
@@ -98,6 +99,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
             this.#searchQuery = this.#searchInput.value;
             this.navigateHandler(1);
         });
+
+        this.#disableQuestions();
     }
 
     unHighlightAllQuestions() {
@@ -122,7 +125,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         }
     }
 
-    disableQuestions() {      
+    #disableQuestions() {      
         Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
             if (this.#disabledQuestionIds.includes(Number(item.dataset.questionId)))
                 item.classList.add(..."opacity-20 pointer-events-none".split(" "));
@@ -138,7 +141,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#paginationComponent.totalPages = this.#totalPages;
         this.#paginationComponent.populatePaginationInfo();                
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
-        this.disableQuestions();
+        this.#disableQuestions();
     }
 
     get questions() {
@@ -160,6 +163,10 @@ export class QuestionListPaletteComponent extends BaseComponent {
     set courseName(value) {
         this.#courseName = value;
     }  
+
+    set disabledQuestionIds(value = [0]) {
+        this.#disabledQuestionIds = value;
+    }
 
     #renderQuestions() {
         return this.#questions.reduce((accumulator, currentValue) => {

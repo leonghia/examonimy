@@ -166,6 +166,19 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("exam-paper/edit/{id:int}")]
+        public async Task<IActionResult> RenderEditView([FromRoute] int id)
+        {
+            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsAuthorAsync(id, contextUser.Id))
+                return Forbid();
+            return View("Edit", new ExamPaperEditViewModel { ExamPaperId = examPaper.Id, CourseId = examPaper.CourseId, User = _mapper.Map<UserGetDto>(contextUser) });
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpDelete("api/exam-paper/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
