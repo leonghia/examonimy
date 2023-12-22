@@ -1,4 +1,5 @@
 ﻿using ExamonimyWeb.DTOs.ExamPaperDTO;
+using ExamonimyWeb.Entities;
 
 namespace ExamonimyWeb.Managers.ExamPaperManager
 {
@@ -6,5 +7,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
     {
         Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId);
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
+        Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate);
     }
 }

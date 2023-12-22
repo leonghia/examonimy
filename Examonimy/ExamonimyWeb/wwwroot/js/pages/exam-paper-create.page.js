@@ -65,12 +65,13 @@ const populateExamPaperDetailPreview = (examPaperCreate = new ExamPaperCreate(),
 }
 
 const deleteQuestionHandler = (questionId) => {
-    questionListPaletteComponent.removeQuestionIdFromDisabledListThenEnableIt(questionId);
+    questionListPaletteComponent.enableQuestion(questionId);
 }
 
 const dropQuestionHandler = (data = { questionId, questionNumber }) => {
-    const question = questionListPaletteComponent.addQuestionIdToDisabledListThenDisableIt(data.questionId);
+    const question = questionListPaletteComponent.disableQuestion(data.questionId);
     examPaperQuestionListComponent.populateQuestion(data.questionNumber, question);
+    questionListPaletteComponent.unHighlightAllQuestions();
 }
 
 const onClickStepperHandler = async (stepOrder = 0) => {
@@ -104,6 +105,7 @@ const onClickStepperHandler = async (stepOrder = 0) => {
     }
 
     if (stepOrder === 4) {
+        examPaperCreate.examPaperQuestions = examPaperQuestionListComponent.getExamPaperQuestionCreates();
         populateExamPaperDetailPreview(examPaperCreate, courseName);
         examPaperQuestionListPreviewContainer.innerHTML = examPaperQuestionListComponent.getMarkup();
         examPaperQuestionListPreviewContainer.querySelectorAll(".delete-btn").forEach(v => v.remove());
@@ -134,7 +136,6 @@ addEmptyQuestionButton.addEventListener("click", () => {
 
 
 createExamPaperButton.addEventListener("click", () => {
-    examPaperCreate.examPaperQuestions = examPaperQuestionListComponent.getExamPaperQuestionCreates();
     postExamPaper(examPaperCreate);
 });
 

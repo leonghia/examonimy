@@ -1,5 +1,4 @@
-﻿import { ExamPaperQuestionCreate } from "../models/exam-paper-question-create.model.js";
-import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
+﻿import { ExamPaperQuestion, ExamPaperQuestionUpdate, ExamPaperQuestionCreate } from "../models/exam-paper-question.model.js";
 import { BaseComponent } from "./base.component.js";
 import { QuestionPreviewComponent } from "./question-preview.component.js";
 
@@ -98,6 +97,10 @@ export class ExamPaperQuestionListComponent extends BaseComponent {
 
     getExamPaperQuestionCreates() {
         return Array.from(this.#container.querySelectorAll(".exam-paper-question-container")).map(v => new ExamPaperQuestionCreate(Number(v.dataset.questionId), Number(v.dataset.questionNumber)));
+    }
+
+    getExamPaperQuestionUpdates() {
+        return Array.from(this.#container.querySelectorAll(".exam-paper-question-container")).map(v => new ExamPaperQuestionUpdate(Number(v.dataset.questionId), Number(v.dataset.questionNumber)));
     }
 
     getMarkup() {

@@ -154,6 +154,9 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json", "application/problem+json")]
         public async Task<IActionResult> Create([FromBody] ExamPaperCreateDto examPaperCreateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var contextUser = await base.GetContextUser();
             var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
             examPaper.Status = (byte)ExamPaperStatus.Pending;
@@ -192,6 +195,32 @@ namespace ExamonimyWeb.Controllers
             await _examPaperQuestionRepository.SaveAsync();
             _examPaperRepository.Delete(examPaper);
             await _examPaperRepository.SaveAsync();
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPut("api/exam-paper/{id:int}")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ExamPaperUpdateDto examPaperUpdateDto)
+        {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (examPaper.AuthorId != contextUser.Id)
+                return Forbid();
+            var examPaperQuestionsToUpdate = examPaperUpdateDto.ExamPaperQuestions
+                .Select(e => _mapper.Map<ExamPaperQuestion>(e))
+                .Select(e =>
+                {
+                    e.ExamPaperId = examPaper.Id;
+                    return e;
+                })
+                .ToList();
+            await _examPaperManager.UpdateThenSaveAsync(examPaper.Id, examPaperQuestionsToUpdate);         
             return NoContent();
         }
     }

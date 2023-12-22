@@ -102,6 +102,7 @@ namespace ExamonimyWeb.Profiles
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.QuestionId))
                 .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
                 .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question!.QuestionType));
+            CreateMap<ExamPaperQuestionUpdateDto, ExamPaperQuestion>();
         }
     }
 }

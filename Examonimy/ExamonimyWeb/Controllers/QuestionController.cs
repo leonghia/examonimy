@@ -243,6 +243,8 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] MultipleChoiceQuestionWithOneCorrectAnswerUpdateDto questionUpdateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
             var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();
@@ -259,6 +261,9 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] MultipleChoiceQuestionWithMultipleCorrectAnswersUpdateDto questionUpdateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();
@@ -275,6 +280,9 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] TrueFalseQuestionUpdateDto questionUpdateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();
@@ -291,6 +299,9 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ShortAnswerQuestionUpdateDto questionUpdateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();
@@ -307,6 +318,9 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] FillInBlankQuestionUpdateDto questionUpdateDto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var exist = await _questionManager.DoesQuestionExistAsync(id);
             if (!exist)
                 return NotFound();

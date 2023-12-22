@@ -109,7 +109,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         });
     }
 
-    addQuestionIdToDisabledListThenDisableIt(questionId = 0) {
+    disableQuestion(questionId = 0) {
         if (!this.#disabledQuestionIds.includes(questionId)) {
             this.#disabledQuestionIds.push(questionId);
             Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.add(..."opacity-20 pointer-events-none".split(" "));
@@ -118,7 +118,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         return null;   
     }
 
-    removeQuestionIdFromDisabledListThenEnableIt(questionId = 0) {
+    enableQuestion(questionId = 0) {
         const index = this.#disabledQuestionIds.indexOf(questionId);
         if (index > -1) {
             this.#disabledQuestionIds.splice(index, 1);
@@ -169,7 +169,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         return this.#questions.reduce((accumulator, currentValue) => {
             return accumulator + `
 <!-- Active: "bg-gray-200" -->
-<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 cursor-pointer" draggable="true">
+<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-lg p-3 cursor-pointer" draggable="true">
     <div class="ml-4 basis-4/5">
         <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
         <div class="prose prose-sm font-medium text-violet-700 mb-2">

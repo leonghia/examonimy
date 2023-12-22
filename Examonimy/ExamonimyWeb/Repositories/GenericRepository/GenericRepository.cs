@@ -84,7 +84,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
         }
 
-        public async Task InserRangeAsync(List<TEntity> entities)
+        public async Task InsertRangeAsync(List<TEntity> entities)
         {
             await _dbSet.AddRangeAsync(entities);
         }

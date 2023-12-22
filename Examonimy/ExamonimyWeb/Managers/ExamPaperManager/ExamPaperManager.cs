@@ -43,5 +43,12 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));                       
             return examPaper.Author!.Id == userId;
         }
+
+        public async Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate)
+        {
+            _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
+            await _examPaperQuestionRepository.InsertRangeAsync(examPaperQuestionsToUpdate);
+            await _examPaperQuestionRepository.SaveAsync();
+        }
     }
 }
