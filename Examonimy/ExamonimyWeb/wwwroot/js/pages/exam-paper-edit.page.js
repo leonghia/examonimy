@@ -51,11 +51,11 @@ tabButtonContainer.addEventListener("click", event => {
     if (!clickedTabButton)
         return;
     Array.from(tabButtonContainer.querySelectorAll(".tab-btn")).forEach(tabButton => {
-        tabButton.classList.remove(..."bg-violet-200 text-violet-800".split(" "));
-        tabButton.classList.add(..."text-violet-600 hover:text-violet-800".split(" "));
+        tabButton.classList.remove(..."bg-gray-200 text-gray-800".split(" "));
+        tabButton.classList.add(..."text-gray-600 hover:text-gray-800".split(" "));
     });
-    clickedTabButton.classList.remove(..."text-violet-600 hover:text-violet-800".split(" "));
-    clickedTabButton.classList.add(..."bg-violet-200 text-violet-800".split(" "));
+    clickedTabButton.classList.remove(..."text-gray-600 hover:text-gray-800".split(" "));
+    clickedTabButton.classList.add(..."bg-gray-200 text-gray-800".split(" "));
     if (clickedTabButton.dataset.tab === "preview") {
         editorContainer.classList.add("hidden");
         previewContainer.classList.remove("hidden");
