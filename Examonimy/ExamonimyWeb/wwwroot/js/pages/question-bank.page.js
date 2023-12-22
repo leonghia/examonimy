@@ -63,7 +63,6 @@ const init = async (requestParams = new QuestionRequestParams()) => {
     }
 }
 
-
 // Event listeners
 questionTypeDropdownButton.addEventListener("click", () => {
     questionTypeDropdown.classList.toggle("hidden");

@@ -86,6 +86,7 @@ namespace ExamonimyWeb.Controllers
 
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
+
             var user = _mapper.Map<User>(userRegisterDto);
             var operationResult = await _userManager.CreateAsync(user, userRegisterDto.Password);
 

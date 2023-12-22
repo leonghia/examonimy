@@ -59,8 +59,7 @@ export const highlightSidebarLink = (className = "") => {
 }
 
 export const toggleDropdown = (dropdown = new HTMLElement()) => {
-    dropdown.classList.toggle("opacity-0");
-    dropdown.classList.toggle("pointer-events-none");
+    dropdown.classList.toggle("hidden");   
 }
 
 export const selectDropdownItem = (event) => {
@@ -71,6 +70,8 @@ export const selectDropdownItem = (event) => {
     const dropdownContainer = clicked.closest(".dropdown-container");
     dropdownContainer.querySelector(".selected-item").textContent = dropdownItemName.textContent;
     const dropdown = clicked.closest(".dropdown");
+    if (!dropdown?.querySelectorAll(".dropdown-item"))
+        return;
     const dropdownItems = Array.from(dropdown.querySelectorAll(".dropdown-item"));
     dropdownItems.forEach(dropdownItem => {
         const itemName = dropdownItem.querySelector(".dropdown-item-name");

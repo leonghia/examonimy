@@ -1,5 +1,6 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
@@ -110,8 +111,8 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();
-            services.AddScoped<IQuestionManager, QuestionManager>();           
-            
+            services.AddScoped<IQuestionManager, QuestionManager>();
+            services.AddScoped<IExamPaperManager, ExamPaperManager>();
         }
     }
 }

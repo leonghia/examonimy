@@ -57,7 +57,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.Update(entity);
         }
 
-        public async Task<PagedList<TEntity>> GetAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
+        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
         {
             requestParams ??= new RequestParams();
 
@@ -84,7 +84,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
         }
 
-        public async Task InserRangeAsync(List<TEntity> entities)
+        public async Task InsertRangeAsync(List<TEntity> entities)
         {
             await _dbSet.AddRangeAsync(entities);
         }
@@ -97,6 +97,43 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         public void Delete(TEntity entity)
         {
             _dbSet.Remove(entity);
+        }
+
+        public void DeleteRange(List<TEntity> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
+        public void DeleteRange(Expression<Func<TEntity, bool>> predicate)
+        {
+            IQueryable<TEntity> query = _dbSet;
+            query = query.Where(predicate);
+            _dbSet.RemoveRange(query);
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (searchPredicate is not null)
+            {
+                query = query.Where<TEntity>(searchPredicate);
+            }
+
+            if (filterPredicate is not null)
+            {
+                query = query.Where<TEntity>(filterPredicate);
+            }
+
+            if (includedProperties is not null)
+            {
+                foreach (var includedProperty in includedProperties)
+                {
+                    query = query.Include(includedProperty);
+                }
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

@@ -26,9 +26,10 @@ export class QuestionListPaletteComponent extends BaseComponent {
     #paginationComponent = new SimplePaginationComponent(null);
     #courseName = "";
 
-    constructor(container = new HTMLElement()) {
+    constructor(container = new HTMLElement(), questions = [new Question()]) {
         super();
         this.#container = container;
+        this.#questions = questions;
     }
 
     connectedCallback() {
@@ -98,6 +99,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
             this.#searchQuery = this.#searchInput.value;
             this.navigateHandler(1);
         });
+
+        this.#disableQuestions();
     }
 
     unHighlightAllQuestions() {
@@ -106,15 +109,16 @@ export class QuestionListPaletteComponent extends BaseComponent {
         });
     }
 
-    addQuestionIdToDisabledListThenDisableIt(questionId = 0) {
+    disableQuestion(questionId = 0) {
         if (!this.#disabledQuestionIds.includes(questionId)) {
             this.#disabledQuestionIds.push(questionId);
             Array.from(this.#container.querySelectorAll(".question-palette-item")).find(item => Number(item.dataset.questionId) === questionId).classList.add(..."opacity-20 pointer-events-none".split(" "));
+            return this.#questions.find(q => q.id === questionId);
         }
-            
+        return null;   
     }
 
-    removeQuestionIdFromDisabledListThenEnableIt(questionId = 0) {
+    enableQuestion(questionId = 0) {
         const index = this.#disabledQuestionIds.indexOf(questionId);
         if (index > -1) {
             this.#disabledQuestionIds.splice(index, 1);
@@ -122,7 +126,7 @@ export class QuestionListPaletteComponent extends BaseComponent {
         }
     }
 
-    disableQuestions() {      
+    #disableQuestions() {      
         Array.from(this.#container.querySelectorAll(".question-palette-item")).forEach(item => {
             if (this.#disabledQuestionIds.includes(Number(item.dataset.questionId)))
                 item.classList.add(..."opacity-20 pointer-events-none".split(" "));
@@ -138,12 +142,8 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#paginationComponent.totalPages = this.#totalPages;
         this.#paginationComponent.populatePaginationInfo();                
         this.#questionListContainerForPalette.innerHTML = this.#renderQuestions();    
-        this.disableQuestions();
-    }
-
-    get questions() {
-        return this.#questions;
-    }
+        this.#disableQuestions();
+    }   
 
     set questions(value = [new Question()]) {
         this.#questions = value;
@@ -161,11 +161,15 @@ export class QuestionListPaletteComponent extends BaseComponent {
         this.#courseName = value;
     }  
 
+    set disabledQuestionIds(value = [0]) {
+        this.#disabledQuestionIds = value;
+    }
+
     #renderQuestions() {
         return this.#questions.reduce((accumulator, currentValue) => {
             return accumulator + `
 <!-- Active: "bg-gray-200" -->
-<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-xl p-3 cursor-pointer" draggable="true">
+<li data-question-id="${currentValue.id}" class="question-palette-item group flex items-center select-none rounded-lg p-3 cursor-pointer" draggable="true">
     <div class="ml-4 basis-4/5">
         <!-- Active: "text-gray-900", Not Active: "text-gray-700" -->
         <div class="prose prose-sm font-medium text-violet-700 mb-2">

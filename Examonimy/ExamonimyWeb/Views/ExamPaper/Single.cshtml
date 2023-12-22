@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Chi tiết đề thi";
+    Layout = "_TeacherLayout";
+}
+@model ExamPaperSingleViewModel
+<div>
+    @await Html.PartialAsync("_PageHeadingPartial", "Chi tiết đề thi")
+    <div class="flex justify-between">
+        <div>
+            <a href="/exam-paper" class="text-base font-semibold text-violet-700 hover:text-violet-600 flex items-center gap-x-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                </svg>
+                Quay lại
+            </a>
+        </div>
+        <div>
+            <div class="hidden sm:block">
+                <nav id="tab-button-container" class="flex justify-end space-x-5" aria-label="Tabs">                  
+                    <a href="/exam-paper/edit/@Model.ExamPaper.Id" class="w-20 text-center bg-green-200 text-green-700 hover:bg-green-300 hover:text-green-800 rounded-md px-3 py-2 text-sm font-medium">Sửa</a>
+                    <button id="delete-btn" type="button" title="Xóa đề thi" class="w-20 bg-red-200 text-red-700 hover:bg-red-300 hover:text-red-800 rounded-md px-3 py-2 text-sm font-medium">Xóa</button>
+                    <div id="confirm-delete-modal-container"></div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center">
+    <div class="w-1/2">
+        <div id="exam-paper-detail-container" data-exam-paper-id="@Model.ExamPaper.Id" class="mb-10 p-8 bg-white rounded-lg">           
+            <div class="flex gap-x-28">
+                <div>
+                    <div class="mb-10">
+                        <h5 class="mb-3 font-semibold text-gray-900">Mã đề thi</h5>
+                        <p class="font-normal text-gray-700">@Model.ExamPaper.ExamPaperCode</p>
+                    </div>
+                    <div>
+                        <h5 class="mb-3 font-semibold text-gray-900">Tác giả</h5>
+                        <p class="font-normal text-gray-700">@Model.ExamPaper.Author.FullName</p>
+                    </div>
+                </div>
+                          
+                <div>
+                    <div class="mb-10">
+                        <h5 class="mb-3 font-semibold text-gray-900">Môn học</h5>
+                        <p class="font-normal text-gray-700">@Model.ExamPaper.Course.Name</p>
+                    </div>
+                    <div>
+                        <h5 class="mb-3 font-semibold text-gray-900">Ngày tạo</h5>
+                        <p class="font-normal text-gray-700">20/12/2023</p>
+                    </div>                 
+                </div>
+            </div>
+
+        </div> 
+        <div id="question-list-container" class="space-y-8">
+
+        </div>
+    </div>
+</div>
+<script src="~/js/pages/exam-paper-single.page.js" type="module"></script>
