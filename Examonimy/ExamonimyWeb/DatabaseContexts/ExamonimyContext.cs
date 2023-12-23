@@ -18,7 +18,7 @@ namespace ExamonimyWeb.DatabaseContexts
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Role>(new RoleConfiguration());
-            //modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
+            modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
             modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
