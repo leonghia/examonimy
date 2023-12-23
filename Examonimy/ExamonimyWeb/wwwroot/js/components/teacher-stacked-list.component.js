@@ -1,9 +1,13 @@
-﻿import { mapByFullName } from "../helpers/user.helper.js";
+﻿import { postData } from "../helpers/ajax.helper.js";
+import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { mapByFullName } from "../helpers/user.helper.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
 import { User } from "../models/user.model.js";
 import { BaseComponent } from "./base.component.js";
 
 
 export class TeacherStackedListComponent extends BaseComponent {
+    #examPaperId;
     #container;
     #teachers;
     #closeButton;
@@ -11,20 +15,46 @@ export class TeacherStackedListComponent extends BaseComponent {
         close: [],
         confirm: []
     }
+    #confirmButton;
 
-    constructor(container = new HTMLElement(), teachers = [new User()]) {
+    constructor(container = new HTMLElement(), teachers = [new User()], examPaperId = 0) {
         super();
         this.#container = container;
         this.#teachers = teachers;
+        this.#examPaperId = examPaperId;
     }
 
     connectedCallback() {
         this.#container.innerHTML = this.render();
         this.#closeButton = this.#container.querySelector("#close-btn");
+        this.#confirmButton = this.#container.querySelector("#confirm-btn");
 
         this.#closeButton.addEventListener("click", () => {
             this.#container.innerHTML = "";
             this._trigger("close");
+        });
+
+        this.#confirmButton.addEventListener("click", async () => {
+            const teacherIds = Array.from(this.#container.querySelectorAll(".teacher")).filter(e => e.checked).map(e => Number(e.value));
+            try {
+                showSpinnerForButton(this.#confirmButton.querySelector(".button-text"), this.#confirmButton, new SpinnerOption("w-5", "h-5"));
+                setTimeout(() => {                   
+                    hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"));
+                    this.#confirmButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                        </svg>
+                        `;
+                    setTimeout(() => {
+                        this.#container.innerHTML = "";                       
+                        this._trigger("confirm", { examPaperId: this.#examPaperId, teacherIds });
+                    }, 1500);
+                    
+                    
+                }, 3000);
+            } catch (err) {
+                console.error(err);
+            }
         });
     }
 
@@ -48,7 +78,7 @@ export class TeacherStackedListComponent extends BaseComponent {
                         <p class="mt-1 truncate text-xs leading-5 text-gray-500">${teacher.email}</p>
                     </div>
                 </div>
-                <input id="${teacher.id}" type="checkbox" value="${teacher.id}" name="reviewer" class="w-5 h-5 text-teal-500 bg-gray-300 border-none rounded focus:ring-0 focus:ring-offset-0">
+                <input id="${teacher.id}" type="checkbox" value="${teacher.id}" name="teacher" class="teacher w-5 h-5 text-teal-500 bg-gray-300 border-none rounded focus:ring-0 focus:ring-offset-0">
             </li>
             `;
         }, "")}
@@ -101,7 +131,7 @@ export class TeacherStackedListComponent extends BaseComponent {
                     ${this.#renderListMarkup(mapByFullName(this.#teachers))}                               
                 </nav>
                 <div class="w-full p-4 flex items-center justify-end">
-                    <button type="button" class="text-sm font-semibold bg-violet-300 hover:bg-violet-400 text-violet-800 hover:text-violet-900 rounded-md py-2 px-4">Xác nhận</button>
+                    <button type="button" id="confirm-btn" class="w-24 flex items-center justify-center text-sm font-semibold bg-violet-300 hover:bg-violet-400 text-violet-800 hover:text-violet-900 rounded-md py-3 px-4"><span class="button-text">Xác nhận</span></button>
                 </div>
             </div>
             

@@ -35,7 +35,7 @@ const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teach
     paginationComponent.connectedCallback();
 }
 
-const handler = async (requestParams = new ExamPaperRequestParams()) => {
+const examPapersHandler = async (requestParams = new ExamPaperRequestParams()) => {
     const res = await fetchData("exam-paper", requestParams);   
     examPaperTableComponent.examPapers = res.data;
     examPaperTableComponent.populateTableBody();
@@ -78,13 +78,13 @@ courseDropdown.addEventListener("click", event => {
 });
 
 filterButton.addEventListener("click", () => {
-    handler(examPaperRequestParams);
+    examPapersHandler(examPaperRequestParams);
 });
 
 searchForm.addEventListener("click", event => {
     event.preventDefault();
     examPaperRequestParams.searchQuery = searchInput.value;
-    handler(examPaperRequestParams);
+    examPapersHandler(examPaperRequestParams);
 });
 
 

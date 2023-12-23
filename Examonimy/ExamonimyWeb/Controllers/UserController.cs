@@ -30,7 +30,10 @@ namespace ExamonimyWeb.Controllers
             Expression<Func<User, bool>>? filterPredicate = null;
             if (requestParamsForUser?.RoleId is not null && requestParamsForUser.RoleId > 0)
                 filterPredicate = u => u.RoleId == requestParamsForUser.RoleId;
-            var users = await _userRepository.GetAsync(null, filterPredicate, null, q => q.OrderBy(u => u.FullName));
+            var users = (await _userRepository.GetAsync(null, filterPredicate, null, q => q.OrderBy(u => u.FullName))).ToList();
+            var contextUser = await base.GetContextUser();
+            var index = users.FindIndex(u => u.Id == contextUser.Id);
+            users.RemoveAt(index);
             var usersToReturn = users.Select(u => _mapper.Map<UserGetDto>(u));
             return Ok(usersToReturn);
         }

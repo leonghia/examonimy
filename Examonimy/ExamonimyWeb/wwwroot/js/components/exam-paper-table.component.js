@@ -3,6 +3,7 @@ import { ExamPaper } from "../models/exam-paper.model.js";
 import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
 import { TeacherStackedListComponent } from "./teacher-stacked-list.component.js";
 import { User } from "../models/user.model.js";
+import { BaseComponent } from "./base.component.js";
 
 export class ExamPaperTableComponent {
     #container;
@@ -11,9 +12,9 @@ export class ExamPaperTableComponent {
     #tableBody;
     #fromItemNumber = 1;
     #modalComponent;
-    #teacherStackedListComponent = new TeacherStackedListComponent(null);
+    #teacherStackedListComponent = new TeacherStackedListComponent(null);  
 
-    constructor(container = new HTMLElement(), examPapers = [new ExamPaper()], teachers = [new User()]) {
+    constructor(container = new HTMLElement(), examPapers = [new ExamPaper()], teachers = [new User()]) {      
         this.#container = container;
         this.#examPapers = examPapers;
         this.#teachers = teachers;
@@ -52,12 +53,26 @@ export class ExamPaperTableComponent {
 
             const clickedAddReviewerButton = event.target.closest(".add-reviewer-btn");
             if (clickedAddReviewerButton) {
-                this.#teacherStackedListComponent = new TeacherStackedListComponent(clickedAddReviewerButton.parentElement.querySelector(".teacher-stacked-list-container"), this.#teachers);
+                this.#teacherStackedListComponent = new TeacherStackedListComponent(clickedAddReviewerButton.parentElement.querySelector(".teacher-stacked-list-container"), this.#teachers, Number(clickedAddReviewerButton.closest(".exam-paper").dataset.examPaperId));
                 this.#teacherStackedListComponent.connectedCallback();
                 this.#teacherStackedListComponent.subscribe("close", () => {
                     this.#teacherStackedListComponent = undefined;
                 });
+                this.#teacherStackedListComponent.subscribe("confirm", (data = { examPaperId: 0, teacherIds: [0] }) => {
+                    const teachers = this.#teachers.filter(t => data.teacherIds.indexOf(t.id) > -1);        
+                    this.#populateReviewers(this.#container.querySelector(`.exam-paper[data-exam-paper-id="${data.examPaperId}"]`).querySelector(".reviewer-container"), teachers);
+                    this.#teacherStackedListComponent = undefined;                 
+                });
             }
+        });
+    }
+
+    #populateReviewers(container = new HTMLElement(), reviewers = [new User()]) {
+        container.querySelectorAll(".reviewer").forEach(r => r.remove());
+        reviewers.forEach(r => {
+            container.insertAdjacentHTML("afterbegin", `
+            <img title="${r.fullName}" class="reviewer w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="${r.profilePicture}" alt="profile picture of user ${r.userName}">
+            `);
         });
     }
 
@@ -87,7 +102,7 @@ export class ExamPaperTableComponent {
     #renderExamPapers() {
         return this.#examPapers.reduce((accumulator, examPaper, currentIndex) => {
             return accumulator + `
-<tr class="">
+<tr class="exam-paper" data-exam-paper-id="${examPaper.id}">
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + currentIndex}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm font-semibold text-violet-700 hover:text-violet-600">
         <a href="/exam-paper/${examPaper.id}">${examPaper.examPaperCode}</a>
@@ -96,7 +111,7 @@ export class ExamPaperTableComponent {
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${examPaper.numbersOfQuestion}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${examPaper.author.fullName}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        <div class="flex -space-x-4 rtl:space-x-reverse">
+        <div class="reviewer-container flex -space-x-4 rtl:space-x-reverse">
             <!-- <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
             <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
             <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt=""> -->
