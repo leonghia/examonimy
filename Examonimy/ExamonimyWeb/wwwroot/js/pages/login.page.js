@@ -1,7 +1,7 @@
 ﻿// Imports
 import { BASE_API_URL } from "../config.js";
 import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton } from "../helpers/markup.helper.js";
-import { UserLogin } from "../models/user-login.model.js";
+import { UserLogin } from "../models/user.model.js";
 import { StatusCodes } from "../helpers/status-code.helper.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";

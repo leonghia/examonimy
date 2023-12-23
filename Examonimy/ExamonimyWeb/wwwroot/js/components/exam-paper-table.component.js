@@ -52,7 +52,7 @@ export class ExamPaperTableComponent {
 
             const clickedAddReviewerButton = event.target.closest(".add-reviewer-btn");
             if (clickedAddReviewerButton) {
-                this.#teacherStackedListComponent = new TeacherStackedListComponent(clickedAddReviewerButton.parentElement.querySelector(".teacher-stacked-list-container"));
+                this.#teacherStackedListComponent = new TeacherStackedListComponent(clickedAddReviewerButton.parentElement.querySelector(".teacher-stacked-list-container"), this.#teachers);
                 this.#teacherStackedListComponent.connectedCallback();
                 this.#teacherStackedListComponent.subscribe("close", () => {
                     this.#teacherStackedListComponent = undefined;

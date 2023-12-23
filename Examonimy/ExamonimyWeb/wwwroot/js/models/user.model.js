@@ -1,11 +1,11 @@
 ﻿export class User {
-    id;
-    fullName;
-    userName;
-    email;
+    id = 0;
+    fullName = "";
+    userName = "";
+    email = "";
     dateOfBirth;
     role;
-    profilePicture;
+    profilePicture = "";
 }
 
 export class UserLogin {

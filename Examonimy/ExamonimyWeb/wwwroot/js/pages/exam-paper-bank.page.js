@@ -25,13 +25,13 @@ const teacherRequestParams = new UserRequestParams(RoleId.Teacher);
 
 // Function expressions
 const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teacherRequestParams = new UserRequestParams()) => {
-    let res = await fetchData("exam-paper", examPaperRequestParams);
-    const examPapers = res.data;  
-    res = await fetchData("user", teacherRequestParams);
-    const teachers = res.data;
+    const getExamPapersResponse = await fetchData("exam-paper", examPaperRequestParams);
+    const examPapers = getExamPapersResponse.data;  
+    const getTeachersResponse = await fetchData("user", teacherRequestParams);
+    const teachers = getTeachersResponse.data;
     examPaperTableComponent = new ExamPaperTableComponent(tableContainer, examPapers, teachers);
     examPaperTableComponent.connectedCallback();
-    paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", res.paginationMetadata.totalCount, res.paginationMetadata.pageSize, res.paginationMetadata.currentPage, res.paginationMetadata.totalPages);
+    paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", getExamPapersResponse.paginationMetadata.totalCount, getExamPapersResponse.paginationMetadata.pageSize, getExamPapersResponse.paginationMetadata.currentPage, getExamPapersResponse.paginationMetadata.totalPages);
     paginationComponent.connectedCallback();
 }
 

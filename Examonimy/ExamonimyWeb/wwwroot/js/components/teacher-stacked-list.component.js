@@ -1,4 +1,5 @@
-﻿import { User } from "../models/user.model.js";
+﻿import { mapByFullName } from "../helpers/user.helper.js";
+import { User } from "../models/user.model.js";
 import { BaseComponent } from "./base.component.js";
 
 
@@ -27,7 +28,35 @@ export class TeacherStackedListComponent extends BaseComponent {
         });
     }
 
-    
+    #renderListMarkup(teacherMap = new Map([["", [new User()]]])) {
+        const keys = Array.from(teacherMap.keys());
+        return keys.reduce((accumulator, key) => {
+            const teacherArr = teacherMap.get(key);
+            return accumulator + `
+<div class="relative">
+    <div class="sticky top-0 z-10 border-y border-b-gray-200 border-t-gray-100 bg-gray-50 px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900">
+        <h3>${key}</h3>
+    </div>
+    <ul role="list" class="divide-y divide-gray-100">
+        ${teacherArr.reduce((accumulator, teacher) => {
+            return accumulator + `
+            <li class="flex items-center justify-between p-4">
+                <div class="flex gap-x-4">
+                    <img class="h-12 w-12 flex-none rounded-full bg-gray-50" src="${teacher.profilePicture}" alt="profile image">
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold leading-6 text-gray-900">${teacher.fullName}</p>
+                        <p class="mt-1 truncate text-xs leading-5 text-gray-500">${teacher.email}</p>
+                    </div>
+                </div>
+                <input id="${teacher.id}" type="checkbox" value="${teacher.id}" name="reviewer" class="w-5 h-5 text-teal-500 bg-gray-300 border-none rounded focus:ring-0 focus:ring-offset-0">
+            </li>
+            `;
+        }, "")}
+    </ul>
+</div>
+            `;
+        }, "");
+    }
 
     render() {
         return `
@@ -69,23 +98,7 @@ export class TeacherStackedListComponent extends BaseComponent {
                     </button>
                 </div>
                 <nav class="max-h-96 w-full overflow-y-auto">
-                    <div class="relative">
-                        <div class="sticky top-0 z-10 border-y border-b-gray-200 border-t-gray-100 bg-gray-50 px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900">
-                            <h3>A</h3>
-                        </div>
-                        <ul role="list" class="divide-y divide-gray-100">
-                            <li class="flex items-center justify-between p-4">
-                                <div class="flex gap-x-4">
-                                    <img class="h-12 w-12 flex-none rounded-full bg-gray-50" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-semibold leading-6 text-gray-900">Leslie Abbott</p>
-                                        <p class="mt-1 truncate text-xs leading-5 text-gray-500">leslie.abbott@example.com</p>
-                                    </div>
-                                </div>
-                                <input id="default-checkbox" type="checkbox" value="" class="w-5 h-5 text-teal-500 bg-gray-300 border-none rounded focus:ring-0 focus:ring-offset-0">
-                            </li>                         
-                        </ul>
-                    </div>                                  
+                    ${this.#renderListMarkup(mapByFullName(this.#teachers))}                               
                 </nav>
                 <div class="w-full p-4 flex items-center justify-end">
                     <button type="button" class="text-sm font-semibold bg-violet-300 hover:bg-violet-400 text-violet-800 hover:text-violet-900 rounded-md py-2 px-4">Xác nhận</button>
