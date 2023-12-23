@@ -8,5 +8,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId);
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
         Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate);
+        Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers);
     }
 }

@@ -107,6 +107,7 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
             services.AddScoped<IGenericRepository<ExamPaper>, GenericRepository<ExamPaper>>();
             services.AddScoped<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
+            services.AddScoped<IGenericRepository<ExamPaperReviewer>, GenericRepository<ExamPaperReviewer>>();
             
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();

@@ -103,7 +103,7 @@ namespace ExamonimyWeb.Controllers
             {
                 filterPredicate = filterPredicate.And(eP => eP.Status == requestParamsForExamPaper.Status);
             }
-            var examPapers = await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course" });
+            var examPapers = await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course", "Reviewers" });
             var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
 
             for (var i = 0; i < examPapersToReturn.Length; i++)
@@ -224,6 +224,20 @@ namespace ExamonimyWeb.Controllers
             return NoContent();
         }
 
-       
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPost("api/exam-paper/{id:int}/reviewer")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> AddReviewers([FromRoute] int id, [FromBody] ExamPaperReviewerCreateDto examPaperReviewerCreateDto)
+        {
+            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (examPaper.AuthorId != contextUser.Id)
+                return Forbid();
+            var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
+            await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+            return Accepted();
+        }
     }
 }

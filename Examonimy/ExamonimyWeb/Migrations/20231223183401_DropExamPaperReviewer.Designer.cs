@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231223183401_DropExamPaperReviewer")]
+    partial class DropExamPaperReviewer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,21 +247,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("ExamPaperQuestion");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
-                {
-                    b.Property<int>("ExamPaperId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ExamPaperId", "ReviewerId");
-
-                    b.HasIndex("ReviewerId");
-
-                    b.ToTable("ExamPaperReviewer");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
@@ -620,25 +608,6 @@ namespace ExamonimyWeb.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
-                {
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
-                        .WithMany("ExamPaperReviewers")
-                        .HasForeignKey("ExamPaperId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ExamonimyWeb.Entities.User", "Reviewer")
-                        .WithMany("ExamPaperReviewers")
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExamPaper");
-
-                    b.Navigation("Reviewer");
-                });
-
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.Question", "Question")
@@ -743,8 +712,6 @@ namespace ExamonimyWeb.Migrations
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
                 {
                     b.Navigation("ExamPaperQuestions");
-
-                    b.Navigation("ExamPaperReviewers");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
@@ -759,8 +726,6 @@ namespace ExamonimyWeb.Migrations
 
             modelBuilder.Entity("ExamonimyWeb.Entities.User", b =>
                 {
-                    b.Navigation("ExamPaperReviewers");
-
                     b.Navigation("ExamPapersCreated");
                 });
 #pragma warning restore 612, 618

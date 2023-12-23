@@ -1,5 +1,4 @@
 ﻿using ExamonimyWeb.DTOs.CourseDTO;
-using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Utilities;
 
@@ -20,5 +19,6 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO
         
         public required string StatusAsString { get; set; }
         public ExamPaperStatus? Status { get; set; }
+        public ICollection<UserGetDto>? Reviewers { get; set; }
     }
 }

@@ -37,7 +37,10 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.Entity<ExamPaper>()
                 .HasMany(eP => eP.Reviewers)
                 .WithMany(r => r.ExamPapersToReview)
-                .UsingEntity<ExamPaperReviewer>();
+                .UsingEntity<ExamPaperReviewer>(
+                l => l.HasOne<User>(ePR => ePR.Reviewer).WithMany(r => r.ExamPaperReviewers).HasForeignKey(ePR => ePR.ReviewerId),
+                r => r.HasOne<ExamPaper>(ePR => ePR.ExamPaper).WithMany(eP => eP.ExamPaperReviewers).HasForeignKey(ePR => ePR.ExamPaperId)
+                );
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
