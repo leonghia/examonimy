@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231223174422_AddExamPaperReviewer")]
+    partial class AddExamPaperReviewer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -587,6 +590,138 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 6,
+                            Email = "thidk@fpt.edu.vn",
+                            FullName = "Đặng Kim Thi",
+                            NormalizedEmail = "THIDK@FPT.EDU.VN",
+                            NormalizedUsername = "THIDK",
+                            PasswordHash = "25C4A05A401000EB67E805E8F49E3D460D8F67718D91FF034454CDBBD423D16913F10469FB22EF470C771AC4AAB437E5C1E47D8320AF8DD9F0718ABC970B283F",
+                            PasswordSalt = "5CF20C1370EEBB9235957D691D37352832A7EEA3C7CAF6D1AAD0957D7BF3A8AC1F7018BE1BF80EB0361791335B96CCC94A7E50F3DEFC93373AF0FB1AE5AAD63F",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "thidk"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Email = "hoangnd@fpt.edu.vn",
+                            FullName = "Nguyễn Duy Hoàng",
+                            NormalizedEmail = "HOANGND@FPT.EDU.VN",
+                            NormalizedUsername = "HOANGND",
+                            PasswordHash = "DC84980009F1AD7E7020B01AE451783D00D65F9FD6DDDF4EDE5D7CD7C7F791669B71AE24144748318FEC5319CFC7E8BE0DF7CBB9011F7E36C5C2BC09807B45D3",
+                            PasswordSalt = "16D8241490AA803057CFC65E332E8532291BA1B300E6E2DAF860D5B9DB2A2865F01CA312BFD74D8A3FC4ABCFB5E0FB23BF0100E99FB215876A8E2FD30F1B6712",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "hoangnd"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Email = "cuongnx@fpt.edu.vn",
+                            FullName = "Nguyễn Xuân Cường",
+                            NormalizedEmail = "CUONGNX@FPT.EDU.VN",
+                            NormalizedUsername = "CUONGNX",
+                            PasswordHash = "E3B9B76300ED1CE7E97B14AFF40879DADF896C20B67DC1943A9597DC17AB0259F92AB7E3830355B061B4535DD6470703030D8A29BB54FBD5E47042763D9F25AC",
+                            PasswordSalt = "32080D3DE169B585829967B39D6A8B026209B8ABB6E51045BAAF9790F45950BCCF38E3101F7605392F03B53110D044B2547FAF6293B68D975016F14CBC1DA2BE",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "cuongnx"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Email = "phuongvh@fpt.edu.vn",
+                            FullName = "Vũ Hữu Phương",
+                            NormalizedEmail = "PHUONGVH@FPT.EDU.VN",
+                            NormalizedUsername = "PHUONGVH",
+                            PasswordHash = "955FB5728BE748FEA60EF7BA4167BFF3BF3202C2018D36818CAE2B5642D45BCF67B4987BA4885E2DA7644D9F233F8BC5499085F94F87E352A7AF9B1DEDB050A9",
+                            PasswordSalt = "AF2E1E5706739014B8DAD59BC8DEB6B6ED009EC5F94961B042D65D9080646A58AA01899AE2D664C04F1B121B6FCF34480530C5702E38D11780B7FC33DB82DC31",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "phuongvh"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Email = "vantn@fpt.edu.vn",
+                            FullName = "Trịnh Ngọc Văn",
+                            NormalizedEmail = "VANTN@FPT.EDU.VN",
+                            NormalizedUsername = "VANTN",
+                            PasswordHash = "69399730175D3EB09F19E3B607BDD4DBC272886B37E89EF0F9AE3CF7E701FCE3F97AACAF75EE8867F0A0F7C4DC31811186F16F0A08B4C90AA9FB616C08466461",
+                            PasswordSalt = "C572D1B49E5936DCA81A614C93E44DA977C596661D38B1422ED0C5A1665741CFECC9FD284FD8C3726E4D5154A1202745B88615ED2EDFB33B52BD1BD32665D825",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "vantn"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Email = "tuann@fpt.edu.vn",
+                            FullName = "Nguyễn Tuân",
+                            NormalizedEmail = "TUANN@FPT.EDU.VN",
+                            NormalizedUsername = "TUANN",
+                            PasswordHash = "DFEB56D8376A9B4FE5A1B6F077E9E80C1F2FFC167AB576EE7F083F1A1514E2ACA8D22CA30E15103E9DE7CF2044D361C4483D3AD7D2A73A03591984DFEE912676",
+                            PasswordSalt = "89B1BE6E25138FCC0B1FC6ADE752D5D7416641EFF917909A54C79880B205C8D4D30EF68CE668B8C84C3B5ED32856F458B3A6AD73B854F73C9365C971E8A7B95F",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "tuann"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Email = "truongtm@fpt.edu.vn",
+                            FullName = "Trần Mạnh Trường",
+                            NormalizedEmail = "TRUONGTM@FPT.EDU.VN",
+                            NormalizedUsername = "TRUONGTM",
+                            PasswordHash = "17405E85BCECEB113008F038B26B6E3CF465A4573FEA1B89F649E129CF8ED2407361407B7AE2302EA08618227F19290B4030B22FFAD614AFDFC9ED52C7178243",
+                            PasswordSalt = "66AF127C9F9487E35B93E0D455814E63593B4DBEF80851EC5FBD0C37B0BF256183B1836991D08A195B5D02F2E0070D466D6C77B0A65006B0941CE3B20119270C",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "truongtm"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Email = "vinhmt@fpt.edu.vn",
+                            FullName = "Mai Thành Vinh",
+                            NormalizedEmail = "VINHMT@FPT.EDU.VN",
+                            NormalizedUsername = "VINHMT",
+                            PasswordHash = "EB7A71BBAC2BE531D75FCA89EB57597BBA1FF0E1C54CB3AC212CF8428150229D2604BCE7CDA1E662A52E397D44A5E08E5CB8D6585F568AAE291E3F084F8C527A",
+                            PasswordSalt = "B1A17649BE6477DFBE69569B9D74C62CE6F1F98532AC99641985D185371E7090C2CDB8D03BF0E981B34151E3B8052AE701966C3BEC7E3EC6EF27209C73B7FEE0",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "vinhmt"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Email = "anhth@fpt.edu.vn",
+                            FullName = "Trần Hoàng Anh",
+                            NormalizedEmail = "ANHTH@FPT.EDU.VN",
+                            NormalizedUsername = "ANHTH",
+                            PasswordHash = "017D240304171EF7890A83F8CE9288FEEF7855BF6578BB8FAC801753FB41CB3EBE360EFA93FCCF1A03C2EFEBD9944AD65269506E84E6838C3120FE17C8399341",
+                            PasswordSalt = "C0A4F51912C4BCCDA2FAF624B4104A609914613A7491DC4389F3CC5F5BA91A0C25BFE9A863963652F5BEEC05D435D23C0FD7B136D5A340840CB1AA7134DC50E9",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "anhth"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Email = "lammn@fpt.edu.vn",
+                            FullName = "Man Ngọc Lam",
+                            NormalizedEmail = "lammn@fpt.edu.vn",
+                            NormalizedUsername = "LAMMN",
+                            PasswordHash = "55A4DE6C427D623DA9FB8627DAD33CA32027DD0CDD0FCE9A96DC1C148C24AE1FD66BF4024655B465E313D6DCE14E4F2712D3E5B2EEB67E86E52AF07CDB83ADB6",
+                            PasswordSalt = "F37509B56DD1527C585A39E8CD0DBD96364977C1578AE6FE65244D278370E1C8F0AEC7645201C64587D6C56ABA5BA34EED2A4E362840CBA0F4A49E470300CEA8",
+                            ProfilePicture = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg",
+                            RoleId = 2,
+                            Username = "lammn"
+                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>

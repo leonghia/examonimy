@@ -18,7 +18,7 @@ namespace ExamonimyWeb.DatabaseContexts
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration<Role>(new RoleConfiguration());
-            modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
+            //modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
             modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
@@ -27,6 +27,17 @@ namespace ExamonimyWeb.DatabaseContexts
                 .HasMany(eP => eP.Questions)
                 .WithMany(q => q.ExamPapers)
                 .UsingEntity<ExamPaperQuestion>();
+
+            modelBuilder.Entity<ExamPaper>()
+                .HasOne(eP => eP.Author)
+                .WithMany(a => a.ExamPapersCreated)
+                .HasForeignKey(eP => eP.AuthorId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaper>()
+                .HasMany(eP => eP.Reviewers)
+                .WithMany(r => r.ExamPapersToReview)
+                .UsingEntity<ExamPaperReviewer>();
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
