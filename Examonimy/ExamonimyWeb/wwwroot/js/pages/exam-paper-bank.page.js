@@ -1,11 +1,10 @@
 ﻿// Imports
 import { ExamPaperTableComponent } from "../components/exam-paper-table.component.js";
 import { AdvancedPaginationComponent } from "../components/advanced-pagination.component.js";
-import { ExamPaperRequestParams, RequestParams } from "../models/request-params.model.js";
-import { deleteData, fetchData } from "../helpers/ajax.helper.js";
+import { ExamPaperRequestParams, UserRequestParams } from "../models/request-params.model.js";
+import { fetchData } from "../helpers/ajax.helper.js";
 import { selectDropdownItem, toggleDropdown } from "../helpers/markup.helper.js";
-import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
-import { BASE_URL } from "../config.js";
+import { RoleId } from "../helpers/user.helper.js";
 
 // DOM selectors
 const tableContainer = document.querySelector("#table-container");
@@ -21,15 +20,16 @@ const searchInput = document.querySelector("#search-input");
 // States
 let examPaperTableComponent = new ExamPaperTableComponent(tableContainer);
 let paginationComponent = new AdvancedPaginationComponent(paginationContainer);
-const requestParams = new ExamPaperRequestParams(null, null, null, 10, 1);
-let modalComponent;
+const examPaperRequestParams = new ExamPaperRequestParams(null, null, null, 10, 1);
+const teacherRequestParams = new UserRequestParams(RoleId.Teacher);
 
 // Function expressions
-const init = async (requestParams = new ExamPaperRequestParams()) => {
-    let res = await fetchData("exam-paper", requestParams);
-    const examPapers = res.data;
-    res = await fetchData("")
-    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, res.data);
+const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teacherRequestParams = new UserRequestParams()) => {
+    let res = await fetchData("exam-paper", examPaperRequestParams);
+    const examPapers = res.data;  
+    res = await fetchData("user", teacherRequestParams);
+    const teachers = res.data;
+    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, examPapers, teachers);
     examPaperTableComponent.connectedCallback();
     paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", res.paginationMetadata.totalCount, res.paginationMetadata.pageSize, res.paginationMetadata.currentPage, res.paginationMetadata.totalPages);
     paginationComponent.connectedCallback();
@@ -57,9 +57,9 @@ statusDropdown.addEventListener("click", event => {
         return;
     const value = clicked.querySelector("input").value;
     if (value === "all")
-        requestParams.status = null;
+        examPaperRequestParams.status = null;
     else
-        requestParams.status = Number(value);
+        examPaperRequestParams.status = Number(value);
 });
 
 courseDropdownButton.addEventListener("click", () => {
@@ -72,21 +72,21 @@ courseDropdown.addEventListener("click", event => {
         return;
     const value = clicked.querySelector("input").value;
     if (value === "all")
-        requestParams.courseId = null;
+        examPaperRequestParams.courseId = null;
     else
-        requestParams.courseId = Number(value);
+        examPaperRequestParams.courseId = Number(value);
 });
 
 filterButton.addEventListener("click", () => {
-    handler(requestParams);
+    handler(examPaperRequestParams);
 });
 
 searchForm.addEventListener("click", event => {
     event.preventDefault();
-    requestParams.searchQuery = searchInput.value;
-    handler(requestParams);
+    examPaperRequestParams.searchQuery = searchInput.value;
+    handler(examPaperRequestParams);
 });
 
 
 // On load
-init(requestParams);
+init(examPaperRequestParams, teacherRequestParams);

@@ -34,3 +34,12 @@ export class ExamPaperRequestParams extends RequestParams {
         this.status = status;
     }
 }
+
+export class UserRequestParams extends RequestParams {
+    roleId = 0;
+
+    constructor(roleId = null, searchQuery = null, pageSize = null, pageNumber = null) {
+        super(searchQuery, pageSize, pageNumber);
+        this.roleId = roleId;
+    }
+}
