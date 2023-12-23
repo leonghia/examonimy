@@ -1,11 +1,15 @@
 ﻿import { ExamPaperStatusBadgeBackgroundColorMappings, ExamPaperStatusBadgeFillColorMappings, ExamPaperStatusBadgeTextColorMappings } from "../helpers/exam-paper.helper.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
+import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
+import { TeacherStackedListComponent } from "./teacher-stacked-list.component.js";
 
 export class ExamPaperTableComponent {
     #container;
     #examPapers = [new ExamPaper()];
     #tableBody;
     #fromItemNumber = 1;
+    #modalComponent;
+    #teacherStackedListComponent = new TeacherStackedListComponent(null);
 
     constructor(container = new HTMLElement(), examPapers = [new ExamPaper()]) {
         this.#container = container;
@@ -15,6 +19,43 @@ export class ExamPaperTableComponent {
     connectedCallback() {
         this.#container.innerHTML = this.#render();
         this.#tableBody = this.#container.querySelector("tbody");
+
+        this.#container.addEventListener("click", event => {          
+            const clickedDeleteButton = event.target.closest(".delete-btn");
+            if (clickedDeleteButton) {
+                const modalContainer = clickedDeleteButton.parentElement.querySelector(".modal-container");
+                const examPaperId = Number(clickedDeleteButton.dataset.examPaperId);
+                this.#modalComponent = new ConfirmModalComponent(modalContainer, {
+                    title: "Xóa đề thi",
+                    description: "Bạn có chắc chắn muốn xóa đề thi này? Đề thi sau khi bị xóa sẽ không thể khôi phục lại.",
+                    ctaText: "Xác nhận"
+                });
+                this.#modalComponent.connectedCallback();
+                this.#modalComponent.subscribe("confirm", async () => {
+                    try {
+                        await deleteData("exam-paper", examPaperId);
+                        document.location.reload();
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+                this.#modalComponent.subscribe("cancel", () => {
+                    this.#modalComponent?.disconnectedCallback();
+                    this.#modalComponent = null;
+                });
+
+                return;
+            }
+
+            const clickedAddReviewerButton = event.target.closest(".add-reviewer-btn");
+            if (clickedAddReviewerButton) {
+                this.#teacherStackedListComponent = new TeacherStackedListComponent(clickedAddReviewerButton.parentElement.querySelector(".teacher-stacked-list-container"));
+                this.#teacherStackedListComponent.connectedCallback();
+                this.#teacherStackedListComponent.subscribe("close", () => {
+                    this.#teacherStackedListComponent = undefined;
+                });
+            }
+        });
     }
 
     populateTableBody() {
@@ -53,14 +94,15 @@ export class ExamPaperTableComponent {
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${examPaper.author.fullName}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <div class="flex -space-x-4 rtl:space-x-reverse">
+            <!-- <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
             <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
-            <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
-            <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt="">
-            <button type="button" class="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800" title="Thêm kiểm duyệt viên">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-slot="icon" class="w-4 h-4 text-white">
+            <img class="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg" alt=""> -->
+            <button type="button" class="add-reviewer-btn flex items-center justify-center w-10 h-10 text-xs font-medium text-gray-800 bg-gray-200 border-2 border-white rounded-full hover:text-gray-900 hover:bg-gray-300 dark:border-gray-800" title="Thêm kiểm duyệt viên">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-slot="icon" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                 </svg>
             </button>
+            <div class="teacher-stacked-list-container"></div>
         </div>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

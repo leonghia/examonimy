@@ -86,32 +86,6 @@ searchForm.addEventListener("click", event => {
     handler(requestParams);
 });
 
-tableContainer.addEventListener("click", event => {
-    const clickedDeleteButton = event.target.closest(".delete-btn");
-    if (clickedDeleteButton) {
-        const modalContainer = clickedDeleteButton.parentElement.querySelector(".modal-container");
-        const examPaperId = Number(clickedDeleteButton.dataset.examPaperId);
-        modalComponent = new ConfirmModalComponent(modalContainer, {
-            title: "Xóa đề thi",
-            description: "Bạn có chắc chắn muốn xóa đề thi này? Đề thi sau khi bị xóa sẽ không thể khôi phục lại.",
-            ctaText: "Xác nhận"
-        });
-        modalComponent.connectedCallback();
-        modalComponent.subscribe("confirm", async () => {
-            try {
-                await deleteData("exam-paper", examPaperId);
-                document.location.reload();
-            } catch (err) {
-                console.error(err);
-            }
-        });
-        modalComponent.subscribe("cancel", () => {
-            modalComponent?.disconnectedCallback();
-            modalComponent = null;
-        });
-    }
-});
-
 
 // On load
 init(requestParams);

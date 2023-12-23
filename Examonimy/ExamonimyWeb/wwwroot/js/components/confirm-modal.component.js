@@ -99,7 +99,6 @@ export class ConfirmModalComponent extends BaseComponent {
     </div>
   </div>
 </div>
-
         `;
     }
 }
