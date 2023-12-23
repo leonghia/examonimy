@@ -26,9 +26,10 @@ let modalComponent;
 
 // Function expressions
 const init = async (requestParams = new ExamPaperRequestParams()) => {
-    const res = await fetchData("exam-paper", requestParams);
+    let res = await fetchData("exam-paper", requestParams);
     const examPapers = res.data;
-    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, examPapers);
+    res = await fetchData("")
+    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, res.data);
     examPaperTableComponent.connectedCallback();
     paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", res.paginationMetadata.totalCount, res.paginationMetadata.pageSize, res.paginationMetadata.currentPage, res.paginationMetadata.totalPages);
     paginationComponent.connectedCallback();

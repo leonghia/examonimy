@@ -2,18 +2,21 @@
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
 import { TeacherStackedListComponent } from "./teacher-stacked-list.component.js";
+import { User } from "../models/user.model.js";
 
 export class ExamPaperTableComponent {
     #container;
     #examPapers = [new ExamPaper()];
+    #teachers = [new User()];
     #tableBody;
     #fromItemNumber = 1;
     #modalComponent;
     #teacherStackedListComponent = new TeacherStackedListComponent(null);
 
-    constructor(container = new HTMLElement(), examPapers = [new ExamPaper()]) {
+    constructor(container = new HTMLElement(), examPapers = [new ExamPaper()], teachers = [new User()]) {
         this.#container = container;
         this.#examPapers = examPapers;
+        this.#teachers = teachers;
     }
 
     connectedCallback() {
