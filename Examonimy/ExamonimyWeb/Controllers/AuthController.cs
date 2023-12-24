@@ -20,7 +20,7 @@ namespace ExamonimyWeb.Controllers
         private readonly IUserManager _userManager;
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _jwtConfigurations;
-        private readonly string _tokenName;
+        private readonly string _accessTokenName;
         private readonly string _refreshTokenName;
         private readonly int _accessTokenLifetimeInMinutes;
         private readonly int _refreshTokenLifetimeInDays;
@@ -48,7 +48,7 @@ namespace ExamonimyWeb.Controllers
             _userManager = userManager;
             _tokenService = tokenService;
             _jwtConfigurations = configuration.GetSection("JwtConfigurations");
-            _tokenName = _jwtConfigurations["AccessTokenName"]!;
+            _accessTokenName = _jwtConfigurations["AccessTokenName"]!;
             _refreshTokenName = _jwtConfigurations["RefreshTokenName"]!;
             _accessTokenLifetimeInMinutes = int.Parse(_jwtConfigurations["AccessTokenLifetimeInMinutes"]!);
             _refreshTokenLifetimeInDays = int.Parse(_jwtConfigurations["RefreshTokenLifetimeInDays"]!);
@@ -66,16 +66,16 @@ namespace ExamonimyWeb.Controllers
             };
         }
 
-        [HttpGet("login", Name = "GetLoginView")]
-        public IActionResult Login()
+        [HttpGet("login", Name = "RenderLoginView")]
+        public IActionResult RenderLoginView()
         {
-            return View();
+            return View("Login");
         }
 
         [HttpGet("register")]
-        public IActionResult Register()
+        public IActionResult RenderRegisterView()
         {
-            return View();
+            return View("Register");
         }
 
         [HttpPost("api/auth/register")]
@@ -137,17 +137,26 @@ namespace ExamonimyWeb.Controllers
 
                 await _userManager.UpdateAsync(user);
 
-                Response.Cookies.Append(_tokenName, jwt, _cookieOptionForAccessTokenWithMaxAge);
+                Response.Cookies.Append(_accessTokenName, jwt, _cookieOptionForAccessTokenWithMaxAge);
                 Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithMaxAge);
             }
             else
             {
-                Response.Cookies.Append(_tokenName, jwt, _cookieOptionsForAccessTokenWithoutMaxAge);
+                Response.Cookies.Append(_accessTokenName, jwt, _cookieOptionsForAccessTokenWithoutMaxAge);
                 Response.Cookies.Append(_refreshTokenName, refreshToken, _cookieOptionsForRefreshTokenWithoutMaxAge);
             }
 
             
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete(_accessTokenName);
+            Response.Cookies.Delete(_refreshTokenName);
+
+            return RedirectToAction("RenderLoginView");
         }
 
         [HttpPost("api/auth/refresh")]
