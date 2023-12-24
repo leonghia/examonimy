@@ -60,5 +60,9 @@ namespace ExamonimyWeb.Entities
         public ICollection<ExamPaper>? ExamPapersToReview { get; set; }
         public ICollection<ExamPaperReviewer>? ExamPaperReviewers { get; set; }
 
+        public ICollection<Notification>? NotificationsTriggered { get; set; }
+
+        public ICollection<Notification>? Notifications { get; set; }
+        public ICollection<NotificationReceiver>? NotificationReceivers { get; set; }
     }
 }

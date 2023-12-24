@@ -7,11 +7,11 @@ namespace ExamonimyWeb.DatabaseContexts
 {
     public class ExamonimyContext : DbContext
     {
-        
+
 
         public ExamonimyContext(DbContextOptions options) : base(options)
         {
-            
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,10 +41,24 @@ namespace ExamonimyWeb.DatabaseContexts
                 l => l.HasOne<User>(ePR => ePR.Reviewer).WithMany(r => r.ExamPaperReviewers).HasForeignKey(ePR => ePR.ReviewerId),
                 r => r.HasOne<ExamPaper>(ePR => ePR.ExamPaper).WithMany(eP => eP.ExamPaperReviewers).HasForeignKey(ePR => ePR.ExamPaperId)
                 );
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Actor)
+                .WithMany(a => a.NotificationsTriggered)
+                .HasForeignKey(n => n.ActorId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<Notification>()
+                .HasMany(n => n.Receivers)
+                .WithMany(r => r.Notifications)
+                .UsingEntity<NotificationReceiver>(
+                l => l.HasOne<User>(nR => nR.Receiver).WithMany(r => r.NotificationReceivers).HasForeignKey(nR => nR.ReceiverId),
+                r => r.HasOne<Notification>(nR => nR.Notification).WithMany(n => n.NotificationReceivers).HasForeignKey(nR => nR.NotificationId)
+                );
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
-        public required DbSet<Course> Courses { get; init; }      
+        public required DbSet<Course> Courses { get; init; }
         public required DbSet<QuestionType> QuestionTypes { get; init; }
         public required DbSet<QuestionLevel> QuestionLevels { get; init; }
         public required DbSet<Question> Questions { get; init; }
@@ -55,6 +69,10 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<FillInBlankQuestion> FillInBlankQuestions { get; init; }
 
         public required DbSet<ExamPaper> ExamPapers { get; init; }
+
+        public required DbSet<Notification> Notifications { get; init; }
+        
+        public required DbSet<NotificationType> NotificationTypes { get; init; }
 
     }
 }
