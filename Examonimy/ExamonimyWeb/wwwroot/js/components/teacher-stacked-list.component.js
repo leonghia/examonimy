@@ -1,6 +1,7 @@
 ﻿import { postData } from "../helpers/ajax.helper.js";
 import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { mapByFullName } from "../helpers/user.helper.js";
+import { ExamPaperReviewerCreate } from "../models/exam-paper.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 import { User } from "../models/user.model.js";
 import { BaseComponent } from "./base.component.js";
@@ -10,22 +11,27 @@ export class TeacherStackedListComponent extends BaseComponent {
     #examPaperId;
     #container;
     #teachers;
+    #reviewerIds;
     #closeButton;
     _events = {
         close: [],
         confirm: []
     }
     #confirmButton;
+    #spinnerOption = new SpinnerOption("w-5", "h-5");
 
-    constructor(container = new HTMLElement(), teachers = [new User()], examPaperId = 0) {
+    constructor(container = new HTMLElement(), teachers = [new User()], examPaperId = 0, reviewerIds = [0]) {
         super();
         this.#container = container;
         this.#teachers = teachers;
         this.#examPaperId = examPaperId;
+        this.#reviewerIds = reviewerIds;
     }
 
     connectedCallback() {
         this.#container.innerHTML = this.render();
+        this.#markReviewersAsChecked(this.#reviewerIds);
+
         this.#closeButton = this.#container.querySelector("#close-btn");
         this.#confirmButton = this.#container.querySelector("#confirm-btn");
 
@@ -37,23 +43,30 @@ export class TeacherStackedListComponent extends BaseComponent {
         this.#confirmButton.addEventListener("click", async () => {
             const teacherIds = Array.from(this.#container.querySelectorAll(".teacher")).filter(e => e.checked).map(e => Number(e.value));
             try {
-                showSpinnerForButton(this.#confirmButton.querySelector(".button-text"), this.#confirmButton, new SpinnerOption("w-5", "h-5"));
-                setTimeout(() => {                   
-                    hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"));
-                    this.#confirmButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                        </svg>
-                        `;
-                    setTimeout(() => {
-                        this.#container.innerHTML = "";                       
-                        this._trigger("confirm", { examPaperId: this.#examPaperId, teacherIds });
-                    }, 1500);
-                    
-                    
-                }, 3000);
+                showSpinnerForButton(this.#confirmButton.querySelector(".button-text"), this.#confirmButton, this.#spinnerOption);
+                const examPaperReviewerCreate = new ExamPaperReviewerCreate(teacherIds);
+                await postData(`exam-paper/${this.#examPaperId}/reviewer`, examPaperReviewerCreate);
+                hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"), this.#spinnerOption);
+                this.#confirmButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                </svg>
+                `;
+                this._trigger("confirm", { examPaperId: this.#examPaperId, teacherIds });
+                setTimeout(() => {
+                    this.#container.innerHTML = "";
+                }, 1500);
             } catch (err) {
+                hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"), this.#spinnerOption);
                 console.error(err);
+            }
+        });
+    }
+
+    #markReviewersAsChecked(reviewerIds = [0]) {
+        Array.from(this.#container.querySelectorAll(".teacher")).forEach(v => {
+            if (reviewerIds.indexOf(Number(v.value)) > -1) {
+                v.checked = true;
             }
         });
     }

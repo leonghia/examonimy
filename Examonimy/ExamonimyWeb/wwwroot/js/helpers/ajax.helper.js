@@ -64,10 +64,7 @@ export const postData = async (route = "", dataToPost) => {
             const problemDetails = new ProblemDetails();
             Object.assign(problemDetails, await res.json());
             throw problemDetails;
-        }    
-
-        const bodyData = await res.json();
-        return bodyData;
+        }     
 
     } catch (err) {
         throw err;
