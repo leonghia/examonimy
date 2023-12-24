@@ -9,5 +9,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
         Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate);
         Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers);
+        Task<int> GetReviewerIdAsync(int examPaperReviewerId);
     }
 }

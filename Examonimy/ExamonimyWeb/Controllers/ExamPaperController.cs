@@ -9,6 +9,7 @@ using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,9 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
+        private readonly INotificationService _notificationService;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager) : base(mapper, examPaperRepository, userManager)
+        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(mapper, examPaperRepository, userManager)
         {
             _mapper = mapper;
             _examPaperRepository = examPaperRepository;
@@ -36,6 +38,7 @@ namespace ExamonimyWeb.Controllers
             _examPaperQuestionRepository = examPaperQuestionRepository;
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;
+            _notificationService = notificationService;
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -237,6 +240,9 @@ namespace ExamonimyWeb.Controllers
                 return Forbid();
             var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
             await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+
+            await _notificationService.RequestReviewerForExamPaper(examPaperReviewers, contextUser.Id);
+
             return Accepted();
         }
     }

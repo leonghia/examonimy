@@ -47,6 +47,12 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return examPaperQuestionsToReturn;
         }
 
+        public async Task<int> GetReviewerIdAsync(int examPaperReviewerId)
+        {
+            var examPaperReviewer = await _examPaperReviewerRepository.GetByIdAsync(examPaperReviewerId) ?? throw new ArgumentException(null, nameof(examPaperReviewerId));
+            return examPaperReviewer.ReviewerId;
+        }
+
         public async Task<bool> IsAuthorAsync(int examPaperId, int userId)
         {
             var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));                       

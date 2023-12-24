@@ -1,7 +1,11 @@
-﻿namespace ExamonimyWeb.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ExamonimyWeb.Entities
 {
     public class ExamPaperReviewer
     {
+        [Key]
+        public int Id { get; set; }
         public required int ExamPaperId { get; set; }
         public required int ReviewerId { get; set; }
         public ExamPaper? ExamPaper { get; set; }

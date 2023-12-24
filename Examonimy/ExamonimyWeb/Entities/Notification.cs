@@ -20,7 +20,7 @@ namespace ExamonimyWeb.Entities
         public string? Href { get; set; }
 
         [Required]
-        public required DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         [ForeignKey(nameof(Actor))]
