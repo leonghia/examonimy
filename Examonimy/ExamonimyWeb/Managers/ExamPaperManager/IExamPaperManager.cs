@@ -11,5 +11,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers);
         Task<int> GetReviewerIdAsync(int examPaperReviewerId);
         Task<int> GetExamPaperIdAsync(int examPaperReviewerId);
+        Task<Course> GetCourseAsync(int examPaperId);
     }
 }
