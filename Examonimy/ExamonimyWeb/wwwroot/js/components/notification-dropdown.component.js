@@ -34,10 +34,8 @@ export class NotificationDropdownComponent {
                     ${cV.iconMarkup}
                 </div>
                 <div class="w-full ps-3">
-                    <div class="text-gray-500 text-sm mb-1.5 dark:text-gray-400">
-                        ${cV.messageMarkup}
-                    </div>
-                    <div class="text-xs text-blue-600 dark:text-blue-500">${cV.dateTimeAgoMarkup}</div>
+                    ${cV.messageMarkup}
+                    ${cV.dateTimeAgoMarkup}
                 </div>
             </div>
         </a>

@@ -4,7 +4,7 @@
     {
         public string ExamPaperCode { get; }
 
-        public RejectExamPaperNotiMessage(string actorFullName, string examPaperCode) : base(actorFullName)
+        public RejectExamPaperNotiMessage(string actorFullName, string examPaperCode, bool isRead) : base(actorFullName, isRead)
         {
             ExamPaperCode = examPaperCode;
         }      

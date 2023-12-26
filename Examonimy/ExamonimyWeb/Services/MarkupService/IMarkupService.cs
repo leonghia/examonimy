@@ -2,6 +2,6 @@
 {
     public interface IMarkupService
     {
-        string GetDateTimeAgoMarkup(DateTime date);
+        string GetDateTimeAgoMarkup(DateTime date, bool isRead);
     }
 }

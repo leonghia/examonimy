@@ -2,7 +2,7 @@
 {
     public class CommentExamPaperNotiMessage : NotiMessage
     {
-        public CommentExamPaperNotiMessage(string actorFullName, string examPaperCode) : base(actorFullName)
+        public CommentExamPaperNotiMessage(string actorFullName, string examPaperCode, bool isRead) : base(actorFullName, isRead)
         {
             ExamPaperCode = examPaperCode;
         }

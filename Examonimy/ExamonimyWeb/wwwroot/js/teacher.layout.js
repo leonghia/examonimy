@@ -34,3 +34,4 @@ viewNotificationButton.addEventListener("click", async () => {
 });
 
 // On load
+

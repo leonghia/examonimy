@@ -27,7 +27,7 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public string GetDateTimeAgoMarkup(DateTime dateTime)
         {
-            return _markupService.GetDateTimeAgoMarkup(dateTime);
+            return _markupService.GetDateTimeAgoMarkup(dateTime, false);
         }
 
         public async Task<string> GetHrefAsync(Notification notification)
@@ -65,7 +65,7 @@ namespace ExamonimyWeb.Services.NotificationService
                 case NotificationTypeIds.AskForReviewForExamPaper:
                     var examPaperId = await _examPaperManager.GetExamPaperIdAsync(notification.EntityId);
                     var course = await _examPaperManager.GetCourseAsync(examPaperId) ?? throw new ArgumentException(null, nameof(notification.EntityId));      
-                    return new AskForReviewForExamPaperNotiMessage(actorFullName, course.Name).ToVietnamese();
+                    return new AskForReviewForExamPaperNotiMessage(actorFullName, course.Name, false).ToVietnamese();
                 default:
                     throw new SwitchExpressionException(notification.NotificationTypeId);
     
@@ -89,7 +89,7 @@ namespace ExamonimyWeb.Services.NotificationService
             var notificationReceivers = new List<NotificationReceiver>();
             foreach (var n in notifications)
             {
-                notificationReceivers.Add(new NotificationReceiver { NotificationId = n.Id, ReceiverId = await _examPaperManager.GetReviewerIdAsync(n.EntityId) });
+                notificationReceivers.Add(new NotificationReceiver { NotificationId = n.Id, ReceiverId = await _examPaperManager.GetReviewerIdAsync(n.EntityId), IsRead = false });
             }
             await _notificationReceiverRepository.InsertRangeAsync(notificationReceivers);
             await _notificationReceiverRepository.SaveAsync();
