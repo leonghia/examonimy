@@ -6,6 +6,8 @@ using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
+using ExamonimyWeb.Services.MarkupService;
+using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -107,12 +109,18 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
             services.AddScoped<IGenericRepository<ExamPaper>, GenericRepository<ExamPaper>>();
             services.AddScoped<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
+            services.AddScoped<IGenericRepository<ExamPaperReviewer>, GenericRepository<ExamPaperReviewer>>();
+            services.AddScoped<IGenericRepository<Notification>, GenericRepository<Notification>>();
+            services.AddScoped<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();
+
             
             services.AddScoped<IUserManager, UserManager>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IQuestionManager, QuestionManager>();
             services.AddScoped<IExamPaperManager, ExamPaperManager>();
+            services.AddScoped<INotificationService, InAppNotificationService>();
+            services.AddScoped<IMarkupService, VietnameseMarkupService>();
         }
     }
 }

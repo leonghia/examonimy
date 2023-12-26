@@ -29,7 +29,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
     }
 
     connectedCallback() {
-        this.#container.innerHTML = this.#render();              
+        this.#container.innerHTML = this.render();              
         this.#paginationInfoContainer = this.#container.querySelector("#pagination-info-container");
         this.#buttonContainer = this.#container.querySelector("#button-container");
 
@@ -158,7 +158,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
     }
     
 
-    #render() {
+    render() {
         
         return `
 <div class="flex items-center justify-between border-t border-gray-100 bg-white px-4 py-3 sm:px-6">

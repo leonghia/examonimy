@@ -6,7 +6,7 @@ using ExamonimyWeb.DTOs.RoleDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Extensions;
-using ExamonimyWeb.Utilities;
+using ExamonimyWeb.Helpers;
 
 namespace ExamonimyWeb.Profiles
 {

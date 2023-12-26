@@ -57,7 +57,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.Update(entity);
         }
 
-        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
+        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
         {
             requestParams ??= new RequestParams();
 
@@ -79,6 +79,11 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 {
                     query = query.Include(includedProperty);
                 }
+            }
+
+            if (orderByPredicate is not null)
+            {
+                return await orderByPredicate(query).ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
             }
 
             return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
@@ -111,7 +116,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.RemoveRange(query);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
+        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
         {
             IQueryable<TEntity> query = _dbSet;
 
@@ -131,6 +136,11 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 {
                     query = query.Include(includedProperty);
                 }
+            }
+
+            if (orderByPredicate is not null)
+            {
+                return await orderByPredicate(query).ToListAsync();
             }
 
             return await query.ToListAsync();

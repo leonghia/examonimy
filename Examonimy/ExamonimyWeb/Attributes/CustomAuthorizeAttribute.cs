@@ -12,7 +12,7 @@ namespace ExamonimyWeb.Attributes
         {
             if (context.HttpContext.User.Identity is null || !context.HttpContext.User.Identity.IsAuthenticated)
             {
-                context.Result = new RedirectToRouteResult("GetLoginView", null);
+                context.Result = new RedirectToRouteResult("RenderLoginView", null);
                 return;
             }
 

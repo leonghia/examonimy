@@ -79,3 +79,70 @@ export class QuestionType {
         this.name = name;
     }
 }
+
+export class QuestionCreateDto {
+    courseId = 0;
+    questionTypeId = 0;
+    questionLevelId = 0;
+    questionContent = "";
+}
+
+export class MultipleChoiceQuestionCreateDto extends QuestionCreateDto {
+    choiceA = "";
+    choiceB = "";
+    choiceC = "";
+    choiceD = "";
+}
+
+export class MultipleChoiceQuestionWithOneCorrectAnswerCreateDto extends MultipleChoiceQuestionCreateDto {
+    correctAnswer = 0;
+}
+
+export class MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto extends MultipleChoiceQuestionCreateDto {
+    correctAnswers = "";
+}
+
+export class TrueFalseQuestionCreateDto extends QuestionCreateDto {
+    correctAnswer = false;
+}
+
+export class ShortAnswerQuestionCreateDto {
+    correctAnswer = "";
+}
+
+export class FillInBlankQuestionCreateDto extends QuestionCreateDto {
+    correctAnswers = "";
+}
+
+export class QuestionUpdate {
+    questionLevelId = 0;
+    questionContent = "";
+}
+
+export class MultipleChoiceQuestionWithOneCorrectAnswerUpdate extends QuestionUpdate {
+    choiceA = "";
+    choiceB = "";
+    choiceC = "";
+    choiceD = "";
+    correctAnswer = "";
+}
+
+export class MultipleChoiceQuestionWithMultipleCorrectAnswersUpdate extends QuestionUpdate {
+    choiceA = "";
+    choiceB = "";
+    choiceC = "";
+    choiceD = "";
+    correctAnswers = [""];
+}
+
+export class TrueFalseQuestionUpdate extends QuestionUpdate {
+    correctAnswer = "";
+}
+
+export class ShortAnswerQuestionUpdate extends QuestionUpdate {
+    correctAnswer = "";
+}
+
+export class FillInBlankQuestionUpdate extends QuestionUpdate {
+    correctAnswers = [""];
+}

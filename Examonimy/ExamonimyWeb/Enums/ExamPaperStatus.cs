@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExamonimyWeb.Utilities
+namespace ExamonimyWeb.Enums
 {
     public enum ExamPaperStatus
     {

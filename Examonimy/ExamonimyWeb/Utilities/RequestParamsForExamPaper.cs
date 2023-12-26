@@ -1,4 +1,6 @@
-﻿namespace ExamonimyWeb.Utilities
+﻿using ExamonimyWeb.Enums;
+
+namespace ExamonimyWeb.Utilities
 {
     public class RequestParamsForExamPaper : RequestParams
     {

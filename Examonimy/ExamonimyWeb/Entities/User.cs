@@ -53,6 +53,16 @@ namespace ExamonimyWeb.Entities
         [DataType(DataType.DateTime)]
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
-        public string? ProfilePicture { get; set; } = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg";
+        public string ProfilePicture { get; set; } = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg";
+
+        public ICollection<ExamPaper>? ExamPapersCreated { get; set; }      
+        
+        public ICollection<ExamPaper>? ExamPapersToReview { get; set; }
+        public ICollection<ExamPaperReviewer>? ExamPaperReviewers { get; set; }
+
+        public ICollection<Notification>? NotificationsTriggered { get; set; }
+
+        public ICollection<Notification>? Notifications { get; set; }
+        public ICollection<NotificationReceiver>? NotificationReceivers { get; set; }
     }
 }

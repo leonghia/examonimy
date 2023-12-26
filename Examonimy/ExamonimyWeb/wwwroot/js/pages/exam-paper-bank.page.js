@@ -1,11 +1,10 @@
 ﻿// Imports
 import { ExamPaperTableComponent } from "../components/exam-paper-table.component.js";
 import { AdvancedPaginationComponent } from "../components/advanced-pagination.component.js";
-import { ExamPaperRequestParams, RequestParams } from "../models/request-params.model.js";
-import { deleteData, fetchData } from "../helpers/ajax.helper.js";
+import { ExamPaperRequestParams, UserRequestParams } from "../models/request-params.model.js";
+import { fetchData } from "../helpers/ajax.helper.js";
 import { selectDropdownItem, toggleDropdown } from "../helpers/markup.helper.js";
-import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
-import { BASE_URL } from "../config.js";
+import { RoleId } from "../helpers/user.helper.js";
 
 // DOM selectors
 const tableContainer = document.querySelector("#table-container");
@@ -21,20 +20,22 @@ const searchInput = document.querySelector("#search-input");
 // States
 let examPaperTableComponent = new ExamPaperTableComponent(tableContainer);
 let paginationComponent = new AdvancedPaginationComponent(paginationContainer);
-const requestParams = new ExamPaperRequestParams(null, null, null, 10, 1);
-let modalComponent;
+const examPaperRequestParams = new ExamPaperRequestParams(null, null, null, 10, 1);
+const teacherRequestParams = new UserRequestParams(RoleId.Teacher);
 
 // Function expressions
-const init = async (requestParams = new ExamPaperRequestParams()) => {
-    const res = await fetchData("exam-paper", requestParams);
-    const examPapers = res.data;
-    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, examPapers);
+const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teacherRequestParams = new UserRequestParams()) => {
+    const getExamPapersResponse = await fetchData("exam-paper", examPaperRequestParams);
+    const examPapers = getExamPapersResponse.data;  
+    const getTeachersResponse = await fetchData("user", teacherRequestParams);
+    const teachers = getTeachersResponse.data;
+    examPaperTableComponent = new ExamPaperTableComponent(tableContainer, examPapers, teachers);
     examPaperTableComponent.connectedCallback();
-    paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", res.paginationMetadata.totalCount, res.paginationMetadata.pageSize, res.paginationMetadata.currentPage, res.paginationMetadata.totalPages);
+    paginationComponent = new AdvancedPaginationComponent(paginationContainer, "đề thi", getExamPapersResponse.paginationMetadata.totalCount, getExamPapersResponse.paginationMetadata.pageSize, getExamPapersResponse.paginationMetadata.currentPage, getExamPapersResponse.paginationMetadata.totalPages);
     paginationComponent.connectedCallback();
 }
 
-const handler = async (requestParams = new ExamPaperRequestParams()) => {
+const examPapersHandler = async (requestParams = new ExamPaperRequestParams()) => {
     const res = await fetchData("exam-paper", requestParams);   
     examPaperTableComponent.examPapers = res.data;
     examPaperTableComponent.populateTableBody();
@@ -56,9 +57,9 @@ statusDropdown.addEventListener("click", event => {
         return;
     const value = clicked.querySelector("input").value;
     if (value === "all")
-        requestParams.status = null;
+        examPaperRequestParams.status = null;
     else
-        requestParams.status = Number(value);
+        examPaperRequestParams.status = Number(value);
 });
 
 courseDropdownButton.addEventListener("click", () => {
@@ -71,47 +72,21 @@ courseDropdown.addEventListener("click", event => {
         return;
     const value = clicked.querySelector("input").value;
     if (value === "all")
-        requestParams.courseId = null;
+        examPaperRequestParams.courseId = null;
     else
-        requestParams.courseId = Number(value);
+        examPaperRequestParams.courseId = Number(value);
 });
 
 filterButton.addEventListener("click", () => {
-    handler(requestParams);
+    examPapersHandler(examPaperRequestParams);
 });
 
 searchForm.addEventListener("click", event => {
     event.preventDefault();
-    requestParams.searchQuery = searchInput.value;
-    handler(requestParams);
-});
-
-tableContainer.addEventListener("click", event => {
-    const clickedDeleteButton = event.target.closest(".delete-btn");
-    if (clickedDeleteButton) {
-        const modalContainer = clickedDeleteButton.parentElement.querySelector(".modal-container");
-        const examPaperId = Number(clickedDeleteButton.dataset.examPaperId);
-        modalComponent = new ConfirmModalComponent(modalContainer, {
-            title: "Xóa đề thi",
-            description: "Bạn có chắc chắn muốn xóa đề thi này? Đề thi sau khi bị xóa sẽ không thể khôi phục lại.",
-            ctaText: "Xác nhận"
-        });
-        modalComponent.connectedCallback();
-        modalComponent.subscribe("confirm", async () => {
-            try {
-                await deleteData("exam-paper", examPaperId);
-                document.location.reload();
-            } catch (err) {
-                console.error(err);
-            }
-        });
-        modalComponent.subscribe("cancel", () => {
-            modalComponent?.disconnectedCallback();
-            modalComponent = null;
-        });
-    }
+    examPaperRequestParams.searchQuery = searchInput.value;
+    examPapersHandler(examPaperRequestParams);
 });
 
 
 // On load
-init(requestParams);
+init(examPaperRequestParams, teacherRequestParams);

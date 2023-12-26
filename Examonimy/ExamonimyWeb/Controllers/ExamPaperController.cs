@@ -4,11 +4,13 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +29,9 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
+        private readonly INotificationService _notificationService;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager) : base(mapper, examPaperRepository, userManager)
+        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(mapper, examPaperRepository, userManager)
         {
             _mapper = mapper;
             _examPaperRepository = examPaperRepository;
@@ -36,6 +39,7 @@ namespace ExamonimyWeb.Controllers
             _examPaperQuestionRepository = examPaperQuestionRepository;
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;
+            _notificationService = notificationService;
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -103,7 +107,7 @@ namespace ExamonimyWeb.Controllers
             {
                 filterPredicate = filterPredicate.And(eP => eP.Status == requestParamsForExamPaper.Status);
             }
-            var examPapers = await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course" });
+            var examPapers = await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course", "Reviewers" });
             var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
 
             for (var i = 0; i < examPapersToReturn.Length; i++)
@@ -222,6 +226,25 @@ namespace ExamonimyWeb.Controllers
                 .ToList();
             await _examPaperManager.UpdateThenSaveAsync(examPaper.Id, examPaperQuestionsToUpdate);         
             return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpPost("api/exam-paper/{id:int}/reviewer")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> AddReviewers([FromRoute] int id, [FromBody] ExamPaperReviewerCreateDto examPaperReviewerCreateDto)
+        {
+            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (examPaper.AuthorId != contextUser.Id)
+                return Forbid();
+            var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
+            await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+
+            await _notificationService.RequestReviewerForExamPaperAsync(examPaperReviewers, contextUser.Id);
+
+            return Accepted();
         }
     }
 }

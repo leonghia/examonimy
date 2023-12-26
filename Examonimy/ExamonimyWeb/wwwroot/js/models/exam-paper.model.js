@@ -1,5 +1,6 @@
 ﻿import { Course } from "./course.model.js";
 import { ExamPaperQuestionCreate, ExamPaperQuestionUpdate } from "./exam-paper-question.model.js";
+import { User } from "./user.model.js";
 
 export class ExamPaper {
     id = 0;
@@ -9,6 +10,7 @@ export class ExamPaper {
     author;
     status = 0;
     statusAsString = "";
+    reviewers = [new User()];
 }
 
 export class ExamPaperCreate {
@@ -25,4 +27,12 @@ export class ExamPaperCreate {
 
 export class ExamPaperUpdate {
     examPaperQuestions = [new ExamPaperQuestionUpdate()];
+}
+
+export class ExamPaperReviewerCreate {
+    reviewerIds;
+
+    constructor(reviewerIds = [0]) {
+        this.reviewerIds = reviewerIds;
+    }
 }

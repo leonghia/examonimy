@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Utilities;
+﻿using ExamonimyWeb.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,14 +18,18 @@ namespace ExamonimyWeb.Entities
         public required int CourseId { get; set; }
         public Course? Course { get; set; }        
 
-        [ForeignKey("Author")]
+        [ForeignKey(nameof(Author))]
         [Required]
         public required int AuthorId { get; set; }
+        
         public User? Author { get; set; }
         
         public ICollection<Question>? Questions { get; set; }
         public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
 
         public ExamPaperStatus? Status { get; set; } = ExamPaperStatus.Pending;
+
+        public ICollection<User>? Reviewers { get; set; }
+        public ICollection<ExamPaperReviewer>? ExamPaperReviewers { get; set; }
     }
 }

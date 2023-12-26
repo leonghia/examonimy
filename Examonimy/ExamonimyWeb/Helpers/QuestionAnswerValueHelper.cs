@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 
-namespace ExamonimyWeb.Utilities
+namespace ExamonimyWeb.Helpers
 {
     public static class QuestionAnswerValueHelper
     {
@@ -51,7 +51,7 @@ namespace ExamonimyWeb.Utilities
 
         public static string[] GetAnswerValuesFromStringForBlanks(string answers)
         {
-            return answers.Split('|');          
+            return answers.Split('|');
         }
 
         public static string GetAnswerValuesFromListOfStringForBlanks(List<string> answers)

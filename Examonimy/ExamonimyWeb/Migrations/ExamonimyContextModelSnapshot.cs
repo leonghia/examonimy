@@ -246,6 +246,29 @@ namespace ExamonimyWeb.Migrations
                     b.ToTable("ExamPaperQuestion");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExamPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamPaperId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("ExamPaperReviewer");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
                 {
                     b.Property<int>("QuestionId")
@@ -318,6 +341,86 @@ namespace ExamonimyWeb.Migrations
                     b.HasKey("QuestionId");
 
                     b.ToTable("MultipleChoiceQuestionsWithOneCorrectAnswer");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Href")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NotificationTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("NotificationTypeId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.NotificationReceiver", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.HasKey("NotificationId", "ReceiverId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("NotificationReceiver");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.NotificationType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Entity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Operation")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Entity = 0,
+                            Operation = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Entity = 1,
+                            Operation = 1
+                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
@@ -574,7 +677,7 @@ namespace ExamonimyWeb.Migrations
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.User", "Author")
-                        .WithMany()
+                        .WithMany("ExamPapersCreated")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -603,6 +706,25 @@ namespace ExamonimyWeb.Migrations
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany("ExamPaperReviewers")
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.User", "Reviewer")
+                        .WithMany("ExamPaperReviewers")
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExamPaper");
+
+                    b.Navigation("Reviewer");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.FillInBlankQuestion", b =>
@@ -636,6 +758,44 @@ namespace ExamonimyWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.User", "Actor")
+                        .WithMany("NotificationsTriggered")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.NotificationType", "NotificationType")
+                        .WithMany()
+                        .HasForeignKey("NotificationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("NotificationType");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.NotificationReceiver", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.Notification", "Notification")
+                        .WithMany("NotificationReceivers")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.User", "Receiver")
+                        .WithMany("NotificationReceivers")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("Receiver");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
@@ -709,6 +869,13 @@ namespace ExamonimyWeb.Migrations
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
                 {
                     b.Navigation("ExamPaperQuestions");
+
+                    b.Navigation("ExamPaperReviewers");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>
+                {
+                    b.Navigation("NotificationReceivers");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
@@ -719,6 +886,17 @@ namespace ExamonimyWeb.Migrations
             modelBuilder.Entity("ExamonimyWeb.Entities.Role", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.User", b =>
+                {
+                    b.Navigation("ExamPaperReviewers");
+
+                    b.Navigation("ExamPapersCreated");
+
+                    b.Navigation("NotificationReceivers");
+
+                    b.Navigation("NotificationsTriggered");
                 });
 #pragma warning restore 612, 618
         }

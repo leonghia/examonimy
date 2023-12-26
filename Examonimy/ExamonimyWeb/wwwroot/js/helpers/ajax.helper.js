@@ -12,7 +12,13 @@ export const fetchData = async (route = "", requestParams = new RequestParams())
         }
     }
     try {
-        const res = await fetch(url);
+        const res = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "TimezoneOffset": new Date().getTimezoneOffset()
+            }
+        });
 
         if (!res.ok) {
             const problemDetails = new ProblemDetails();
@@ -37,7 +43,13 @@ export const fetchData = async (route = "", requestParams = new RequestParams())
 
 export const fetchDataById = async (route = "", id = 0) => {
     try {
-        const res = await fetch(`${BASE_API_URL}/${route}/${id}`);
+        const res = await fetch(`${BASE_API_URL}/${route}/${id}`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "TimezoneOffset": new Date().getTimezoneOffset()
+            }
+        });
         if (!res.ok) {
             throw res;
         }
@@ -64,10 +76,7 @@ export const postData = async (route = "", dataToPost) => {
             const problemDetails = new ProblemDetails();
             Object.assign(problemDetails, await res.json());
             throw problemDetails;
-        }    
-
-        const bodyData = await res.json();
-        return bodyData;
+        }     
 
     } catch (err) {
         throw err;
