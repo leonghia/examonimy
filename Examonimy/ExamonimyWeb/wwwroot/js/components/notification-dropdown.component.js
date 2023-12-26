@@ -1,4 +1,5 @@
 ﻿import { Notification } from "../models/notification.model.js";
+import { putData } from "../helpers/ajax.helper.js";
 
 export class NotificationDropdownComponent {
     #container;
@@ -11,6 +12,18 @@ export class NotificationDropdownComponent {
 
     connectedCallback() {
         this.#container.innerHTML = this.render();
+
+        this.#container.addEventListener("click", async event => {
+            event.preventDefault();
+            const clickedNoti = event.target.closest(".noti");
+            if (clickedNoti && clickedNoti.dataset.isRead === "false") {
+                try {
+                    await putData("notification", Number(clickedNoti.dataset.notificationId));
+                } catch (err) {
+                    console.error(err);
+                }               
+            }
+        });
     }
 
     renderEmptyState() {
@@ -27,7 +40,7 @@ export class NotificationDropdownComponent {
     renderNotifications(notifications = [new Notification()]) {
         return notifications.reduce((pV, cV) => {
             return pV + `
-        <a href="${cV.href}" class="flex p-2 dark:hover:bg-gray-700">
+        <a data-is-read="${cV.isRead}" href="${cV.href}" data-notification-id="${cV.id}" class="noti flex p-2 dark:hover:bg-gray-700">
             <div class="flex p-2 hover:bg-gray-50 rounded-md">
                 <div class="flex-shrink-0">
                     <img class="rounded-full w-11 h-11" src="${cV.actorProfilePicture}" alt="user profile picture">

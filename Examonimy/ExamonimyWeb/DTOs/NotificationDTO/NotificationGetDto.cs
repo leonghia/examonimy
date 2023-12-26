@@ -8,5 +8,6 @@
         public required string ActorProfilePicture { get; set; }  
         public required string Href { get; set; }
         public required string DateTimeAgoMarkup { get; set; }
+        public required bool IsRead { get; set; }
     }
 }
