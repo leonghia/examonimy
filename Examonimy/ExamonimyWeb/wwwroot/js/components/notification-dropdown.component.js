@@ -47,7 +47,7 @@ export class NotificationDropdownComponent {
 
     render() {
         return `
-<div id="notification-dropdown" class="absolute right-0 z-20 mt-2 w-96 top-12 origin-top-right bg-white divide-y divide-gray-100 rounded-lg dark:bg-gray-800 dark:divide-gray-700" aria-labelledby="dropdownNotificationButton">
+<div id="notification-dropdown" class="absolute right-0 z-20 mt-2 w-96 top-16 origin-top-right bg-white shadow-md divide-y divide-gray-100 rounded-lg dark:bg-gray-800 dark:divide-gray-700" aria-labelledby="dropdownNotificationButton">
     <div class="block px-4 py-2 font-semibold text-center text-sm text-gray-700 rounded-t-lg dark:bg-gray-800 dark:text-white">
         Thông báo
     </div>

@@ -20,14 +20,17 @@ openUserMenuButton.addEventListener("click", () => {
     userMenu.classList.toggle("hidden");
 });
 
-viewNotificationButton.addEventListener("click", () => {
+viewNotificationButton.addEventListener("click", async () => {
     notifcationDropdownContainer.classList.toggle("hidden");
-});
-
-// On load
-(async () => {
+    if (notifcationDropdownContainer.classList.contains("hidden")) {
+        notifcationDropdownContainer.innerHTML = "";
+        notificationDropdownComponent = undefined;
+        return;
+    } 
     const res = await fetchData("notification", new RequestParams(null, 5, 1));
     const notifications = res.data;
     notificationDropdownComponent = new NotificationDropdownComponent(notifcationDropdownContainer, notifications);
     notificationDropdownComponent.connectedCallback();
-})();
+});
+
+// On load
