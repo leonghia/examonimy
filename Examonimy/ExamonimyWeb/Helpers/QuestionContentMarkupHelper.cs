@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ExamonimyWeb.Utilities
+namespace ExamonimyWeb.Helpers
 {
     public static class QuestionContentMarkupHelper
     {

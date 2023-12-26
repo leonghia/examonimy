@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Utilities;
+﻿using ExamonimyWeb.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

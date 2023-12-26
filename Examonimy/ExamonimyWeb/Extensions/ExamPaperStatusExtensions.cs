@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Utilities;
+﻿using ExamonimyWeb.Enums;
 
 namespace ExamonimyWeb.Extensions
 {

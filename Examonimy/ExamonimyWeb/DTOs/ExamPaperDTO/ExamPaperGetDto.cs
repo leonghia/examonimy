@@ -1,6 +1,6 @@
 ﻿using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.UserDTO;
-using ExamonimyWeb.Utilities;
+using ExamonimyWeb.Enums;
 
 namespace ExamonimyWeb.DTOs.ExamPaperDTO
 {

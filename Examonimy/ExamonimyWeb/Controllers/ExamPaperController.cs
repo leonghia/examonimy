@@ -4,6 +4,7 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
@@ -241,7 +242,7 @@ namespace ExamonimyWeb.Controllers
             var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
             await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
 
-            await _notificationService.RequestReviewerForExamPaper(examPaperReviewers, contextUser.Id);
+            await _notificationService.RequestReviewerForExamPaperAsync(examPaperReviewers, contextUser.Id);
 
             return Accepted();
         }

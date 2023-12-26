@@ -1,4 +1,4 @@
-﻿namespace ExamonimyWeb.Utilities
+﻿namespace ExamonimyWeb.Enums
 {
     public enum Operation
     {

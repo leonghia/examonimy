@@ -6,6 +6,7 @@ using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
+using ExamonimyWeb.Services.MarkupService;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -119,6 +120,7 @@ namespace ExamonimyWeb.Extensions
             services.AddScoped<IQuestionManager, QuestionManager>();
             services.AddScoped<IExamPaperManager, ExamPaperManager>();
             services.AddScoped<INotificationService, InAppNotificationService>();
+            services.AddScoped<IMarkupService, VietnameseMarkupService>();
         }
     }
 }

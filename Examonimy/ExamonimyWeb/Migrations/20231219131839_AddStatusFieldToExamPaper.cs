@@ -1,4 +1,4 @@
-﻿using ExamonimyWeb.Utilities;
+﻿using ExamonimyWeb.Enums;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ExamonimyWeb.Utilities;
+using ExamonimyWeb.Enums;
 
 namespace ExamonimyWeb.Entities
 {

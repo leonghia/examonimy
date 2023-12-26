@@ -1,4 +1,5 @@
 ﻿using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,14 +13,14 @@ namespace ExamonimyWeb.Configurations
                 new NotificationType
                 {
                     Id = 1,
-                    Entity = Utilities.Entity.ExamPaperReviewer,
-                    Operation = Utilities.Operation.AskForReviewForExamPaper
+                    Entity = Entity.ExamPaperReviewer,
+                    Operation = Operation.AskForReviewForExamPaper
                 },
                 new NotificationType
                 {
                     Id = 2,
-                    Entity = Utilities.Entity.ExamPaperComment,
-                    Operation = Utilities.Operation.CommentExamPaper
+                    Entity = Entity.ExamPaperComment,
+                    Operation = Operation.CommentExamPaper
                 }
                 );
         }
