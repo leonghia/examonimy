@@ -23,12 +23,12 @@ namespace ExamonimyWeb.Services.NotificationService
             _userRepository = userRepository;          
         }
 
-        public async Task<string> GetHrefAsync(Notification notification)
+        public string GetHref(Notification notification)
         {
             switch (notification.NotificationTypeId)
             {
                 case NotificationTypeIds.AskForReviewForExamPaper:
-                    var examPaperId = await _examPaperManager.GetExamPaperIdAsync(notification.EntityId);
+                    var examPaperId = notification.EntityId;
                     return $"/exam-paper/{examPaperId}/review";
                 default:
                     throw new SwitchExpressionException(notification.NotificationTypeId);
@@ -51,7 +51,7 @@ namespace ExamonimyWeb.Services.NotificationService
             switch (notification.NotificationTypeId)
             {
                 case NotificationTypeIds.AskForReviewForExamPaper:
-                    var examPaperId = await _examPaperManager.GetExamPaperIdAsync(notification.EntityId);
+                    var examPaperId = notification.EntityId;
                     var course = await _examPaperManager.GetCourseAsync(examPaperId) ?? throw new ArgumentException(null, nameof(notification.EntityId));      
                     return new AskForReviewForExamPaperNotiMessage(actorFullName, course.Name, isRead).ToVietnamese();
                 default:
@@ -67,37 +67,48 @@ namespace ExamonimyWeb.Services.NotificationService
             return notificationReceivers;
         }
 
-        public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId, List<int> entityIdsToDelete)
+        public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
         {
-            var notificationsToDelete = new List<Notification>();
-            foreach (var entityId in entityIdsToDelete)
+          
+            var notification = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
+            // if this noti does not exist, we persist it and create its receivers
+            if (notification is null)
             {
-                var n = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == entityId, null) ?? throw new ArgumentException(null, nameof(entityId));
-                notificationsToDelete.Add(n);
+                var notificationToCreate = new Notification
+                {
+                    NotificationTypeId = NotificationTypeIds.AskForReviewForExamPaper,
+                    EntityId = examPaperId,
+                    ActorId = actorId
+                };
+
+                await _notificationRepository.InsertAsync(notificationToCreate);
+                await _notificationRepository.SaveAsync();
+
+                var notificationReceiversToCreate = examPaperReviewers.Select(ePR => new NotificationReceiver
+                {
+                    ReceiverId = ePR.ReviewerId,
+                    NotificationId = notificationToCreate.Id
+                }).ToList();
+
+                await _notificationReceiverRepository.InsertRangeAsync(notificationReceiversToCreate);
+                await _notificationReceiverRepository.SaveAsync();
+
+                return;
             }
 
-            var notificationIds = notificationsToDelete.Select(n => n.Id);
-            var notificationReceiversToDelete = new List<NotificationReceiver>();
-            foreach (var notificationId in notificationIds)
-            {
-                var nR = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == notificationId, null) ?? throw new ArgumentException(null, nameof(notificationId));
-                notificationReceiversToDelete.Add(nR);
-            }
-
-            _notificationReceiverRepository.DeleteRange(notificationReceiversToDelete);
-            _notificationRepository.DeleteRange(notificationsToDelete);
-
-            // create notification
-            var notifications = examPaperReviewers.Select(ePR => new Notification { NotificationTypeId = NotificationTypeIds.AskForReviewForExamPaper, EntityId = ePR.Id, ActorId = actorId }).ToList();
-            await _notificationRepository.InsertRangeAsync(notifications);
-            await _notificationRepository.SaveAsync();
-
-            var notificationReceivers = new List<NotificationReceiver>();
-            foreach (var n in notifications)
-            {
-                notificationReceivers.Add(new NotificationReceiver { NotificationId = n.Id, ReceiverId = await _examPaperManager.GetReviewerIdAsync(n.EntityId) });
-            }
-            await _notificationReceiverRepository.InsertRangeAsync(notificationReceivers);
+            // else, we just need to update its receivers
+            var existingReceivers = await _notificationReceiverRepository.GetAsync(null, nR => nR.NotificationId == notification.Id);
+            var existingReceiverIds = existingReceivers.Select(e => e.ReceiverId);
+            var receiverIds = examPaperReviewers.Select(e => e.ReviewerId);
+            var receiversToAdd = receiverIds
+                .Where(id => !existingReceiverIds.Contains(id))
+                .Select(receiverId => new NotificationReceiver { NotificationId = notification.Id, ReceiverId = receiverId })
+                .ToList();
+            var receiversToDelete = existingReceivers
+                .Where(r => !receiverIds.Contains(r.ReceiverId))
+                .ToList();
+            _notificationReceiverRepository.DeleteRange(receiversToDelete);
+            await _notificationReceiverRepository.InsertRangeAsync(receiversToAdd);
             await _notificationReceiverRepository.SaveAsync();
         }
     }

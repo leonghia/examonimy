@@ -23,28 +23,18 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             _examPaperReviewerRepository = examPaperReviewerRepository;
         }
 
-        public async Task<IEnumerable<int>> AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
+        public async Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
         {
-            var existingExamPaperReviewers = await _examPaperReviewerRepository.GetAsync(null, ePR => ePR.ExamPaperId == examPaperId);
-            var examPaperReviewersToDelete = existingExamPaperReviewers.Where(e => !examPaperReviewers.Contains(e, new ExamPaperReviewerEqualityComparer())).ToList();
-            var entityIdsToDelete = examPaperReviewersToDelete.Select(e => e.Id);
-            _examPaperReviewerRepository.DeleteRange(examPaperReviewersToDelete);
+            _examPaperReviewerRepository.DeleteRange(ePR => ePR.ExamPaperId == examPaperId);
             await _examPaperReviewerRepository.InsertRangeAsync(examPaperReviewers);
-            await _examPaperReviewerRepository.SaveAsync();
-            return entityIdsToDelete;
+            await _examPaperReviewerRepository.SaveAsync();         
         }
 
         public async Task<Course> GetCourseAsync(int examPaperId)
         {
             var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Course" }) ?? throw new ArgumentException(null, nameof(examPaperId));
             return examPaper.Course!;
-        }
-
-        public async Task<int> GetExamPaperIdAsync(int examPaperReviewerId)
-        {
-            var examPaperReviewer = await _examPaperReviewerRepository.GetByIdAsync(examPaperReviewerId) ?? throw new ArgumentException(null, nameof(examPaperReviewerId));
-            return examPaperReviewer.ExamPaperId;
-        }
+        }      
 
         public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId)
         {

@@ -12,7 +12,7 @@ export class NotificationDropdownComponent {
     }
 
     connectedCallback() {
-        this.#container.innerHTML = this.render();
+        this.populate();
 
         this.#container.addEventListener("click", async event => {
             event.preventDefault();
@@ -38,18 +38,22 @@ export class NotificationDropdownComponent {
         `;
     }
 
+    populate() {
+        this.#container.innerHTML = this.render();
+    }
+
     renderNotifications(notifications = [new Notification()]) {
         return notifications.reduce((pV, cV) => {
             return pV + `
         <a data-is-read="${cV.isRead}" href="${cV.href}" data-notification-id="${cV.id}" class="noti flex p-2 dark:hover:bg-gray-700">
-            <div class="flex p-2 hover:bg-gray-50 rounded-md">
+            <div class="flex p-2 hover:bg-gray-100 rounded-md">
                 <div class="flex-shrink-0">
                     <img class="rounded-full w-11 h-11" src="${cV.actorProfilePicture}" alt="user profile picture">
                     ${cV.iconMarkup}
                 </div>
                 <div class="w-full ps-3">
                     ${cV.messageMarkup}
-                    ${cV.isRead ? `<div class='text-xs text-gray-400 font-normal'>${convertToAgo(new Date(cV.dateTimeAgo))}</div>` : `<div class='text-xs text-blue-600 font-medium flex items-center justify-between'><span>${convertToAgo(new Date(cV.dateTimeAgo))}</span><div class='flex-none rounded-full p-1 text-blue-500 bg-blue-500/10'><div class='h-2 w-2 rounded-full bg-current'></div></div></div>`}
+                    ${cV.isRead ? `<div class='text-xs text-gray-500 font-normal'>${convertToAgo(new Date(cV.dateTimeAgo))}</div>` : `<div class='text-xs text-blue-600 font-medium flex items-center justify-between'><span>${convertToAgo(new Date(cV.dateTimeAgo))}</span><div class='flex-none rounded-full p-1 text-blue-500 bg-blue-500/10'><div class='h-2 w-2 rounded-full bg-current'></div></div></div>`}
                 </div>
             </div>
         </a>

@@ -22,6 +22,14 @@ const toggleNotiDot = (notifications = [new Notification]) => {
         notiDot.classList.add("hidden");
 }
 
+const init = async () => {
+    const res = await fetchData("notification", new RequestParams(null, 5, 1));
+    const notifications = res.data;
+    notificationDropdownComponent = new NotificationDropdownComponent(notifcationDropdownContainer, notifications);
+    notificationDropdownComponent.connectedCallback();
+    toggleNotiDot(notifications);
+}
+
 // Event listeners
 openUserMenuButton.addEventListener("click", () => {
     userMenu.classList.toggle("hidden");
@@ -29,14 +37,10 @@ openUserMenuButton.addEventListener("click", () => {
 
 viewNotificationButton.addEventListener("click", async () => {
     notifcationDropdownContainer.classList.toggle("hidden");
+    notificationDropdownComponent.populate();
+    notiDot.classList.add("hidden");
 });
 
 // On load
-(async () => {
-    const res = await fetchData("notification", new RequestParams(null, 5, 1));
-    const notifications = res.data;
-    notificationDropdownComponent = new NotificationDropdownComponent(notifcationDropdownContainer, notifications);
-    notificationDropdownComponent.connectedCallback();
-    toggleNotiDot(notifications);
-})();
+init();
 
