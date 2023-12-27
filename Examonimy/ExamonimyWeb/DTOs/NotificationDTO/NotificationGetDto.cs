@@ -7,7 +7,7 @@
         public required string IconMarkup { get; set; }
         public required string ActorProfilePicture { get; set; }  
         public required string Href { get; set; }
-        public required string DateTimeAgoMarkup { get; set; }
+        public required DateTime DateTimeAgo { get; set; }
         public required bool IsRead { get; set; }
     }
 }

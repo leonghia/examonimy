@@ -240,9 +240,8 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
-            await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
-
-            await _notificationService.RequestReviewerForExamPaperAsync(examPaperReviewers, contextUser.Id);
+            var entityIdsToDelete = await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+            await _notificationService.RequestReviewerForExamPaperAsync(examPaper.Id, examPaperReviewers, contextUser.Id, entityIdsToDelete.ToList());
 
             return Accepted();
         }

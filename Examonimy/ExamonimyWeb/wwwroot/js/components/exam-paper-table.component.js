@@ -3,6 +3,7 @@ import { ExamPaper } from "../models/exam-paper.model.js";
 import { ConfirmModalComponent } from "../components/confirm-modal.component.js";
 import { TeacherStackedListComponent } from "./teacher-stacked-list.component.js";
 import { User } from "../models/user.model.js";
+import { deleteData } from "../helpers/ajax.helper.js";
 
 export class ExamPaperTableComponent {
     #container;
@@ -72,7 +73,7 @@ export class ExamPaperTableComponent {
         container.innerHTML = "";
         reviewers.forEach(r => {
             container.insertAdjacentHTML("beforeend", `
-            <img title="${r.fullName}" class="reviewer w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="${r.profilePicture}" alt="profile picture of user ${r.userName}">
+            <img title="${r.fullName}" class="reviewer-img w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="${r.profilePicture}" alt="profile picture of user ${r.userName}">
             `);
         });
     }

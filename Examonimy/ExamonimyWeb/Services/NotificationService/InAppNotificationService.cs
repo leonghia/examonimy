@@ -1,7 +1,6 @@
 ﻿using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Repositories.GenericRepository;
-using ExamonimyWeb.Services.MarkupService;
 using ExamonimyWeb.Utilities;
 using ExamonimyWeb.Utilities.NotificationMessages;
 using System.Runtime.CompilerServices;
@@ -14,20 +13,14 @@ namespace ExamonimyWeb.Services.NotificationService
         private readonly IGenericRepository<Notification> _notificationRepository;
         private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;
         private readonly IGenericRepository<User> _userRepository;      
-        private readonly IMarkupService _markupService;
+       
 
-        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IGenericRepository<User> userRepository, IMarkupService markupService)
+        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IGenericRepository<User> userRepository)
         {
             _examPaperManager = examPaperManager;
             _notificationRepository = notificationRepository;
             _notificationReceiverRepository = notificationReceiverRepository;
-            _userRepository = userRepository;           
-            _markupService = markupService;
-        }
-
-        public string GetDateTimeAgoMarkup(DateTime dateTime, bool isRead)
-        {
-            return _markupService.GetDateTimeAgoMarkup(dateTime, isRead);
+            _userRepository = userRepository;          
         }
 
         public async Task<string> GetHrefAsync(Notification notification)
@@ -74,8 +67,26 @@ namespace ExamonimyWeb.Services.NotificationService
             return notificationReceivers;
         }
 
-        public async Task RequestReviewerForExamPaperAsync(List<ExamPaperReviewer> examPaperReviewers, int actorId)
+        public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId, List<int> entityIdsToDelete)
         {
+            var notificationsToDelete = new List<Notification>();
+            foreach (var entityId in entityIdsToDelete)
+            {
+                var n = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == entityId, null) ?? throw new ArgumentException(null, nameof(entityId));
+                notificationsToDelete.Add(n);
+            }
+
+            var notificationIds = notificationsToDelete.Select(n => n.Id);
+            var notificationReceiversToDelete = new List<NotificationReceiver>();
+            foreach (var notificationId in notificationIds)
+            {
+                var nR = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == notificationId, null) ?? throw new ArgumentException(null, nameof(notificationId));
+                notificationReceiversToDelete.Add(nR);
+            }
+
+            _notificationReceiverRepository.DeleteRange(notificationReceiversToDelete);
+            _notificationRepository.DeleteRange(notificationsToDelete);
+
             // create notification
             var notifications = examPaperReviewers.Select(ePR => new Notification { NotificationTypeId = NotificationTypeIds.AskForReviewForExamPaper, EntityId = ePR.Id, ActorId = actorId }).ToList();
             await _notificationRepository.InsertRangeAsync(notifications);
