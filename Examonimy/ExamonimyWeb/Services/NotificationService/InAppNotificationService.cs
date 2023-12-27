@@ -1,8 +1,12 @@
-﻿using ExamonimyWeb.Entities;
+﻿using Azure.Core;
+using ExamonimyWeb.DTOs.NotificationDTO;
+using ExamonimyWeb.Entities;
+using ExamonimyWeb.Hubs;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using ExamonimyWeb.Utilities.NotificationMessages;
+using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
 
 namespace ExamonimyWeb.Services.NotificationService
@@ -12,15 +16,16 @@ namespace ExamonimyWeb.Services.NotificationService
         private readonly IExamPaperManager _examPaperManager;
         private readonly IGenericRepository<Notification> _notificationRepository;
         private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;
-        private readonly IGenericRepository<User> _userRepository;      
-       
+        private readonly IGenericRepository<User> _userRepository;
+        private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
 
-        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IGenericRepository<User> userRepository)
+        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IGenericRepository<User> userRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext)
         {
             _examPaperManager = examPaperManager;
             _notificationRepository = notificationRepository;
             _notificationReceiverRepository = notificationReceiverRepository;
-            _userRepository = userRepository;          
+            _userRepository = userRepository;
+            _notificationHubContext = notificationHubContext;
         }
 
         public string GetHref(Notification notification)
@@ -93,6 +98,21 @@ namespace ExamonimyWeb.Services.NotificationService
                 await _notificationReceiverRepository.InsertRangeAsync(notificationReceiversToCreate);
                 await _notificationReceiverRepository.SaveAsync();
 
+                // send noti via signalr
+                var ids = notificationReceiversToCreate.Select(nR => nR.ReceiverId);
+                var usernames = (await _userRepository.GetAsync(null, u => ids.Contains(u.Id))).Select(u => u.Username).ToList();
+                var actor = await _userRepository.GetByIdAsync(actorId) ?? throw new ArgumentException(null, nameof(actorId));
+                await _notificationHubContext.Clients.Users(usernames).ReceiveNotification(new NotificationGetDto
+                {
+                    Id = notificationToCreate.Id,
+                    MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
+                    ActorProfilePicture = actor.ProfilePicture,
+                    Href = GetHref(notificationToCreate),
+                    IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
+                    DateTimeAgo = notificationToCreate.CreatedAt,
+                    IsRead = false
+                });
+
                 return;
             }
 
@@ -110,6 +130,8 @@ namespace ExamonimyWeb.Services.NotificationService
             _notificationReceiverRepository.DeleteRange(receiversToDelete);
             await _notificationReceiverRepository.InsertRangeAsync(receiversToAdd);
             await _notificationReceiverRepository.SaveAsync();
+
+            // send noti via signalr
         }
     }
 }

@@ -8,9 +8,11 @@ using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Services.TokenService;
+using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -119,6 +121,8 @@ public static class BuilderServicesExtensions
         services.AddScoped<IQuestionManager, QuestionManager>();
         services.AddScoped<IExamPaperManager, ExamPaperManager>();
         services.AddScoped<INotificationService, InAppNotificationService>();
+
+        services.AddSingleton<IUserIdProvider, UsernameBasedUserIdProvider>();
 
         services.AddSignalR();
     }
