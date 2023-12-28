@@ -1,5 +1,5 @@
 ﻿import { MAX_LENGTH_FOR_QUESTION_CONTENT } from "../config.js";
-import { MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../models/question-create.model.js";
+import { MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, TrueFalseQuestionCreateDto, ShortAnswerQuestionCreateDto, FillInBlankQuestionCreateDto } from "../models/question.model.js";
 
 export const QuestionTypeIDs = {
     MultipleChoiceWithOneCorrectAnswer: 1,

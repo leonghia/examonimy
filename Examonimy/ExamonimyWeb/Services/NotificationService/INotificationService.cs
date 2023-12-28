@@ -5,11 +5,10 @@ namespace ExamonimyWeb.Services.NotificationService
 {
     public interface INotificationService
     {
-        Task RequestReviewerForExamPaperAsync(List<ExamPaperReviewer> examPaperReviewers, int actorId);
-        Task<string> GetMessageMarkupAsync(Notification notification);
+        Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId);
+        Task<string> GetMessageMarkupAsync(Notification notification, bool isRead);
         string GetIconMarkup(int notificationTypeId);
-        string GetDateTimeAgoMarkup(DateTime dateTime); 
-        Task<string> GetHrefAsync(Notification notification);
-        Task<IEnumerable<Notification>> GetNotificationsAsync(int receiverId, RequestParams requestParams);
+        string GetHref(Notification notification);
+        Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams);
     }
 }

@@ -25,7 +25,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 return await _dbSet.CountAsync();
         }       
 
-        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties)
+        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
             query = query.Where<TEntity>(filterPredicate);          
@@ -57,7 +57,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.Update(entity);
         }
 
-        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
+        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate = null, Expression<Func<TEntity, bool>>? filterPredicate = null, List<string>? includedProperties = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
         {
             requestParams ??= new RequestParams();
 
@@ -116,7 +116,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.RemoveRange(query);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
+        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate = null, Expression<Func<TEntity, bool>>? filterPredicate = null, List<string>? includedProperties = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
         {
             IQueryable<TEntity> query = _dbSet;
 

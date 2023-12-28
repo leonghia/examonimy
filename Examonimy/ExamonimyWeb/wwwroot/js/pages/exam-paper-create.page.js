@@ -7,7 +7,7 @@ import { Course } from "../models/course.model.js";
 import { fetchData, postData } from "../helpers/ajax.helper.js";
 import { QuestionListPaletteComponent } from "../components/question-list-palette.component.js";
 import { QuestionRequestParams, RequestParams } from "../models/request-params.model.js";
-import { ExamPaperCreate } from "../models/exam-paper-create.model.js";
+import { ExamPaperCreate } from "../models/exam-paper.model.js";
 import { Question } from "../models/question.model.js";
 import { ExamPaperQuestionListComponent } from "../components/exam-paper-question-list.component.js";
 

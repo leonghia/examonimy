@@ -2,26 +2,26 @@
 using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
     public class NotificationController : GenericController<Notification>
     {          
-        private readonly INotificationService _notificationService;       
-        private const int _defaultTimezoneOffset = 0;
-        private const string _timezoneOffsetRequestHeaderKey = "TimezoneOffset";
-        private const int _offsetMultiplier = -1;
+        private readonly INotificationService _notificationService;
+        private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;     
+        private const string _timezoneOffsetRequestHeaderKey = "TimezoneOffset";      
 
-        public NotificationController(IMapper mapper, IGenericRepository<Notification> notificationRepository, IUserManager userManager, INotificationService notificationService) : base(mapper, notificationRepository, userManager)
+        public NotificationController(IMapper mapper, IGenericRepository<Notification> notificationRepository, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(mapper, notificationRepository, userManager)
         {                    
-            _notificationService = notificationService;           
+            _notificationService = notificationService;
+            _notificationReceiverRepository = notificationReceiverRepository;
         }
 
         [CustomAuthorize]
@@ -32,25 +32,38 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             var notifications = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
             var notificationsToReturn = new List<NotificationGetDto>();
-            foreach (var notification in notifications)
+            if (notifications.Any())
             {
-                var str = Request.Headers[_timezoneOffsetRequestHeaderKey];
-                DateTime createdAt;
-                if (StringValues.IsNullOrEmpty(str))
-                    createdAt = notification.CreatedAt.AddMinutes(Convert.ToDouble(_defaultTimezoneOffset) * _offsetMultiplier);
-                else
-                    createdAt = notification.CreatedAt.AddMinutes(Convert.ToDouble(int.Parse(str!)) * _offsetMultiplier);
-                notificationsToReturn.Add(new NotificationGetDto
+                foreach (var notification in notifications)
                 {
-                    Id = notification.Id,
-                    MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification),
-                    ActorProfilePicture = contextUser.ProfilePicture,                   
-                    Href = await _notificationService.GetHrefAsync(notification),                   
-                    IconMarkup = _notificationService.GetIconMarkup(notification.NotificationTypeId),
-                    DateTimeAgoMarkup = _notificationService.GetDateTimeAgoMarkup(notification.CreatedAt)
-                });
+                    notificationsToReturn.Add(new NotificationGetDto
+                    {
+                        Id = notification.NotificationId,
+                        MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
+                        ActorProfilePicture = contextUser.ProfilePicture,
+                        Href = _notificationService.GetHref(notification.Notification!),
+                        IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.NotificationTypeId),
+                        DateTimeAgo = notification.Notification.CreatedAt.ConvertTo(Request.Headers[_timezoneOffsetRequestHeaderKey]),
+                        IsRead = notification.IsRead
+                    });
+                }
             }
+            
             return Ok(notificationsToReturn);
+        }
+
+        [CustomAuthorize]
+        [HttpPut("api/notification/{id:int}")]
+        public async Task<IActionResult> MarkAsRead([FromRoute] int id)
+        {
+            var contextUser = await base.GetContextUser();
+            var notificationReceiver = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
+            if (notificationReceiver is null)
+                return NotFound();
+            notificationReceiver.IsRead = true;
+            _notificationReceiverRepository.Update(notificationReceiver);
+            await _notificationReceiverRepository.SaveAsync();
+            return NoContent();
         }
     }
 }

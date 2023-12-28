@@ -6,6 +6,8 @@
 
         public required int ReceiverId { get; set; }
 
+        public bool IsRead { get; set; } = false;
+
         public Notification? Notification { get; set; }
         public User? Receiver { get; set; }
     }

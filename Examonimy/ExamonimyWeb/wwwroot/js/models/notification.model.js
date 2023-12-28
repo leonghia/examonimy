@@ -4,5 +4,6 @@
     iconMarkup = "";
     actorProfilePicture = "";
     href = "";
-    dateTimeAgoMarkup = "";
+    dateTimeAgo = "";
+    isRead = false;
 }

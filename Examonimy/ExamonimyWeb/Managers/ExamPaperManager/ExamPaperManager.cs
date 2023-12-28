@@ -2,6 +2,7 @@
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Utilities;
 
 namespace ExamonimyWeb.Managers.ExamPaperManager
 {
@@ -26,20 +27,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         {
             _examPaperReviewerRepository.DeleteRange(ePR => ePR.ExamPaperId == examPaperId);
             await _examPaperReviewerRepository.InsertRangeAsync(examPaperReviewers);
-            await _examPaperReviewerRepository.SaveAsync();
+            await _examPaperReviewerRepository.SaveAsync();         
         }
 
         public async Task<Course> GetCourseAsync(int examPaperId)
         {
             var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Course" }) ?? throw new ArgumentException(null, nameof(examPaperId));
             return examPaper.Course!;
-        }
-
-        public async Task<int> GetExamPaperIdAsync(int examPaperReviewerId)
-        {
-            var examPaperReviewer = await _examPaperReviewerRepository.GetByIdAsync(examPaperReviewerId) ?? throw new ArgumentException(null, nameof(examPaperReviewerId));
-            return examPaperReviewer.ExamPaperId;
-        }
+        }      
 
         public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId)
         {

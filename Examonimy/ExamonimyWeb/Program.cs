@@ -1,4 +1,5 @@
 using ExamonimyWeb.Extensions;
+using ExamonimyWeb.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,5 +27,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
