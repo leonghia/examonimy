@@ -12,10 +12,7 @@ using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
-using LinqKit;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Immutable;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
@@ -23,20 +20,16 @@ namespace ExamonimyWeb.Controllers
     [Route("")]
     public class ExamPaperController : GenericController<ExamPaper>
     {
-        private readonly IMapper _mapper;
-        private readonly IGenericRepository<ExamPaper> _examPaperRepository;
-        private readonly IUserManager _userManager;
-        private readonly IGenericRepository<ExamPaperQuestion> _examPaperQuestionRepository;
+        private readonly IMapper _mapper;        
+        private readonly IUserManager _userManager;     
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
         private readonly INotificationService _notificationService;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(mapper, examPaperRepository, userManager)
+        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(mapper, examPaperRepository, userManager)
         {
-            _mapper = mapper;
-            _examPaperRepository = examPaperRepository;
-            _userManager = userManager;
-            _examPaperQuestionRepository = examPaperQuestionRepository;
+            _mapper = mapper;          
+            _userManager = userManager;          
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;
             _notificationService = notificationService;
@@ -66,7 +59,10 @@ namespace ExamonimyWeb.Controllers
         {
             var contextUser = await base.GetContextUser();
             var userToReturn = _mapper.Map<UserGetDto>(contextUser);
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(await _examPaperRepository.GetAsync(eP => eP.Id == id, new List<string> { "Author", "Course" }));
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
 
             var examPaperSingleViewModel = new ExamPaperSingleViewModel
             {
@@ -81,7 +77,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> GetExamPaperQuestions([FromRoute] int examPaperId)
         {
-            var examPaper = await _examPaperRepository.GetByIdAsync(examPaperId);
+            var examPaper = await _examPaperManager.GetByIdAsync(examPaperId);
             if (examPaper is null)
                 return NotFound();
             var examPaperQuestionsToReturn = await _examPaperManager.GetExamPaperQuestionsAsync(examPaperId);
@@ -93,26 +89,12 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
         {
-            Expression<Func<ExamPaper, bool>>? searchPredicate = null;
-            if (requestParamsForExamPaper.SearchQuery is not null)
-            {
-                searchPredicate = eP => eP.ExamPaperCode.ToUpper().Contains(requestParamsForExamPaper.SearchQuery.ToUpper());
-            }
-            var filterPredicate = PredicateBuilder.New<ExamPaper>(true);
-            if (requestParamsForExamPaper.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
-            {
-                filterPredicate = filterPredicate.And(eP => eP.CourseId == requestParamsForExamPaper.CourseId);
-            }
-            if (requestParamsForExamPaper.Status is not null)
-            {
-                filterPredicate = filterPredicate.And(eP => eP.Status == requestParamsForExamPaper.Status);
-            }
-            var examPapers = await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, searchPredicate, filterPredicate, new List<string> { "Author", "Course", "Reviewers" });
+            var examPapers = await _examPaperManager.GetPagedListAsync(requestParamsForExamPaper);
             var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
 
             for (var i = 0; i < examPapersToReturn.Length; i++)
             {
-                examPapersToReturn[i].NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(examPaperQuestion => examPaperQuestion.ExamPaperId == examPapersToReturn[i].Id);
+                examPapersToReturn[i].NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPapersToReturn[i].Id);
                 examPapersToReturn[i].StatusAsString = examPapersToReturn[i].Status.ToVietnameseString();
             }    
 
@@ -134,12 +116,11 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {           
-            var examPaperEntity = await _examPaperRepository.GetAsync(eP => eP.Id == id, new List<string> { "Course", "Author" });
-            if (examPaperEntity is null)
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null)
                 return NotFound();
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaperEntity);
-            Expression<Func<ExamPaperQuestion, bool>> examPaperQuestionPredicate = ePQ => ePQ.ExamPaperId == examPaperEntity.Id;
-            examPaperToReturn.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(examPaperQuestionPredicate);
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);           
+            examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return Ok(examPaperToReturn);
         }
 
@@ -165,10 +146,9 @@ namespace ExamonimyWeb.Controllers
             var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
             examPaper.Status = (byte)ExamPaperStatus.Pending;
             examPaper.AuthorId = contextUser.Id;
-            await _examPaperRepository.InsertAsync(examPaper);
-            await _examPaperRepository.SaveAsync();
+            await _examPaperManager.AddThenSaveAsync(examPaper);
             var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
-            examPaperToReturn.NumbersOfQuestion = await _examPaperQuestionRepository.CountAsync(ePQ => ePQ.ExamPaperId == examPaper.Id);
+            examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return CreatedAtRoute("GetExamPaperById", new { id = examPaper.Id }, examPaperToReturn);
         }
 
@@ -176,7 +156,7 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("exam-paper/edit/{id:int}")]
         public async Task<IActionResult> RenderEditView([FromRoute] int id)
         {
-            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
@@ -189,16 +169,14 @@ namespace ExamonimyWeb.Controllers
         [HttpDelete("api/exam-paper/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
-            _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaper.Id);
-            await _examPaperQuestionRepository.SaveAsync();
-            _examPaperRepository.Delete(examPaper);
-            await _examPaperRepository.SaveAsync();
+            await _examPaperManager.DeleteThenSaveAsync(id);
+            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper });
             return NoContent();
         }
 
@@ -210,7 +188,7 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
@@ -233,7 +211,7 @@ namespace ExamonimyWeb.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> AddReviewers([FromRoute] int id, [FromBody] ExamPaperReviewerCreateDto examPaperReviewerCreateDto)
         {
-            var examPaper = await _examPaperRepository.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
