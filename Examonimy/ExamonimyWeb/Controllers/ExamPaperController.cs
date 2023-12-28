@@ -176,7 +176,7 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             await _examPaperManager.DeleteThenSaveAsync(id);
-            
+            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper });
             return NoContent();
         }
 

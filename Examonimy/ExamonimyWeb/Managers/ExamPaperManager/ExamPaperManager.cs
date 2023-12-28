@@ -45,9 +45,13 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 
         public async Task DeleteThenSaveAsync(int examPaperId)
         {
-            // Delete all related examPaperQuestions
+            // Delete all the related examPaperQuestions
             _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
             await _examPaperQuestionRepository.SaveAsync();
+
+            // Delete all the related examPaperReviewers
+            _examPaperReviewerRepository.DeleteRange(ePR => ePR.ExamPaperId == examPaperId);
+            await _examPaperReviewerRepository.SaveAsync();
 
             // Delete the examPaper itself         
             await _examPaperRepository.DeleteAsync(examPaperId);
