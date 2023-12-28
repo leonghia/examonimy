@@ -1,5 +1,6 @@
 ﻿// Imports
 import { NotificationDropdownComponent } from "./components/notification-dropdown.component.js";
+import { NotificationSignalRComponent } from "./components/notification-signalr.component.js";
 import { fetchData } from "./helpers/ajax.helper.js";
 import { Notification } from "./models/notification.model.js";
 import { RequestParams } from "./models/request-params.model.js";
@@ -13,6 +14,7 @@ const notiDot = document.querySelector("#noti-dot");
 
 // States
 let notificationDropdownComponent;
+let notificationSignalRComponent;
 const signalRConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
@@ -62,7 +64,14 @@ signalRConnection.onclose(async () => {
 });
 
 signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
-    console.log(notification);
+    notificationSignalRComponent = new NotificationSignalRComponent(document.querySelector("#notification-signalr-container"), notification);
+    notificationSignalRComponent.connectedCallback();
+    notificationDropdownComponent.insertNoti(notification);
+    notiDot.classList.remove("hidden");
+    setTimeout(() => {
+        notificationSignalRComponent.disconnectedCallback();
+        notificationSignalRComponent = undefined;
+    }, 10000);
 });
 
 startSignalR();

@@ -38,6 +38,13 @@ export class NotificationDropdownComponent {
         `;
     }
 
+    insertNoti(notification = new Notification()) {
+        if (this.#notifications.length === 5)
+            this.#notifications.pop();
+        this.#notifications.unshift(notification);
+        this.populate();
+    }
+
     populate() {
         this.#container.innerHTML = this.render();
     }

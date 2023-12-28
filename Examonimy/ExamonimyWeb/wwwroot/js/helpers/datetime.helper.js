@@ -11,7 +11,7 @@ export const convertToAgo = (datetime = new Date()) => {
     if (ts / second < 10)
         return "vừa mới đây";
     if (ts / second < 60)
-        return `${Math.floor(ts / second)} giây trước`;
+        return `vài giây trước`;
     if (ts / minute < 60)
         return `${Math.floor(ts / minute)} phút trước`;
     if (ts / hour < 24)
