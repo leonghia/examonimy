@@ -145,5 +145,11 @@ namespace ExamonimyWeb.Repositories.GenericRepository
 
             return await query.ToListAsync();
         }
+
+        public async Task DeleteAsync(object id)
+        {
+            var entityToDelete = await _dbSet.FindAsync(id) ?? throw new ArgumentException(null, nameof(id));
+            _dbSet.Remove(entityToDelete);
+        }
     }
 }

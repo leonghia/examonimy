@@ -14,6 +14,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         void Update(TEntity entity);
         Task SaveAsync();
         Task<int> CountAsync(Expression<Func<TEntity, bool>>? filterPredicate = null);
+        Task DeleteAsync (object id);
         void Delete(TEntity entity);
         void DeleteRange(List<TEntity> entities);
         void DeleteRange(Expression<Func<TEntity, bool>> predicate);

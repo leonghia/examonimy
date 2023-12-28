@@ -28,6 +28,16 @@ namespace ExamonimyWeb.Services.NotificationService
             _notificationHubContext = notificationHubContext;
         }
 
+        public async Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds)
+        {
+            var notificationsToDelete = (await _notificationRepository.GetAsync(null, n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
+            var notificationsIdsToDelete = notificationsToDelete.Select(n => n.Id);
+            _notificationReceiverRepository.DeleteRange(nR => notificationsIdsToDelete.Contains(nR.NotificationId));
+            await _notificationReceiverRepository.SaveAsync();
+            _notificationRepository.DeleteRange(notificationsToDelete);
+            await _notificationRepository.SaveAsync();
+        }
+
         public string GetHref(Notification notification)
         {
             switch (notification.NotificationTypeId)
