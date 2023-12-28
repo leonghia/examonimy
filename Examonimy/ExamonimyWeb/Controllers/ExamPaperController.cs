@@ -72,6 +72,24 @@ namespace ExamonimyWeb.Controllers
             return View("Single", examPaperSingleViewModel);
         }
 
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpGet("exam-paper/{id}/review")]
+        public async Task<IActionResult> RenderReviewView([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
+
+            var examPaperSingleViewModel = new ExamPaperSingleViewModel
+            {
+                User = _mapper.Map<UserGetDto>(contextUser),
+                ExamPaper = examPaperToReturn
+            };
+            return View("Review", examPaperSingleViewModel);
+        }
+
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper/{examPaperId:int}/question")]
         [Produces("application/json")]

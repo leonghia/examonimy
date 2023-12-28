@@ -40,7 +40,7 @@ namespace ExamonimyWeb.Controllers
                     {
                         Id = notification.NotificationId,
                         MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
-                        ActorProfilePicture = contextUser.ProfilePicture,
+                        ActorProfilePicture = notification.Notification.Actor.ProfilePicture,
                         Href = _notificationService.GetHref(notification.Notification!),
                         IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.NotificationTypeId),
                         DateTimeAgo = notification.Notification.CreatedAt.ConvertTo(Request.Headers[_timezoneOffsetRequestHeaderKey]),

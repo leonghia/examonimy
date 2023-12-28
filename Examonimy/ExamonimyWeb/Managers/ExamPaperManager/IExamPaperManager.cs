@@ -17,5 +17,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<PagedList<ExamPaper>> GetPagedListAsync(RequestParamsForExamPaper requestParamsForExamPaper);
         Task<int> CountNumbersOfQuestions(int examPaperId);
         Task AddThenSaveAsync(ExamPaper examPaper);
+        Task<bool> IsReviewerAsync(int examPaperId, int userId);
     }
 }

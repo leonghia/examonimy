@@ -118,6 +118,13 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return examPaper.Author!.Id == userId;
         }
 
+        public async Task<bool> IsReviewerAsync(int examPaperId, int userId)
+        {
+            var examPaperReviewers = await _examPaperReviewerRepository.GetAsync(null, ePR => ePR.ExamPaperId == examPaperId);
+            var reviewerIds = examPaperReviewers.Select(ePR => ePR.ReviewerId);
+            return reviewerIds.Contains(userId);
+        }
+
         public async Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate)
         {
             _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
