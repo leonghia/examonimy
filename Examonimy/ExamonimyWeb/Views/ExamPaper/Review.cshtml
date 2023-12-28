@@ -19,36 +19,91 @@
         </div>     
     </div>
 </div>
-<div class="flex">
-    <div class="w-1/2">
-        <div id="exam-paper-detail-container" data-exam-paper-id="@Model.ExamPaper.Id" class="mb-10 p-8 bg-white rounded-lg">
-            <div class="flex gap-x-28">
-                <div>
-                    <div class="mb-10">
-                        <h5 class="mb-3 font-semibold text-gray-900">Mã đề thi</h5>
-                        <p class="font-normal text-gray-700">@Model.ExamPaper.ExamPaperCode</p>
-                    </div>
+<div>
+    <div class="flex gap-x-10 mb-10">
+        <div class="basis-1/2">
+            <div id="exam-paper-detail-container" data-exam-paper-id="@Model.ExamPaper.Id" class="mb-10 p-8 bg-white rounded-lg">
+                <div class="flex gap-x-28">
                     <div>
-                        <h5 class="mb-3 font-semibold text-gray-900">Tác giả</h5>
-                        <p class="font-normal text-gray-700">@Model.ExamPaper.Author.FullName</p>
+                        <div class="mb-10">
+                            <h5 class="mb-3 font-semibold text-gray-900">Mã đề thi</h5>
+                            <p class="font-normal text-gray-700">@Model.ExamPaper.ExamPaperCode</p>
+                        </div>
+                        <div>
+                            <h5 class="mb-3 font-semibold text-gray-900">Tác giả</h5>
+                            <p class="font-normal text-gray-700">@Model.ExamPaper.Author.FullName</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="mb-10">
+                            <h5 class="mb-3 font-semibold text-gray-900">Môn học</h5>
+                            <p class="font-normal text-gray-700">@Model.ExamPaper.Course.Name</p>
+                        </div>
+                        <div>
+                            <h5 class="mb-3 font-semibold text-gray-900">Ngày tạo</h5>
+                            <p class="font-normal text-gray-700">20/12/2023</p>
+                        </div>
                     </div>
                 </div>
-
-                <div>
-                    <div class="mb-10">
-                        <h5 class="mb-3 font-semibold text-gray-900">Môn học</h5>
-                        <p class="font-normal text-gray-700">@Model.ExamPaper.Course.Name</p>
-                    </div>
-                    <div>
-                        <h5 class="mb-3 font-semibold text-gray-900">Ngày tạo</h5>
-                        <p class="font-normal text-gray-700">20/12/2023</p>
-                    </div>
-                </div>
-            </div>
-
+            </div>         
         </div>
-        <div id="question-list-container" class="space-y-8">
+        <div class="basis-1/3">
+            <div id="review-container" class="">
+                <form action="#" class="relative">
+                    <div class="overflow-hidden rounded-lg bg-white focus-within:ring-0 focus-within:ring-indigo-500">
+                        <div class="p-4">
+                            <label for="review" class="text-sm font-semibold text-gray-700">Review đề thi</label>
+                            <textarea rows="3" name="review" id="review" class="block w-full rounded-md mt-4 bg-gray-50 resize-none border-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Vui lòng viết nhận xét của bạn vào đây..."></textarea>
+                            <fieldset class="mt-4">
+                                <legend class="sr-only">Tùy chọn</legend>
+                                <div class="space-y-3">
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="small" aria-describedby="small-description" name="plan" type="radio" checked class="h-4 w-4 bg-gray-200 border-none text-violet-600 focus:ring-0 focus:ring-offset-0">
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="small" class="font-medium text-gray-700">Nhận xét</label>
+                                            <p id="small-description" class="text-gray-500">Nhận xét chung về đề thi, yêu cầu chỉnh sửa, thay đổi, v.v.</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="medium" aria-describedby="medium-description" name="plan" type="radio" class="h-4 w-4 bg-gray-200 border-none text-violet-600 focus:ring-0 focus:ring-offset-0">
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="medium" class="font-medium text-gray-700">Duyệt</label>
+                                            <p id="medium-description" class="text-gray-500">Duyệt đề thi ngay lập tức, đề thi phải nhận được sự đồng ý của tất cả kiểm duyệt viên.</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input id="large" aria-describedby="large-description" name="plan" type="radio" class="h-4 w-4 bg-gray-200 border-none text-violet-600 focus:ring-0 focus:ring-offset-0">
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label for="large" class="font-medium text-gray-700">Từ chối</label>
+                                            <p id="large-description" class="text-gray-500">Từ chối đề thi, kèm lý do (nếu có).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="flex items-center justify-end space-x-3 border-t border-gray-200 px-2 py-2 sm:px-3">
+                            <div class="flex-shrink-0">
+                                <button type="submit" class="inline-flex items-center rounded-md bg-violet-400 px-3 py-2 text-sm font-semibold text-violet-800 shadow-sm hover:text-violet-900 hover:bg-violet-500">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="flex gap-x-10">
+        <div class="basis-1/2">
+            <div id="question-list-container" class="space-y-8"></div>
         </div>
     </div>
 </div>
+
+<script src="~/js/pages/exam-paper-review.page.js" type="module"></script>
 

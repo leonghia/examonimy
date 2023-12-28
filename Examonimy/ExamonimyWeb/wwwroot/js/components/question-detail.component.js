@@ -1,4 +1,4 @@
-﻿import { ChoiceValueMappings, QuestionTypeIDs, formatFillInBlankQuestionContent, splitCorrectAnswersForFillInBlankQuestion, splitCorrectAnswersForMultipleChoiceQuestion } from "../helpers/question.helper.js";
+﻿import { QuestionTypeIDs, formatFillInBlankQuestionContent } from "../helpers/question.helper.js";
 import { FillInBlankQuestion, MultipleChoiceQuestionWithMultipleCorrectAnswers, MultipleChoiceQuestionWithOneCorrectAnswer, Question, ShortAnswerQuestion, TrueFalseQuestion } from "../models/question.model.js";
 export class QuestionDetailComponent {
     
