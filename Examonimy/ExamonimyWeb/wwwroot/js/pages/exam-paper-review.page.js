@@ -7,6 +7,7 @@ import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
 const questionListContainer = document.querySelector("#question-list-container");
 // States
 const examPaperId = Number(document.querySelector("#exam-paper-detail-container").dataset.examPaperId);
+const profilePfp = document.querySelector(".profile-pfp").src;
 // Function expressions
 
 // Event listeners
@@ -14,6 +15,41 @@ questionListContainer.addEventListener("click", event => {
     const clickedToggleAnswerButton = event.target.closest(".toggle-answer-btn");
     if (clickedToggleAnswerButton) {
         clickedToggleAnswerButton.closest(".question").querySelector(".answer-container").classList.toggle("hidden");
+        return;
+    }
+
+    const clickedCommentButton = event.target.closest(".comment-btn");
+    if (clickedCommentButton) {
+        clickedCommentButton.closest(".question").nextElementSibling.insertAdjacentHTML("beforeend", `
+<div class="absolute left-4 top-2 flex items-start space-x-4">
+    <div class="flex-shrink-0">
+        <img class="inline-block h-10 w-10 rounded-full" src="${profilePfp}" alt="user profile picture">
+    </div>
+    <div class="min-w-0 flex-1">
+        <form action="#" class="relative">
+            <div class="overflow-hidden rounded-lg">
+                <label for="comment" class="sr-only">Add your comment</label>
+                <textarea rows="3" name="comment" id="comment" class="bg-white block w-72 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Add your comment..."></textarea>
+
+                <!-- Spacer element to match the height of the toolbar -->
+                <div class="py-2 bg-white" aria-hidden="true">
+                    <!-- Matches height of button in toolbar (1px border + 36px content height) -->
+                    <div class="py-px">
+                        <div class="h-9"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+                <div class="flex-shrink-0">
+                    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Post</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+        `);
+        return;
     }
 });
 
@@ -23,7 +59,8 @@ questionListContainer.addEventListener("click", event => {
     Object.assign(examPaperQuestions, (await fetchData(`exam-paper/${examPaperId}/question-with-answer`)).data);
     examPaperQuestions.forEach(ePQ => {
         questionListContainer.insertAdjacentHTML("beforeend", `
-        <div class="question bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}">
+    <div class="flex">
+        <div class="question basis-1/2 relative bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}">
             <div class="flex items-center justify-between mb-6">
                 <p class="text-sm font-bold text-gray-900">Câu ${ePQ.number}</p>
                 <div class="flex items-center gap-x-4">
@@ -42,8 +79,10 @@ questionListContainer.addEventListener("click", event => {
             </div>
             
             <div class="question-container"></div>
-        </div>`);
-        new QuestionPreviewComponent(questionListContainer.lastElementChild.lastElementChild, ePQ.question).connectedCallback();
+        </div>
+        <div class="basis-1/2 relative"></div>
+    </div>`);
+        new QuestionPreviewComponent(questionListContainer.lastElementChild.querySelector(".question-container"), ePQ.question).connectedCallback();
         
     });
 })();
