@@ -18,5 +18,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<int> CountNumbersOfQuestions(int examPaperId);
         Task AddThenSaveAsync(ExamPaper examPaper);
         Task<bool> IsReviewerAsync(int examPaperId, int userId);
+        Task<ExamPaperQuestion?> GetExamPaperQuestionAsync(int examPaperQuestionId);
+        Task AddExamPaperQuestionCommentThenSaveAsync(ExamPaperQuestionComment ePQC);
     }
 }

@@ -76,7 +76,11 @@ export const postData = async (route = "", dataToPost) => {
             const problemDetails = new ProblemDetails();
             Object.assign(problemDetails, await res.json());
             throw problemDetails;
-        }     
+        }
+
+        if (res.text) {
+            return await res.json();
+        }
 
     } catch (err) {
         throw err;

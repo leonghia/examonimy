@@ -15,14 +15,22 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         private readonly IQuestionManager _questionManager;
         private readonly IGenericRepository<ExamPaper> _examPaperRepository;
         private readonly IGenericRepository<ExamPaperReviewer> _examPaperReviewerRepository;
+        private readonly IGenericRepository<ExamPaperQuestionComment> _examPaperQuestionCommentRepository;
 
-        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Question> questionRepository, IQuestionManager questionManager, IGenericRepository<ExamPaper> examPaperRepository, IGenericRepository<ExamPaperReviewer> examPaperReviewerRepository)
+        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IGenericRepository<Question> questionRepository, IQuestionManager questionManager, IGenericRepository<ExamPaper> examPaperRepository, IGenericRepository<ExamPaperReviewer> examPaperReviewerRepository, IGenericRepository<ExamPaperQuestionComment> examPaperQuestionCommentRepository)
         {
             _examPaperQuestionRepository = examPaperQuestionRepository;
             _questionRepository = questionRepository;
             _questionManager = questionManager;
             _examPaperRepository = examPaperRepository;
             _examPaperReviewerRepository = examPaperReviewerRepository;
+            _examPaperQuestionCommentRepository = examPaperQuestionCommentRepository;
+        }
+
+        public async Task AddExamPaperQuestionCommentThenSaveAsync(ExamPaperQuestionComment ePQC)
+        {
+            await _examPaperQuestionCommentRepository.InsertAsync(ePQC);
+            await _examPaperQuestionCommentRepository.SaveAsync();
         }
 
         public async Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
@@ -67,7 +75,12 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         {
             var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Course" }) ?? throw new ArgumentException(null, nameof(examPaperId));
             return examPaper.Course!;
-        }      
+        }
+
+        public async Task<ExamPaperQuestion?> GetExamPaperQuestionAsync(int examPaperQuestionId)
+        {
+            return await _examPaperQuestionRepository.GetByIdAsync(examPaperQuestionId);
+        }
 
         public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId)
         {
@@ -79,6 +92,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                 var questionToReturn = await _questionManager.GetSpecificQuestionWithAnswerDtoAsync(question.Id);
                 examPaperQuestionsToReturn.Add(new ExamPaperQuestionGetDto
                 {
+                    Id = examPaperQuestion.Id,
                     Number = examPaperQuestion.Number,
                     Question = questionToReturn
                 });

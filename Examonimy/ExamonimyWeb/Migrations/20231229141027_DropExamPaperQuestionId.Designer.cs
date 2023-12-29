@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231229141027_DropExamPaperQuestionId")]
+    partial class DropExamPaperQuestionId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,24 +265,15 @@ namespace ExamonimyWeb.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CommentedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CommenterId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExamPaperQuestionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CommenterId");
-
-                    b.HasIndex("ExamPaperQuestionId");
 
                     b.ToTable("ExamPaperQuestionComment");
                 });
@@ -758,12 +752,6 @@ namespace ExamonimyWeb.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaperQuestion", null)
-                        .WithMany("ExamPaperQuestionComments")
-                        .HasForeignKey("ExamPaperQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Commenter");
                 });
 
@@ -930,11 +918,6 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("ExamPaperQuestions");
 
                     b.Navigation("ExamPaperReviewers");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
-                {
-                    b.Navigation("ExamPaperQuestionComments");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>

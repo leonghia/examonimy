@@ -1,7 +1,9 @@
 ﻿// Imports
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
-import { fetchData } from "../helpers/ajax.helper.js";
-import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
+import { fetchData, postData } from "../helpers/ajax.helper.js";
+import { convertToAgo } from "../helpers/datetime.helper.js";
+import { hideSpinnerForFailButton, hideSpinnerForSuccessButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { ExamPaperQuestion, ExamPaperQuestionComment, ExamPaperQuestionCommentCreate } from "../models/exam-paper-question.model.js";
 
 // DOM selectors
 const questionListContainer = document.querySelector("#question-list-container");
@@ -20,29 +22,25 @@ questionListContainer.addEventListener("click", event => {
 
     const clickedCommentButton = event.target.closest(".comment-btn");
     if (clickedCommentButton) {
-        clickedCommentButton.closest(".question").nextElementSibling.insertAdjacentHTML("beforeend", `
-<div class="absolute left-4 top-2 flex items-start space-x-4">
+        const ePQCId = Number(clickedCommentButton.closest(".question").dataset.examPaperQuestionId);
+        if (clickedCommentButton.closest(".question").nextElementSibling.querySelector(".question-comment"))
+            clickedCommentButton.closest(".question").nextElementSibling.querySelector(".question-comment").remove();
+        else
+            clickedCommentButton.closest(".question").nextElementSibling.insertAdjacentHTML("beforeend", `
+<div data-exam-paper-question-id="${ePQCId}" class="question-comment absolute -left-5 top-2 flex items-start space-x-4">
     <div class="flex-shrink-0">
         <img class="inline-block h-10 w-10 rounded-full" src="${profilePfp}" alt="user profile picture">
     </div>
-    <div class="min-w-0 flex-1">
+    <div class="min-w-0 flex-1 rounded-md bg-white">
         <form action="#" class="relative">
-            <div class="overflow-hidden rounded-lg">
+            <div class="overflow-hidden rounded-t-md">
                 <label for="comment" class="sr-only">Add your comment</label>
-                <textarea rows="3" name="comment" id="comment" class="bg-white block w-72 border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Add your comment..."></textarea>
-
-                <!-- Spacer element to match the height of the toolbar -->
-                <div class="py-2 bg-white" aria-hidden="true">
-                    <!-- Matches height of button in toolbar (1px border + 36px content height) -->
-                    <div class="py-px">
-                        <div class="h-9"></div>
-                    </div>
-                </div>
+                <textarea rows="2" name="comment" id="comment" class="block w-72 border-0 py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Nhập bình luận về câu hỏi..."></textarea>              
             </div>
 
-            <div class="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+            <div class="flex justify-end py-2 pl-3 pr-2">
                 <div class="flex-shrink-0">
-                    <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Post</button>
+                    <button type="button" class="submit-comment-btn w-16 inline-flex justify-center items-center rounded-md bg-violet-300 px-3 py-2 text-sm font-semibold text-violet-800 hover:bg-violet-400 hover:text-violet-900">Đăng</button>
                 </div>
             </div>
         </form>
@@ -50,6 +48,53 @@ questionListContainer.addEventListener("click", event => {
 </div>
         `);
         return;
+    }
+
+    const clickedSubmitCommentButton = event.target.closest(".submit-comment-btn");
+    if (clickedSubmitCommentButton) {
+        const comment = clickedSubmitCommentButton.closest("form").querySelector("textarea").value;
+        const ePQId = Number(clickedSubmitCommentButton.closest(".question-comment").dataset.examPaperQuestionId);
+        const examPaperQuestionCommentCreate = new ExamPaperQuestionCommentCreate(ePQId, comment);
+        showSpinnerForButton(clickedSubmitCommentButton);
+        postData("exam-paper-question/comment", examPaperQuestionCommentCreate)
+            .then((data) => {
+                hideSpinnerForSuccessButton(clickedSubmitCommentButton);             
+                // insert the new comment
+                const examPaperQuestionComment = new ExamPaperQuestionComment();
+                Object.assign(examPaperQuestionComment, data);
+                clickedSubmitCommentButton.closest(".question-comment").parentElement.insertAdjacentHTML("beforeend", `
+    <div class="relative p-4 bg-white rounded-lg w-80">       
+        <div class="relative flex items-start space-x-3">
+          <div class="relative">
+            <img class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 ring-8 ring-white" src="${examPaperQuestionComment.commenterProfilePicture}" alt="user profile picture">
+
+            <span class="absolute -bottom-0.5 -right-1 rounded-tl bg-white px-0.5 py-px">
+              <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 2c-2.236 0-4.43.18-6.57.524C1.993 2.755 1 4.014 1 5.426v5.148c0 1.413.993 2.67 2.43 2.902.848.137 1.705.248 2.57.331v3.443a.75.75 0 001.28.53l3.58-3.579a.78.78 0 01.527-.224 41.202 41.202 0 005.183-.5c1.437-.232 2.43-1.49 2.43-2.903V5.426c0-1.413-.993-2.67-2.43-2.902A41.289 41.289 0 0010 2zm0 7a1 1 0 100-2 1 1 0 000 2zM8 8a1 1 0 11-2 0 1 1 0 012 0zm5 1a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+              </svg>
+            </span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div>
+              <div class="text-sm">
+                <a href="#" class="font-medium text-gray-900">${examPaperQuestionComment.commenterName}</a>
+              </div>
+              <p class="mt-0.5 text-sm text-gray-500">${convertToAgo(new Date(examPaperQuestionComment.commentedAt))}</p>
+            </div>
+            <div class="mt-2 text-sm text-gray-700">
+              <p>${examPaperQuestionComment.comment}</p>
+            </div>
+          </div>
+        </div>
+    </div>
+                `);
+                // remove the comment form
+                clickedSubmitCommentButton.closest(".question-comment").remove();
+            })
+            .catch(err => {
+                console.error(err);
+                hideSpinnerForFailButton(clickedSubmitCommentButton, "Đăng");
+            });
     }
 });
 
@@ -59,8 +104,8 @@ questionListContainer.addEventListener("click", event => {
     Object.assign(examPaperQuestions, (await fetchData(`exam-paper/${examPaperId}/question-with-answer`)).data);
     examPaperQuestions.forEach(ePQ => {
         questionListContainer.insertAdjacentHTML("beforeend", `
-    <div class="flex">
-        <div class="question basis-1/2 relative bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}">
+    <div class="flex gap-x-10">
+        <div class="question basis-1/2 relative bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}" data-exam-paper-question-id="${ePQ.id}">
             <div class="flex items-center justify-between mb-6">
                 <p class="text-sm font-bold text-gray-900">Câu ${ePQ.number}</p>
                 <div class="flex items-center gap-x-4">
@@ -80,7 +125,9 @@ questionListContainer.addEventListener("click", event => {
             
             <div class="question-container"></div>
         </div>
-        <div class="basis-1/2 relative"></div>
+        <div class="basis-1/3 relative">
+                    
+        </div>
     </div>`);
         new QuestionPreviewComponent(questionListContainer.lastElementChild.querySelector(".question-container"), ePQ.question).connectedCallback();
         
