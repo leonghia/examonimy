@@ -135,7 +135,7 @@ namespace ExamonimyWeb.Controllers
             var user = await base.GetContextUser();
             if (!await _questionManager.IsAuthorAsync(id, user.Id))
                 return Forbid();
-            var questionToReturn = await _questionManager.GetSpecificQuestionDtoAsync(id);
+            var questionToReturn = await _questionManager.GetSpecificQuestionWithAnswerDtoAsync(id);
             return Ok(questionToReturn);
         }
 

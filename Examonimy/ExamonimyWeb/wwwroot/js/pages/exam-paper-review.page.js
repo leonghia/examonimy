@@ -10,14 +10,20 @@ const examPaperId = Number(document.querySelector("#exam-paper-detail-container"
 // Function expressions
 
 // Event listeners
+questionListContainer.addEventListener("click", event => {
+    const clickedToggleAnswerButton = event.target.closest(".toggle-answer-btn");
+    if (clickedToggleAnswerButton) {
+        clickedToggleAnswerButton.closest(".question").querySelector(".answer-container").classList.toggle("hidden");
+    }
+});
 
 // On load
 (async () => {
     const examPaperQuestions = [new ExamPaperQuestion()];   
-    Object.assign(examPaperQuestions, (await fetchData(`exam-paper/${examPaperId}/question`)).data);
+    Object.assign(examPaperQuestions, (await fetchData(`exam-paper/${examPaperId}/question-with-answer`)).data);
     examPaperQuestions.forEach(ePQ => {
         questionListContainer.insertAdjacentHTML("beforeend", `
-        <div class="bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}">
+        <div class="question bg-white rounded-lg p-6" data-question-number="${ePQ.number}" data-question-id="${ePQ.question.id}">
             <div class="flex items-center justify-between mb-6">
                 <p class="text-sm font-bold text-gray-900">Câu ${ePQ.number}</p>
                 <div class="flex items-center gap-x-4">
@@ -38,5 +44,6 @@ const examPaperId = Number(document.querySelector("#exam-paper-detail-container"
             <div class="question-container"></div>
         </div>`);
         new QuestionPreviewComponent(questionListContainer.lastElementChild.lastElementChild, ePQ.question).connectedCallback();
+        
     });
 })();

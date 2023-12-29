@@ -218,7 +218,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             return Tuple.Create(questionToCreate.Id, specificQuestionToCreate);
         }      
 
-        public async Task<QuestionGetDto> GetSpecificQuestionDtoAsync(int id)
+        public async Task<QuestionGetDto> GetSpecificQuestionWithAnswerDtoAsync(int id)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
             var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));

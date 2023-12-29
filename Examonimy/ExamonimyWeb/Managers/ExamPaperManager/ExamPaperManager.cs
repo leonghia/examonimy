@@ -69,14 +69,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return examPaper.Course!;
         }      
 
-        public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsAsync(int examPaperId)
+        public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId)
         {
             var examPaperQuestionsToReturn = new List<ExamPaperQuestionGetDto>();
             var examPaperQuestions = await _examPaperQuestionRepository.GetAsync(ePQ => ePQ.ExamPaperId == examPaperId, null, null);
             foreach (var examPaperQuestion in examPaperQuestions)
             {
                 var question = await _questionRepository.GetByIdAsync(examPaperQuestion.QuestionId) ?? throw new ArgumentException(null, nameof(examPaperId));
-                var questionToReturn = await _questionManager.GetSpecificQuestionWithoutAnswerDtoAsync(question.Id);
+                var questionToReturn = await _questionManager.GetSpecificQuestionWithAnswerDtoAsync(question.Id);
                 examPaperQuestionsToReturn.Add(new ExamPaperQuestionGetDto
                 {
                     Number = examPaperQuestion.Number,

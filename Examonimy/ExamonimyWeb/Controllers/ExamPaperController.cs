@@ -79,7 +79,7 @@ namespace ExamonimyWeb.Controllers
             var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null) return NotFound();
             var contextUser = await base.GetContextUser();
-            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id) && !await _examPaperManager.IsAuthorAsync(id, contextUser.Id)) return Forbid();
             var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
 
             var examPaperSingleViewModel = new ExamPaperSingleViewModel
@@ -91,16 +91,18 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
-        [HttpGet("api/exam-paper/{examPaperId:int}/question")]
+        [HttpGet("api/exam-paper/{examPaperId:int}/question-with-answer")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetExamPaperQuestions([FromRoute] int examPaperId)
+        public async Task<IActionResult> GetExamPaperQuestionsWithAnswers([FromRoute] int examPaperId)
         {
             var examPaper = await _examPaperManager.GetByIdAsync(examPaperId);
             if (examPaper is null)
                 return NotFound();
-            var examPaperQuestionsToReturn = await _examPaperManager.GetExamPaperQuestionsAsync(examPaperId);
+            var examPaperQuestionsToReturn = await _examPaperManager.GetExamPaperQuestionsWithAnswersAsync(examPaperId);
             return Ok(examPaperQuestionsToReturn);
         }
+
+
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper")]
