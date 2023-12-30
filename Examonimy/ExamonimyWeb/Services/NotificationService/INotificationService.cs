@@ -10,6 +10,6 @@ namespace ExamonimyWeb.Services.NotificationService
         string GetIconMarkup(int notificationTypeId);
         string GetHref(Notification notification);
         Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams);
-        Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds); 
+        Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds);        
     }
 }

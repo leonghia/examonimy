@@ -29,14 +29,14 @@ namespace ExamonimyWeb.Managers.UserManager
         {
             var operationResult = new OperationResult();
 
-            if (await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(user.NormalizedUsername), null) is not null)
+            if (await _userRepository.GetSingleAsync(u => u.NormalizedUsername!.Equals(user.NormalizedUsername), null) is not null)
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
                 operationResult.Errors.Add(new OperationError { Code = "username", Description = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác." });
                 return operationResult;
             }
-            if (await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
+            if (await _userRepository.GetSingleAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
@@ -57,12 +57,12 @@ namespace ExamonimyWeb.Managers.UserManager
 
         public async Task<User?> FindByEmailAsync(string email)
         {
-            return await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(email.ToUpperInvariant()), new List<string> { "Role" });
+            return await _userRepository.GetSingleAsync(u => u.NormalizedEmail!.Equals(email.ToUpperInvariant()), new List<string> { "Role" });
         }
 
         public async Task<User?> FindByUsernameAsync(string username)
         {
-            return await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(username.ToUpperInvariant()), new List<string> { "Role" });
+            return await _userRepository.GetSingleAsync(u => u.NormalizedUsername!.Equals(username.ToUpperInvariant()), new List<string> { "Role" });
         }
 
         public string HashPassword(string password, out string passwordSalt)

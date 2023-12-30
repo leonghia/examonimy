@@ -78,7 +78,7 @@ export const postData = async (route = "", dataToPost) => {
             throw problemDetails;
         }
 
-        if (res.text) {
+        if (await res.text()) {
             return await res.json();
         }
 

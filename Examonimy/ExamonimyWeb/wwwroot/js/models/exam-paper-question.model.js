@@ -4,6 +4,7 @@ export class ExamPaperQuestion {
     number = 0;
     question = new Question();
     id = 0;
+    comments = [new ExamPaperQuestionComment()];
 }
 
 export class ExamPaperQuestionCreate {

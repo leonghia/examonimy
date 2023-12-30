@@ -30,7 +30,7 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public async Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds)
         {
-            var notificationsToDelete = (await _notificationRepository.GetAsync(null, n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
+            var notificationsToDelete = (await _notificationRepository.GetAsync(n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
             var notificationsIdsToDelete = notificationsToDelete.Select(n => n.Id);
             _notificationReceiverRepository.DeleteRange(nR => notificationsIdsToDelete.Contains(nR.NotificationId));
             await _notificationReceiverRepository.SaveAsync();
@@ -61,7 +61,7 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead)
         {
-            var actor = await _userRepository.GetByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
+            var actor = await _userRepository.GetSingleByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
             var actorFullName = actor.FullName;
             switch (notification.NotificationTypeId)
             {
@@ -78,14 +78,14 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public async Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams)
         {
-            var notificationReceivers = await _notificationReceiverRepository.GetPagedListAsync(requestParams, null, nR => nR.ReceiverId == receiverId, new List<string> { "Notification", "Notification.Actor" }, q => q.OrderByDescending(nR => nR.Notification!.CreatedAt));
+            var notificationReceivers = await _notificationReceiverRepository.GetPagedListAsync(requestParams, nR => nR.ReceiverId == receiverId, new List<string> { "Notification", "Notification.Actor" }, q => q.OrderByDescending(nR => nR.Notification!.CreatedAt));
             return notificationReceivers;
         }
 
         public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
         {
           
-            var notification = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
+            var notification = await _notificationRepository.GetSingleAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
             // if this noti does not exist, we persist it and create its receivers
             if (notification is null)
             {
@@ -110,8 +110,8 @@ namespace ExamonimyWeb.Services.NotificationService
 
                 // send noti via signalr
                 var ids = notificationReceiversToCreate.Select(nR => nR.ReceiverId);
-                var usernames = (await _userRepository.GetAsync(null, u => ids.Contains(u.Id))).Select(u => u.Username).ToList();
-                var actor = await _userRepository.GetByIdAsync(actorId) ?? throw new ArgumentException(null, nameof(actorId));
+                var usernames = (await _userRepository.GetAsync(u => ids.Contains(u.Id))).Select(u => u.Username).ToList();
+                var actor = await _userRepository.GetSingleByIdAsync(actorId) ?? throw new ArgumentException(null, nameof(actorId));
                 await _notificationHubContext.Clients.Users(usernames).ReceiveNotification(new NotificationGetDto
                 {
                     Id = notificationToCreate.Id,
@@ -119,7 +119,7 @@ namespace ExamonimyWeb.Services.NotificationService
                     ActorProfilePicture = actor.ProfilePicture,
                     Href = GetHref(notificationToCreate),
                     IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
-                    DateTimeAgo = notificationToCreate.CreatedAt,
+                    NotifiedAt = notificationToCreate.CreatedAt,
                     IsRead = false
                 });
 
@@ -127,7 +127,7 @@ namespace ExamonimyWeb.Services.NotificationService
             }
 
             // else, we just need to update its receivers
-            var existingReceivers = await _notificationReceiverRepository.GetAsync(null, nR => nR.NotificationId == notification.Id);
+            var existingReceivers = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == notification.Id);
             var existingReceiverIds = existingReceivers.Select(e => e.ReceiverId);
             var receiverIds = examPaperReviewers.Select(e => e.ReviewerId);
             var receiversToAdd = receiverIds

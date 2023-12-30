@@ -25,7 +25,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 return await _dbSet.CountAsync();
         }       
 
-        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
+        public virtual async Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
             query = query.Where<TEntity>(filterPredicate);          
@@ -57,36 +57,31 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.Update(entity);
         }
 
-        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? searchPredicate = null, Expression<Func<TEntity, bool>>? filterPredicate = null, List<string>? includedProperties = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
+        public async Task<PagedList<TEntity>> GetPagedListAsync(RequestParams? requestParams, Expression<Func<TEntity, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
             requestParams ??= new RequestParams();
 
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet;           
 
-            if (searchPredicate is not null)
+            if (predicate is not null)
             {
-                query = query.Where<TEntity>(searchPredicate);
+                query = query.Where(predicate);
             }
 
-            if (filterPredicate is not null)
+            if (includedProps is not null)
             {
-                query = query.Where<TEntity>(filterPredicate);
-            }
-
-            if (includedProperties is not null)
-            {
-                foreach (var includedProperty in includedProperties)
+                foreach (var includedProperty in includedProps)
                 {
                     query = query.Include(includedProperty);
                 }
             }
 
-            if (orderByPredicate is not null)
+            if (orderBy is not null)
             {
-                return await orderByPredicate(query).ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
+                return await orderBy(query).AsNoTracking().ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
             }
 
-            return await query.ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
+            return await query.AsNoTracking().ToPagedListAsync(requestParams.PageSize, requestParams.PageNumber);
         }
 
         public async Task InsertRangeAsync(List<TEntity> entities)
@@ -94,7 +89,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             await _dbSet.AddRangeAsync(entities);
         }
 
-        public async Task<TEntity?> GetByIdAsync(object id)
+        public async Task<TEntity?> GetSingleByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -116,34 +111,29 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.RemoveRange(query);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? searchPredicate = null, Expression<Func<TEntity, bool>>? filterPredicate = null, List<string>? includedProperties = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderByPredicate = null)
+        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = _dbSet;           
 
-            if (searchPredicate is not null)
+            if (predicate is not null)
             {
-                query = query.Where<TEntity>(searchPredicate);
+                query = query.Where(predicate);
             }
 
-            if (filterPredicate is not null)
+            if (includedProps is not null)
             {
-                query = query.Where<TEntity>(filterPredicate);
-            }
-
-            if (includedProperties is not null)
-            {
-                foreach (var includedProperty in includedProperties)
+                foreach (var includedProperty in includedProps)
                 {
                     query = query.Include(includedProperty);
                 }
             }
 
-            if (orderByPredicate is not null)
+            if (orderBy is not null)
             {
-                return await orderByPredicate(query).ToListAsync();
+                return await orderBy(query).ToListAsync();
             }
 
-            return await query.ToListAsync();
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public async Task DeleteAsync(object id)

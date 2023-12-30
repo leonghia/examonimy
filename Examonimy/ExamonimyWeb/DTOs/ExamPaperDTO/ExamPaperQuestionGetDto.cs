@@ -6,6 +6,6 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO
     {
         public required int Id { get; set; }
         public required byte Number { get; set; }
-        public required QuestionGetDto Question { get; set; }
+        public required QuestionGetDto Question { get; set; }        
     }
 }

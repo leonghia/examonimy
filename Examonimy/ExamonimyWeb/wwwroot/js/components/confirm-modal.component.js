@@ -1,5 +1,5 @@
 ﻿import { BaseComponent } from "./base.component.js";
-import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideSpinnerForButtonWithCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 
 export class ConfirmModalComponent extends BaseComponent {
@@ -35,7 +35,7 @@ export class ConfirmModalComponent extends BaseComponent {
             spinnerOption.fill = "fill-red-600";
             showSpinnerForButton(this.#confirmButton.querySelector("#button-text"), this.#confirmButton, spinnerOption);
             await this._trigger("confirm");
-            hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector("#button-text"), spinnerOption);
+            hideSpinnerForButtonWithCheckmark(this.#confirmButton, this.#confirmButton.querySelector("#button-text"), spinnerOption);
         });
 
         this.#cancelButton.addEventListener("click", () => {

@@ -17,7 +17,7 @@ export const showSpinnerForButton = (button = new HTMLButtonElement(), spinnerOp
     `;
 }
 
-export const hideSpinnerForSuccessButton = (button = new HTMLButtonElement(), spinnerOption = new SpinnerOption()) => {
+export const hideSpinnerForButtonWithCheckmark = (button = new HTMLButtonElement(), spinnerOption = new SpinnerOption()) => {
     button.classList.remove(..."bg-gray-300 pointer-events-none".split(" "));
     button.classList.add(spinnerOption.fill);
     button.innerHTML = `
@@ -27,7 +27,7 @@ export const hideSpinnerForSuccessButton = (button = new HTMLButtonElement(), sp
     `;
 }
 
-export const hideSpinnerForFailButton = (button = new HTMLButtonElement(), textContent = "", spinnerOption = new SpinnerOption()) => {
+export const hideSpinnerForButtonWithoutCheckmark = (button = new HTMLButtonElement(), textContent = "", spinnerOption = new SpinnerOption()) => {
     button.classList.remove(..."bg-gray-300 pointer-events-none".split(" "));
     button.classList.add(spinnerOption.fill);
     button.innerHTML = "";

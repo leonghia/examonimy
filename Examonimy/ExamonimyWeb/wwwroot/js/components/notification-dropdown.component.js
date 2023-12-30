@@ -61,7 +61,7 @@ export class NotificationDropdownComponent {
                 </div>
                 <div class="w-full ps-3">
                     ${cV.messageMarkup}
-                    ${cV.isRead ? `<div class='text-xs text-gray-500 font-normal'>${convertToAgo(new Date(cV.dateTimeAgo))}</div>` : `<div class='text-xs text-blue-600 font-medium flex items-center justify-between'><span>${convertToAgo(new Date(cV.dateTimeAgo))}</span><div class='flex-none rounded-full p-1 text-blue-500 bg-blue-500/10'><div class='h-2 w-2 rounded-full bg-current'></div></div></div>`}
+                    ${cV.isRead ? `<div class='text-xs text-gray-500 font-normal'>${convertToAgo(new Date(cV.notifiedAt))}</div>` : `<div class='text-xs text-blue-600 font-medium flex items-center justify-between'><span>${convertToAgo(new Date(cV.notifiedAt))}</span><div class='flex-none rounded-full p-1 text-blue-500 bg-blue-500/10'><div class='h-2 w-2 rounded-full bg-current'></div></div></div>`}
                 </div>
             </div>
         </a>

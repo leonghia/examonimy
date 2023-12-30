@@ -69,6 +69,46 @@ namespace ExamonimyWeb.DatabaseContexts
                 .HasForeignKey(ePQC => ePQC.CommenterId)
                 .IsRequired(true);
 
+            modelBuilder.Entity<Notification>()
+                .Property(n => n.CreatedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<ExamPaperQuestionComment>()
+                .Property(epqc => epqc.CommentedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<ExamPaperComment>()
+                .HasOne(c => c.ExamPaper)
+                .WithMany()
+                .HasForeignKey(c => c.ExamPaperId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaperComment>()
+                .HasOne(c => c.Commenter)
+                .WithMany()
+                .HasForeignKey(c => c.CommenterId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaperComment>()
+                .Property(c => c.CommentedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<ExamPaperReviewHistory>()
+                .HasOne(h => h.ExamPaper)
+                .WithMany()
+                .HasForeignKey(h => h.ExamPaperId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaperReviewHistory>()
+                .HasOne(h => h.Actor)
+                .WithMany()
+                .HasForeignKey(h => h.ActorId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaperReviewHistory>()
+                .Property(h => h.CreatedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
@@ -87,6 +127,7 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<Notification> Notifications { get; init; }
         
         public required DbSet<NotificationType> NotificationTypes { get; init; }
-
+        public required DbSet<ExamPaperComment> ExamPaperComments { get; init; }
+        public required DbSet<ExamPaperReviewHistory> ExamPaperReviewHistory { get; init; }
     }
 }

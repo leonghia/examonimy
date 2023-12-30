@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20231230084658_AddFieldCreatedAtForExamPaper")]
+    partial class AddFieldCreatedAtForExamPaper
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,36 +234,6 @@ namespace ExamonimyWeb.Migrations
                     b.ToTable("ExamPapers");
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CommentedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CommenterId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExamPaperId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommenterId");
-
-                    b.HasIndex("ExamPaperId");
-
-                    b.ToTable("ExamPaperComments");
-                });
-
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
                 {
                     b.Property<int>("Id")
@@ -315,38 +288,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("ExamPaperQuestionId");
 
                     b.ToTable("ExamPaperQuestionComment");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExamPaperId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActorId");
-
-                    b.HasIndex("ExamPaperId");
-
-                    b.ToTable("ExamPaperReviewHistory");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
@@ -800,25 +741,6 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperComment", b =>
-                {
-                    b.HasOne("ExamonimyWeb.Entities.User", "Commenter")
-                        .WithMany()
-                        .HasForeignKey("CommenterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
-                        .WithMany()
-                        .HasForeignKey("ExamPaperId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Commenter");
-
-                    b.Navigation("ExamPaper");
-                });
-
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.ExamPaper", null)
@@ -849,25 +771,6 @@ namespace ExamonimyWeb.Migrations
                         .IsRequired();
 
                     b.Navigation("Commenter");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewHistory", b =>
-                {
-                    b.HasOne("ExamonimyWeb.Entities.User", "Actor")
-                        .WithMany()
-                        .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
-                        .WithMany()
-                        .HasForeignKey("ExamPaperId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Actor");
-
-                    b.Navigation("ExamPaper");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>

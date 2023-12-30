@@ -244,27 +244,16 @@ namespace ExamonimyWeb.Controllers
             return Accepted();
         }
 
-        [CustomAuthorize(Roles = "Teacher")]
-        [HttpPost("api/exam-paper-question/comment")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> CommentExamPaperQuestion([FromBody] ExamPaperQuestionCommentCreateDto dto)
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("api/exam-paper/{id:int}/review-history")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetReviewHistories([FromRoute] int id)
         {
-            var examPaperQuestion = await _examPaperManager.GetExamPaperQuestionAsync(dto.ExamPaperQuestionId);
-            if (examPaperQuestion is null)
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null)
                 return NotFound();
-            var contextUser = await base.GetContextUser();
-            if (!await _examPaperManager.IsAuthorAsync(examPaperQuestion.ExamPaperId, contextUser.Id) && !await _examPaperManager.IsReviewerAsync(examPaperQuestion.ExamPaperId, contextUser.Id))
-                return Forbid();
-            var examPaperQuestionComment = new ExamPaperQuestionComment { ExamPaperQuestionId = dto.ExamPaperQuestionId, Comment = dto.Comment, CommenterId = contextUser.Id };
-            await _examPaperManager.AddExamPaperQuestionCommentThenSaveAsync(examPaperQuestionComment);
-            return Created("", new ExamPaperQuestionCommentGetDto
-            {
-                CommenterName = examPaperQuestionComment.Commenter?.FullName ?? "",
-                Comment = examPaperQuestionComment.Comment,
-                CommenterProfilePicture = examPaperQuestionComment.Commenter?.ProfilePicture ?? "",
-                CommentedAt = examPaperQuestionComment.CommentedAt
-            });
+            var histories = await _examPaperManager.GetReviewHistories(id);
+            return Ok(histories);
         }
-      
     }
 }

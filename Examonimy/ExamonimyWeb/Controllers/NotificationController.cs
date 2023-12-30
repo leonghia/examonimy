@@ -40,10 +40,10 @@ namespace ExamonimyWeb.Controllers
                     {
                         Id = notification.NotificationId,
                         MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
-                        ActorProfilePicture = notification.Notification.Actor.ProfilePicture,
+                        ActorProfilePicture = notification.Notification!.Actor!.ProfilePicture,
                         Href = _notificationService.GetHref(notification.Notification!),
                         IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.NotificationTypeId),
-                        DateTimeAgo = notification.Notification.CreatedAt.ConvertTo(Request.Headers[_timezoneOffsetRequestHeaderKey]),
+                        NotifiedAt = notification.Notification.CreatedAt,
                         IsRead = notification.IsRead
                     });
                 }
@@ -57,7 +57,7 @@ namespace ExamonimyWeb.Controllers
         public async Task<IActionResult> MarkAsRead([FromRoute] int id)
         {
             var contextUser = await base.GetContextUser();
-            var notificationReceiver = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
+            var notificationReceiver = await _notificationReceiverRepository.GetSingleAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
             if (notificationReceiver is null)
                 return NotFound();
             notificationReceiver.IsRead = true;

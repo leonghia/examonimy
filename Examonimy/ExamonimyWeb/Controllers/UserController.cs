@@ -27,10 +27,10 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] RequestParamsForUser? requestParamsForUser)
         {
-            Expression<Func<User, bool>>? filterPredicate = null;
+            Expression<Func<User, bool>>? predicate = null;
             if (requestParamsForUser?.RoleId is not null && requestParamsForUser.RoleId > 0)
-                filterPredicate = u => u.RoleId == requestParamsForUser.RoleId;
-            var users = (await _userRepository.GetAsync(null, filterPredicate, null, q => q.OrderBy(u => u.FullName))).ToList();
+                predicate = u => u.RoleId == requestParamsForUser.RoleId;
+            var users = (await _userRepository.GetAsync(predicate, null, q => q.OrderBy(u => u.FullName))).ToList();
             var contextUser = await base.GetContextUser();
             var index = users.FindIndex(u => u.Id == contextUser.Id);
             users.RemoveAt(index);
