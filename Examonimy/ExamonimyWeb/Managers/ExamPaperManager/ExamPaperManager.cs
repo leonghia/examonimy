@@ -5,6 +5,7 @@ using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using LinqKit;
+using System.Runtime.CompilerServices;
 
 namespace ExamonimyWeb.Managers.ExamPaperManager
 {
@@ -37,6 +38,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             var authorId = examPaper.AuthorId;
 
             // add to the review history
+            _examPaperReviewHistoryRepository.DeleteRange(eprh => eprh.ExamPaperId == examPaperId && eprh.OperationId == (int)Operation.AskForReviewForExamPaper);
             var eprh = examPaperReviewers.Select(epr => new ExamPaperReviewHistory
             {
                 OperationId = (int)Operation.AskForReviewForExamPaper,
@@ -154,14 +156,67 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return examPaperReviewer.ReviewerId;
         }
 
-        public async Task<List<ExamPaperReviewHistory>> GetReviewHistories(int examPaperId)
+        public async Task<List<ExamPaperReviewHistoryGetDto>> GetReviewHistories(int examPaperId)
         {
-            var examPaperReviewHistories = await _examPaperReviewHistoryRepository.GetAsync(e => e.ExamPaperId == examPaperId);
-
+            var examPaperReviewHistories = await _examPaperReviewHistoryRepository.GetAsync(e => e.ExamPaperId == examPaperId, new List<string> { "Actor" });
+            var results = new List<ExamPaperReviewHistoryGetDto>();
             foreach (var h in examPaperReviewHistories)
             {
-                
+                switch (h.OperationId)
+                {
+                    case (int)Operation.ApproveExamPaper:
+                        results.Add(new ExamPaperReviewHistoryGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            Id = h.Id,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId
+                        });
+                        break;
+                    case (int)Operation.AskForReviewForExamPaper:                       
+                        results.Add(new ExamPaperReviewHistoryAddReviewerGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            Id = h.Id,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId,
+                            ReviewerName = (await _examPaperReviewerRepository.GetSingleAsync(e => e.Id == h.EntityId, new List<string> { "Reviewer" }))!.Reviewer!.FullName
+                        });
+                        break;
+                    case (int)Operation.RejectExamPaper:
+                        results.Add(new ExamPaperReviewHistoryGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            Id = h.Id,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId
+                        });
+                        break;
+                    case (int)Operation.CreateExamPaper:
+                        results.Add(new ExamPaperReviewHistoryGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            Id = h.Id,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId
+                        });
+                        break;
+                    case (int)Operation.CommentExamPaper:
+                        results.Add(new ExamPaperReviewHistoryGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            Id = h.Id,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId,
+                            ActorProfilePicture = h.Actor!.ProfilePicture
+                        });
+                        break;
+                    default:
+                        throw new SwitchExpressionException(h.OperationId);
+                }
             }
+            results.Sort((a, b) => a.CreatedAt.CompareTo(b.CreatedAt));
+            return results;
         }
 
         public async Task<bool> IsAuthorAsync(int examPaperId, int userId)

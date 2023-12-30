@@ -36,3 +36,27 @@ export class ExamPaperReviewerCreate {
         this.reviewerIds = reviewerIds;
     }
 }
+
+export class ExamPaperReviewHistory {
+    id = 0;
+    actorName = "";
+    actorProfilePicture = "";
+    createdAt = "";
+    operationId = 0;
+}
+
+export class ExamPaperReviewHistoryComment extends ExamPaperReviewHistory {
+    comment = "";
+
+    constructor() {
+        super();
+    }
+}
+
+export class ExamPaperReviewHistoryAddReviewer extends ExamPaperReviewHistory {
+    reviewerName = "";
+
+    constructor() {
+        super();
+    }
+}
