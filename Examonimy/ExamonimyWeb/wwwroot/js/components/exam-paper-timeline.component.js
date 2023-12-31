@@ -19,6 +19,10 @@ export class ExamPaperTimelineComponent {
         this.#container.innerHTML = this.#render();
     }
 
+    insertHistory(data = new ExamPaperReviewHistory()) {
+        this.#examPaperReviewHistories.push(data);
+    }
+
     set examPaperReviewHistories(value) {
         this.#examPaperReviewHistories = value;
     }
@@ -104,10 +108,11 @@ export class ExamPaperTimelineComponent {
             </div>
             <div class="min-w-0 flex-1">
                 <div>
-                    <div class="text-sm">
-                        <span class="font-medium text-gray-900">${eprhc.actorName}</span>
+                    <div class="text-sm flex items-center">
+                        <span class="font-medium text-gray-900 mr-2">${eprhc.actorName}</span>     
+                        ${eprhc.isAuthor ? `<span class="inline-flex items-center rounded-md bg-emerald-200 px-2 py-1 text-xs font-medium text-emerald-700">Tác giả đề thi</span>` : `<span class="inline-flex items-center rounded-md bg-gray-200 px-2 py-1 text-xs font-medium text-gray-600">Kiểm duyệt viên</span>`}
                     </div>
-                    <p class="mt-0.5 text-sm text-gray-500">Đã nhận xét ${convertToAgo(new Date(eprhc.createdAt))}</p>
+                    <p class="mt-0.5 text-sm text-gray-500">Đã bình luận ${convertToAgo(new Date(eprhc.createdAt))}</p>
                 </div>
                 <div class="mt-2 text-sm text-gray-700">
                     <p>${eprhc.comment}</p>

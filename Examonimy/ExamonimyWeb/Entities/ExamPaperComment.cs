@@ -14,6 +14,6 @@ namespace ExamonimyWeb.Entities
         public User? Commenter { get; set; }
 
         public required string Comment { get; set; }
-        public required DateTime CommentedAt { get; set; }
+        public DateTime CommentedAt { get; set; } = DateTime.UtcNow;
     }
 }

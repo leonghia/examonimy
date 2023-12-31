@@ -210,7 +210,8 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                             CreatedAt = h.CreatedAt,
                             OperationId = h.OperationId,
                             ActorProfilePicture = h.Actor!.ProfilePicture,
-                            Comment = examPaperComment.Comment
+                            Comment = examPaperComment.Comment,
+                            IsAuthor = await IsAuthorAsync(examPaperId, h.ActorId) 
                         });
                         break;
                     default:
@@ -241,15 +242,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             await _examPaperQuestionRepository.SaveAsync();
         }
 
-        public async Task<ExamPaperReviewCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter)
+        public async Task<ExamPaperReviewHistoryCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter)
         {
             // create examPaperComment
             var commentToCreate = new ExamPaperComment
             {
                 ExamPaperId = examPaperId,
                 CommenterId = commenter.Id,
-                Comment = comment,
-                CommentedAt = DateTime.UtcNow
+                Comment = comment,               
             };
             await _examPaperCommentRepository.InsertAsync(commentToCreate);
             await _examPaperCommentRepository.SaveAsync();
@@ -266,16 +266,18 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             await _examPaperReviewHistoryRepository.InsertAsync(historyToCreate);
             await _examPaperReviewHistoryRepository.SaveAsync();
 
-            var commentToReturn = new ExamPaperReviewCommentGetDto
+            var resultToReturn = new ExamPaperReviewHistoryCommentGetDto
             {
-                ExamPaperCode = (await _examPaperRepository.GetSingleByIdAsync(examPaperId))!.ExamPaperCode,
-                CommenterName = commenter.FullName,
-                CommenterProfilePicture = commenter.ProfilePicture,
+                Id = historyToCreate.Id,
+                ActorName = commenter.FullName,
+                CreatedAt = historyToCreate.CreatedAt,
+                OperationId = historyToCreate.OperationId,
                 Comment = commentToCreate.Comment,
-                CommentedAt = commentToCreate.CommentedAt
+                IsAuthor = await IsAuthorAsync(examPaperId, commenter.Id),
+                ActorProfilePicture = commenter.ProfilePicture
             };
 
-            return commentToReturn;
+            return resultToReturn;
         }
     }
 }

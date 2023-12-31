@@ -86,12 +86,13 @@ submitReviewButton.addEventListener("click", async () => {
             // comment          
             try {
                 const examPaperReviewCommentCreate = new ExamPaperReviewCommentCreate(commentTextArea.value);
-                await postData(`exam-paper/${examPaperId}/review/comment`, examPaperReviewCommentCreate);
-                hideSpinnerForButtonWithCheckmark(submitReviewButton);
-                initTimeline();
+                const data = await postData(`exam-paper/${examPaperId}/review/comment`, examPaperReviewCommentCreate);
+                examPaperTimelineComponent.insertHistory(data);
+                examPaperTimelineComponent.populate();
             } catch (err) {
                 console.error(err);
-                hideSpinnerForButtonWithoutCheckmark(submitReviewButton, "Xác nhận");
+            } finally {
+                hideSpinnerForButtonWithoutCheckmark(submitReviewButton, "Gửi đi");
             }
             break;
         case Operation.ApproveExamPaper:

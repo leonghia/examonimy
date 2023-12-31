@@ -20,6 +20,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<bool> IsReviewerAsync(int examPaperId, int userId);
         Task<ExamPaperQuestion?> GetExamPaperQuestionAsync(int examPaperQuestionId);
         Task<List<ExamPaperReviewHistoryGetDto>> GetReviewHistories(int examPaperId);
-        Task<ExamPaperReviewCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter);
+        Task<ExamPaperReviewHistoryCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter);
     }
 }

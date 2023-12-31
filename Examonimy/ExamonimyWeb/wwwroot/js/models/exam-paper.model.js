@@ -47,6 +47,7 @@ export class ExamPaperReviewHistory {
 
 export class ExamPaperReviewHistoryComment extends ExamPaperReviewHistory {
     comment = "";
+    isAuthor = false;
 
     constructor() {
         super();
