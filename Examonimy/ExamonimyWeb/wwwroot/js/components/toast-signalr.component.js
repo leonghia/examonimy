@@ -1,25 +1,26 @@
 ﻿import { Notification } from "../models/notification.model.js";
 
-export class NotificationSignalRComponent {
+export class ToastSignalRComponent {
     #container;
     #notification;
 
     constructor(container = new HTMLElement(), notification = new Notification()) {
         this.#container = container;
         this.#notification = notification;
-    }
+    }  
 
     connectedCallback() {
-        this.#container.innerHTML = this.#render();
+        this.#container.insertAdjacentHTML("beforeend", this.#render());
     }
 
     disconnectedCallback() {
-        this.#container.innerHTML = "";
+        this.#container.querySelector(".noti-signalr").remove();
     }
+    
 
     #render() {
         return `
-<a data-is-read="false" href="${this.#notification.href}" data-notification-id="${this.#notification.id}" class="absolute right-8 bottom-8 noti bg-white w-80 flex p-2 dark:hover:bg-gray-700 rounded-md">
+<a data-is-read="false" href="${this.#notification.href}" data-notification-id="${this.#notification.id}" class="noti-signalr sticky ml-auto right-8 bottom-8 noti bg-white w-80 flex p-2 dark:hover:bg-gray-700 rounded-md">
     <div class="flex p-2">
         <div class="flex-shrink-0">
             <img class="rounded-full w-11 h-11" src="${this.#notification.actorProfilePicture}" alt="user profile picture">

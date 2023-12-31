@@ -1,6 +1,6 @@
 ﻿// Imports
 import { NotificationDropdownComponent } from "./components/notification-dropdown.component.js";
-import { NotificationSignalRComponent } from "./components/notification-signalr.component.js";
+import { ToastSignalRComponent } from "./components/toast-signalr.component.js";
 import { fetchData } from "./helpers/ajax.helper.js";
 import { Notification } from "./models/notification.model.js";
 import { RequestParams } from "./models/request-params.model.js";
@@ -14,7 +14,7 @@ const notiDot = document.querySelector("#noti-dot");
 
 // States
 let notificationDropdownComponent;
-let notificationSignalRComponent;
+let toastSignalRComponent;
 export const signalRConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
@@ -61,13 +61,14 @@ signalRConnection.onclose(async () => {
 });
 
 signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
-    notificationSignalRComponent = new NotificationSignalRComponent(document.querySelector("#notification-signalr-container"), notification);
-    notificationSignalRComponent.connectedCallback();
+    toastSignalRComponent = new ToastSignalRComponent(document.body, notification);
+    toastSignalRComponent.connectedCallback();
+
     notificationDropdownComponent.insertNoti(notification);
     notiDot.classList.remove("hidden");
     setTimeout(() => {
-        notificationSignalRComponent.disconnectedCallback();
-        notificationSignalRComponent = undefined;
+        toastSignalRComponent.disconnectedCallback();
+        toastSignalRComponent = undefined;
     }, 10000);
 });
 
