@@ -199,7 +199,8 @@ namespace ExamonimyWeb.Services.NotificationService
                 ActorName = actor.FullName,
                 CreatedAt = notificationToCreate.CreatedAt,
                 Comment = comment,
-                IsAuthor = await _examPaperManager.IsAuthorAsync(examPaperId, commenterId)
+                IsAuthor = await _examPaperManager.IsAuthorAsync(examPaperId, commenterId),
+                ActorProfilePicture = actor.ProfilePicture
             });
 
         }

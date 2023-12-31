@@ -15,16 +15,16 @@ const notiDot = document.querySelector("#noti-dot");
 // States
 let notificationDropdownComponent;
 let toastSignalRComponent;
-export const signalRConnection = new signalR.HubConnectionBuilder()
+const notiHubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
 // Function expressions
-export const startSignalR = async () => {
+const startNotiHubConnection = async () => {
     try {
-        await signalRConnection.start();
-        console.log("SignalR connected :)");
+        await notiHubConnection.start();
+        console.log("notificationHub connected :)");
     } catch (err) {
         console.error(err);
     }
@@ -56,11 +56,11 @@ viewNotificationButton.addEventListener("click", async () => {
     notiDot.classList.add("hidden");
 });
 
-signalRConnection.onclose(async () => {
-    await startSignalR();
+notiHubConnection.onclose(async () => {
+    await startNotiHubConnection();
 });
 
-signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
+notiHubConnection.on("ReceiveNotification", (notification = Notification()) => {
     toastSignalRComponent = new ToastSignalRComponent(document.body, notification);
     toastSignalRComponent.connectedCallback();
 
@@ -73,4 +73,5 @@ signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
 });
 
 // On load
+startNotiHubConnection();
 init();

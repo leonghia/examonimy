@@ -6,7 +6,6 @@ import { hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../h
 import { Operation } from "../helpers/operation.helper.js";
 import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
 import { ExamPaperReviewHistory, ExamPaperReviewCommentCreate, ExamPaperReviewHistoryComment } from "../models/exam-paper.model.js";
-import { signalRConnection, startSignalR } from "../teacher.layout.js";
 
 // DOM selectors
 const questionListContainer = document.querySelector("#question-list-container");
@@ -20,9 +19,21 @@ const examPaperTimelineContainer = document.querySelector("#exam-paper-timeline-
 const examPaperId = Number(document.querySelector("#exam-paper-container").dataset.examPaperId);
 const profilePfp = document.querySelector(".profile-pfp").src;
 let examPaperTimelineComponent;
-
+const examPaperTimelineHubConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/examPaperTimelineHub")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
 // Function expressions
+const startExamPaperTimelineHub = async () => {
+    try {
+        await examPaperTimelineHubConnection.start();
+        console.log("examPaperTimelineHub connected :)");
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 const initTimeline = async () => {
     const examPaperReviewHistories = [new ExamPaperReviewHistory()];
     Object.assign(examPaperReviewHistories, (await fetchData(`exam-paper/${examPaperId}/review-history`)).data);
@@ -103,12 +114,17 @@ submitReviewButton.addEventListener("click", async () => {
     }
 });
 
-signalRConnection.on("ReceiveComment", (eprhc = ExamPaperReviewHistoryComment()) => {
-    console.log(eprhc);
+examPaperTimelineHubConnection.onclose(async () => {
+    await startExamPaperTimelineHub();
+});
+
+examPaperTimelineHubConnection.on("ReceiveComment", (eprhc = ExamPaperReviewHistoryComment()) => {
+    examPaperTimelineComponent.insertHistory(eprhc);
+    examPaperTimelineComponent.populate();
 });
 
 // On load
-startSignalR();
+startExamPaperTimelineHub();
 
 (async () => {
     const examPaperQuestions = [new ExamPaperQuestion()];   
