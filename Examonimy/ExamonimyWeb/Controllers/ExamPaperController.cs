@@ -13,6 +13,7 @@ using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
@@ -166,7 +167,7 @@ namespace ExamonimyWeb.Controllers
             var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
             examPaper.Status = (byte)ExamPaperStatus.Pending;
             examPaper.AuthorId = contextUser.Id;
-            await _examPaperManager.AddThenSaveAsync(examPaper);
+            await _examPaperManager.CreateAsync(examPaper);
             var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
             examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return CreatedAtRoute("GetExamPaperById", new { id = examPaper.Id }, examPaperToReturn);
@@ -195,7 +196,7 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
-            await _examPaperManager.DeleteThenSaveAsync(id);
+            await _examPaperManager.DeleteAsync(id);
             await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper });
             return NoContent();
         }
@@ -222,7 +223,7 @@ namespace ExamonimyWeb.Controllers
                     return e;
                 })
                 .ToList();
-            await _examPaperManager.UpdateThenSaveAsync(examPaper.Id, examPaperQuestionsToUpdate);         
+            await _examPaperManager.UpdateAsync(examPaper.Id, examPaperQuestionsToUpdate);         
             return NoContent();
         }
 
@@ -238,7 +239,7 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
-            await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+            await _examPaperManager.AddReviewersAsync(examPaper.Id, examPaperReviewers);
             await _notificationService.RequestReviewerForExamPaperAsync(examPaper.Id, examPaperReviewers, contextUser.Id);
 
             return Accepted();
@@ -254,6 +255,26 @@ namespace ExamonimyWeb.Controllers
                 return NotFound();
             var histories = await _examPaperManager.GetReviewHistories(id);
             return Ok(histories);
+        }
+
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpPost("api/exam-paper/{id:int}/review/comment")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> CommentOnExamPaperReview([FromRoute] int id, [FromBody] ExamPaperReviewCommentCreateDto comment)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _examPaperManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor && !await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            var commentToReturn = await _examPaperManager.CommentOnExamPaperReviewAsync(id, comment.Comment, contextUser);   
+            // send notification to examPaperAuthor if the contextUser is not him
+            if (!isAuthor)
+            {
+                await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId);
+            }
+
+            return Created("", commentToReturn);
         }
     }
 }

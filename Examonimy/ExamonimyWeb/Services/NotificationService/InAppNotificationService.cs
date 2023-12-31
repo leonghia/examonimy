@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using ExamonimyWeb.DTOs.NotificationDTO;
+﻿using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Hubs;
 using ExamonimyWeb.Managers.ExamPaperManager;
@@ -43,6 +42,7 @@ namespace ExamonimyWeb.Services.NotificationService
             switch (notification.NotificationTypeId)
             {
                 case NotificationTypeIds.AskForReviewForExamPaper:
+                case NotificationTypeIds.CommentExamPaper:
                     var examPaperId = notification.EntityId;
                     return $"/exam-paper/{examPaperId}/review";
                 default:
@@ -54,7 +54,10 @@ namespace ExamonimyWeb.Services.NotificationService
         {
             return notificationTypeId switch
             {
-                NotificationTypeIds.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full dark:border-gray-800""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
+                NotificationTypeIds.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
+
+                NotificationTypeIds.CommentExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z"" clip-rule=""evenodd"" /></svg></div>",
+
                 _ => throw new SwitchExpressionException(notificationTypeId)
             };
         }
@@ -69,6 +72,9 @@ namespace ExamonimyWeb.Services.NotificationService
                     var examPaperId = notification.EntityId;
                     var course = await _examPaperManager.GetCourseAsync(examPaperId) ?? throw new ArgumentException(null, nameof(notification.EntityId));      
                     return new AskForReviewForExamPaperNotiMessage(actorFullName, course.Name, isRead).ToVietnamese();
+                case NotificationTypeIds.CommentExamPaper:
+                    var examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
+                    return new CommentExamPaperNotiMessage(actorFullName, examPaper.ExamPaperCode, isRead).ToVietnamese();
                 default:
                     throw new SwitchExpressionException(notification.NotificationTypeId);
     
@@ -142,6 +148,28 @@ namespace ExamonimyWeb.Services.NotificationService
             await _notificationReceiverRepository.SaveAsync();
 
             // send noti via signalr
+        }
+
+        public async Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId)
+        {
+            // Create the notification
+            var notificationToCreate = new Notification
+            {
+                NotificationTypeId = NotificationTypeIds.CommentExamPaper,
+                EntityId = examPaperId,
+                ActorId = commenterId
+            };
+            await _notificationRepository.InsertAsync(notificationToCreate);
+            await _notificationRepository.SaveAsync();
+
+            // Create the notificationReceiver
+            var notificationReceiverToCreate = new NotificationReceiver 
+            {
+                NotificationId = notificationToCreate.Id,
+                ReceiverId = examPaperAuthorId
+            };
+            await _notificationReceiverRepository.InsertAsync(notificationReceiverToCreate);
+            await _notificationReceiverRepository.SaveAsync();
         }
     }
 }

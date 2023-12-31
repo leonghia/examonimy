@@ -28,7 +28,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             _examPaperReviewHistoryRepository = examPaperReviewHistoryRepository;
         }
 
-        public async Task AddReviewersThenSaveAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
+        public async Task AddReviewersAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
         {
             _examPaperReviewerRepository.DeleteRange(ePR => ePR.ExamPaperId == examPaperId);
             await _examPaperReviewerRepository.InsertRangeAsync(examPaperReviewers);
@@ -51,7 +51,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             await _examPaperReviewHistoryRepository.SaveAsync();
         }
 
-        public async Task AddThenSaveAsync(ExamPaper examPaper)
+        public async Task CreateAsync(ExamPaper examPaper)
         {
             await _examPaperRepository.InsertAsync(examPaper);
             await _examPaperRepository.SaveAsync();
@@ -73,7 +73,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return await _examPaperQuestionRepository.CountAsync(examPaperQuestion => examPaperQuestion.ExamPaperId == examPaperId);
         }
 
-        public async Task DeleteThenSaveAsync(int examPaperId)
+        public async Task DeleteAsync(int examPaperId)
         {
             // Delete all the related examPaperQuestions
             _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
@@ -202,13 +202,15 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                         });
                         break;
                     case (int)Operation.CommentExamPaper:
-                        results.Add(new ExamPaperReviewHistoryGetDto
+                        var examPaperComment = await _examPaperCommentRepository.GetSingleByIdAsync(h.EntityId) ?? throw new ArgumentException(null, nameof(h.EntityId));
+                        results.Add(new ExamPaperReviewHistoryCommentGetDto
                         {
                             ActorName = h.Actor!.FullName,
                             Id = h.Id,
                             CreatedAt = h.CreatedAt,
                             OperationId = h.OperationId,
-                            ActorProfilePicture = h.Actor!.ProfilePicture
+                            ActorProfilePicture = h.Actor!.ProfilePicture,
+                            Comment = examPaperComment.Comment
                         });
                         break;
                     default:
@@ -232,11 +234,48 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return reviewerIds.Contains(userId);
         }
 
-        public async Task UpdateThenSaveAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate)
+        public async Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate)
         {
             _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
             await _examPaperQuestionRepository.InsertRangeAsync(examPaperQuestionsToUpdate);
             await _examPaperQuestionRepository.SaveAsync();
+        }
+
+        public async Task<ExamPaperReviewCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter)
+        {
+            // create examPaperComment
+            var commentToCreate = new ExamPaperComment
+            {
+                ExamPaperId = examPaperId,
+                CommenterId = commenter.Id,
+                Comment = comment,
+                CommentedAt = DateTime.UtcNow
+            };
+            await _examPaperCommentRepository.InsertAsync(commentToCreate);
+            await _examPaperCommentRepository.SaveAsync();
+
+            // add to the review history
+            var historyToCreate = new ExamPaperReviewHistory
+            {
+                ExamPaperId = examPaperId,
+                ActorId = commentToCreate.CommenterId,
+                OperationId = (int)Operation.CommentExamPaper,
+                EntityId = commentToCreate.Id,
+                CreatedAt = commentToCreate.CommentedAt
+            };
+            await _examPaperReviewHistoryRepository.InsertAsync(historyToCreate);
+            await _examPaperReviewHistoryRepository.SaveAsync();
+
+            var commentToReturn = new ExamPaperReviewCommentGetDto
+            {
+                ExamPaperCode = (await _examPaperRepository.GetSingleByIdAsync(examPaperId))!.ExamPaperCode,
+                CommenterName = commenter.FullName,
+                CommenterProfilePicture = commenter.ProfilePicture,
+                Comment = commentToCreate.Comment,
+                CommentedAt = commentToCreate.CommentedAt
+            };
+
+            return commentToReturn;
         }
     }
 }

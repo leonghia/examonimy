@@ -60,3 +60,10 @@ export class ExamPaperReviewHistoryAddReviewer extends ExamPaperReviewHistory {
         super();
     }
 }
+
+export class ExamPaperReviewCommentCreate {
+    comment;
+    constructor(comment = "") {
+        this.comment = comment;
+    }
+}
