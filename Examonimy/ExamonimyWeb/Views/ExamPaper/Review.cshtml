@@ -3,15 +3,16 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewData["Title"] = "Duyệt đề thi";
+    ViewData["Title"] = "Review đề thi";
     Layout = "_TeacherLayout";
     var commentExamPaper = (int)Operation.CommentExamPaper;
     var approveExamPaper = (int)Operation.ApproveExamPaper;
     var rejectExamPaper = (int)Operation.RejectExamPaper;
 }
 @model ExamPaperSingleViewModel
+<script src="~/js/pages/exam-paper-review.page.js" defer type="module"></script>
 <div>
-    @await Html.PartialAsync("_PageHeadingPartial", "Duyệt đề thi")
+    @await Html.PartialAsync("_PageHeadingPartial", "Review đề thi")
     <div class="flex justify-between">
         <div>
             <a href="/exam-paper" class="text-sm font-semibold text-gray-800 hover:text-gray-900 rounded-md bg-gray-200 hover:bg-gray-300 py-3 px-4">              
@@ -81,8 +82,6 @@
     </div>
       
 </div>
-
-<script src="~/js/pages/exam-paper-review.page.js" type="module"></script>
 
 
 

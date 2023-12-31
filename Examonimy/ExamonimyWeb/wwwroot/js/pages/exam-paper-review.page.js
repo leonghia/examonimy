@@ -2,10 +2,11 @@
 import { ExamPaperTimelineComponent } from "../components/exam-paper-timeline.component.js";
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
 import { fetchData, postData } from "../helpers/ajax.helper.js";
-import { hideSpinnerForButtonWithoutCheckmark, hideSpinnerForButtonWithCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { Operation } from "../helpers/operation.helper.js";
 import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
-import { ExamPaperReviewHistory, ExamPaperReviewCommentCreate } from "../models/exam-paper.model.js";
+import { ExamPaperReviewHistory, ExamPaperReviewCommentCreate, ExamPaperReviewHistoryComment } from "../models/exam-paper.model.js";
+import { signalRConnection, startSignalR } from "../teacher.layout.js";
 
 // DOM selectors
 const questionListContainer = document.querySelector("#question-list-container");
@@ -86,9 +87,7 @@ submitReviewButton.addEventListener("click", async () => {
             // comment          
             try {
                 const examPaperReviewCommentCreate = new ExamPaperReviewCommentCreate(commentTextArea.value);
-                const data = await postData(`exam-paper/${examPaperId}/review/comment`, examPaperReviewCommentCreate);
-                examPaperTimelineComponent.insertHistory(data);
-                examPaperTimelineComponent.populate();
+                await postData(`exam-paper/${examPaperId}/review/comment`, examPaperReviewCommentCreate);              
             } catch (err) {
                 console.error(err);
             } finally {
@@ -104,8 +103,13 @@ submitReviewButton.addEventListener("click", async () => {
     }
 });
 
+signalRConnection.on("ReceiveComment", (eprhc = ExamPaperReviewHistoryComment()) => {
+    console.log(eprhc);
+});
 
 // On load
+startSignalR();
+
 (async () => {
     const examPaperQuestions = [new ExamPaperQuestion()];   
     Object.assign(examPaperQuestions, (await fetchData(`exam-paper/${examPaperId}/question-with-answer`)).data);

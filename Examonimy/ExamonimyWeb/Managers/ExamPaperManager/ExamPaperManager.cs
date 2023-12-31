@@ -34,7 +34,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             await _examPaperReviewerRepository.InsertRangeAsync(examPaperReviewers);
             await _examPaperReviewerRepository.SaveAsync();
 
-            var examPaper = await _examPaperRepository.GetSingleByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
+            var examPaper = await _examPaperRepository.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
             var authorId = examPaper.AuthorId;
 
             // add to the review history
@@ -98,24 +98,24 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 
         public async Task<ExamPaper?> GetByIdAsync(int examPaperId)
         {
-            return await _examPaperRepository.GetSingleAsync(eP => eP.Id == examPaperId, new List<string> { "Author", "Course" });
+            return await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Author", "Course" });
         }
 
         public async Task<Course> GetCourseAsync(int examPaperId)
         {
-            var examPaper = await _examPaperRepository.GetSingleAsync(eP => eP.Id == examPaperId, new List<string> { "Course" }) ?? throw new ArgumentException(null, nameof(examPaperId));
+            var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Course" }) ?? throw new ArgumentException(null, nameof(examPaperId));
             return examPaper.Course!;
         }
 
         public async Task<ExamPaperQuestion?> GetExamPaperQuestionAsync(int examPaperQuestionId)
         {
-            return await _examPaperQuestionRepository.GetSingleByIdAsync(examPaperQuestionId);
+            return await _examPaperQuestionRepository.GetByIdAsync(examPaperQuestionId);
         }
 
         public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId)
         {
             var examPaperQuestionsToReturn = new List<ExamPaperQuestionGetDto>();
-            var examPaperQuestions = await _examPaperQuestionRepository.GetAsync(ePQ => ePQ.ExamPaperId == examPaperId, new List<string> { "ExamPaperQuestionComments", "ExamPaperQuestionComments.Commenter" });
+            var examPaperQuestions = await _examPaperQuestionRepository.GetRangeAsync(ePQ => ePQ.ExamPaperId == examPaperId, new List<string> { "ExamPaperQuestionComments", "ExamPaperQuestionComments.Commenter" });
             foreach (var examPaperQuestion in examPaperQuestions)
             {
                 var question = await _questionManager.GetSingleByIdAsync(examPaperQuestion.QuestionId) ?? throw new ArgumentException(null, nameof(examPaperId));
@@ -152,13 +152,13 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 
         public async Task<int> GetReviewerIdAsync(int examPaperReviewerId)
         {
-            var examPaperReviewer = await _examPaperReviewerRepository.GetSingleByIdAsync(examPaperReviewerId) ?? throw new ArgumentException(null, nameof(examPaperReviewerId));
+            var examPaperReviewer = await _examPaperReviewerRepository.GetByIdAsync(examPaperReviewerId) ?? throw new ArgumentException(null, nameof(examPaperReviewerId));
             return examPaperReviewer.ReviewerId;
         }
 
         public async Task<List<ExamPaperReviewHistoryGetDto>> GetReviewHistories(int examPaperId)
         {
-            var examPaperReviewHistories = await _examPaperReviewHistoryRepository.GetAsync(e => e.ExamPaperId == examPaperId, new List<string> { "Actor" });
+            var examPaperReviewHistories = await _examPaperReviewHistoryRepository.GetRangeAsync(e => e.ExamPaperId == examPaperId, new List<string> { "Actor" });
             var results = new List<ExamPaperReviewHistoryGetDto>();
             foreach (var h in examPaperReviewHistories)
             {
@@ -180,7 +180,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                             Id = h.Id,
                             CreatedAt = h.CreatedAt,
                             OperationId = h.OperationId,
-                            ReviewerName = (await _examPaperReviewerRepository.GetSingleAsync(e => e.Id == h.EntityId, new List<string> { "Reviewer" }))!.Reviewer!.FullName
+                            ReviewerName = (await _examPaperReviewerRepository.GetAsync(e => e.Id == h.EntityId, new List<string> { "Reviewer" }))!.Reviewer!.FullName
                         });
                         break;
                     case (int)Operation.RejectExamPaper:
@@ -202,7 +202,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                         });
                         break;
                     case (int)Operation.CommentExamPaper:
-                        var examPaperComment = await _examPaperCommentRepository.GetSingleByIdAsync(h.EntityId) ?? throw new ArgumentException(null, nameof(h.EntityId));
+                        var examPaperComment = await _examPaperCommentRepository.GetByIdAsync(h.EntityId) ?? throw new ArgumentException(null, nameof(h.EntityId));
                         results.Add(new ExamPaperReviewHistoryCommentGetDto
                         {
                             ActorName = h.Actor!.FullName,
@@ -224,13 +224,13 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 
         public async Task<bool> IsAuthorAsync(int examPaperId, int userId)
         {
-            var examPaper = await _examPaperRepository.GetSingleAsync(eP => eP.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));                       
+            var examPaper = await _examPaperRepository.GetAsync(eP => eP.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));                       
             return examPaper.Author!.Id == userId;
         }
 
         public async Task<bool> IsReviewerAsync(int examPaperId, int userId)
         {
-            var examPaperReviewers = await _examPaperReviewerRepository.GetAsync(ePR => ePR.ExamPaperId == examPaperId);
+            var examPaperReviewers = await _examPaperReviewerRepository.GetRangeAsync(ePR => ePR.ExamPaperId == examPaperId);
             var reviewerIds = examPaperReviewers.Select(ePR => ePR.ReviewerId);
             return reviewerIds.Contains(userId);
         }
@@ -278,6 +278,11 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             };
 
             return resultToReturn;
+        }
+
+        public async Task<IEnumerable<User>> GetReviewersAsync(int examPaperId)
+        {
+            return (await _examPaperReviewerRepository.GetRangeAsync(epr => epr.ExamPaperId == examPaperId, new List<string> { "Reviewer" })).Select(epr => epr.Reviewer!);
         }
     }
 }

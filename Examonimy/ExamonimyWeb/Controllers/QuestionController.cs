@@ -218,7 +218,7 @@ namespace ExamonimyWeb.Controllers
         public async Task<IActionResult> RenderUpdateView([FromRoute] int id)
         {
             Expression<Func<Question, bool>> predicate = q => q.Id == id;
-            var question = await _questionRepository.GetSingleAsync(predicate, new List<string> { "Author", "Course", "QuestionType", "QuestionLevel" });
+            var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author", "Course", "QuestionType", "QuestionLevel" });
             if (question is null)
                 return NotFound();
             var user = await base.GetContextUser();

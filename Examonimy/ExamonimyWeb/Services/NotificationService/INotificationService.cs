@@ -11,6 +11,6 @@ namespace ExamonimyWeb.Services.NotificationService
         string GetHref(Notification notification);
         Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams);
         Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds);
-        Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId);
+        Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment);
     }
 }

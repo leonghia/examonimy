@@ -25,7 +25,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 return await _dbSet.CountAsync();
         }       
 
-        public virtual async Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
+        public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
             query = query.Where<TEntity>(filterPredicate);          
@@ -89,7 +89,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             await _dbSet.AddRangeAsync(entities);
         }
 
-        public async Task<TEntity?> GetSingleByIdAsync(object id)
+        public async Task<TEntity?> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -111,7 +111,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
             _dbSet.RemoveRange(query);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
+        public async Task<IEnumerable<TEntity>> GetRangeAsync(Expression<Func<TEntity, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
             IQueryable<TEntity> query = _dbSet;           
 

@@ -1,5 +1,5 @@
 using ExamonimyWeb.Extensions;
-using ExamonimyWeb.Hubs;
+using ExamonimyWeb.Hubs.NotificationHub;
 
 var builder = WebApplication.CreateBuilder(args);
 

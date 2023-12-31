@@ -1,7 +1,11 @@
-﻿using ExamonimyWeb.DTOs.NotificationDTO;
+﻿using ExamonimyWeb.DTOs.ExamPaperDTO;
+using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Hubs;
+using ExamonimyWeb.Enums;
+using ExamonimyWeb.Hubs.ExamPaperTimelineHub;
+using ExamonimyWeb.Hubs.NotificationHub;
 using ExamonimyWeb.Managers.ExamPaperManager;
+using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using ExamonimyWeb.Utilities.NotificationMessages;
@@ -14,22 +18,24 @@ namespace ExamonimyWeb.Services.NotificationService
     {
         private readonly IExamPaperManager _examPaperManager;
         private readonly IGenericRepository<Notification> _notificationRepository;
-        private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;      
         private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
+        private readonly IUserManager _userManager;
+        private readonly IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> _examPaperTimelineHubContext;
 
-        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IGenericRepository<User> userRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext)
+        public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext, IUserManager userManager, IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> examPaperTimelineHubContext)
         {
             _examPaperManager = examPaperManager;
             _notificationRepository = notificationRepository;
-            _notificationReceiverRepository = notificationReceiverRepository;
-            _userRepository = userRepository;
+            _notificationReceiverRepository = notificationReceiverRepository;          
             _notificationHubContext = notificationHubContext;
+            _userManager = userManager;
+            _examPaperTimelineHubContext = examPaperTimelineHubContext;
         }
 
         public async Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds)
         {
-            var notificationsToDelete = (await _notificationRepository.GetAsync(n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
+            var notificationsToDelete = (await _notificationRepository.GetRangeAsync(n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
             var notificationsIdsToDelete = notificationsToDelete.Select(n => n.Id);
             _notificationReceiverRepository.DeleteRange(nR => notificationsIdsToDelete.Contains(nR.NotificationId));
             await _notificationReceiverRepository.SaveAsync();
@@ -64,7 +70,7 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead)
         {
-            var actor = await _userRepository.GetSingleByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
+            var actor = await _userManager.GetByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
             var actorFullName = actor.FullName;
             switch (notification.NotificationTypeId)
             {
@@ -91,7 +97,7 @@ namespace ExamonimyWeb.Services.NotificationService
         public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
         {
           
-            var notification = await _notificationRepository.GetSingleAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
+            var notification = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
             // if this noti does not exist, we persist it and create its receivers
             if (notification is null)
             {
@@ -114,10 +120,10 @@ namespace ExamonimyWeb.Services.NotificationService
                 await _notificationReceiverRepository.InsertRangeAsync(notificationReceiversToCreate);
                 await _notificationReceiverRepository.SaveAsync();
 
-                // send noti via signalr
+                // Send SignalR noti
                 var ids = notificationReceiversToCreate.Select(nR => nR.ReceiverId);
-                var usernames = (await _userRepository.GetAsync(u => ids.Contains(u.Id))).Select(u => u.Username).ToList();
-                var actor = await _userRepository.GetSingleByIdAsync(actorId) ?? throw new ArgumentException(null, nameof(actorId));
+                var usernames = (await _userManager.GetRangeAsync(u => ids.Contains(u.Id))).Select(u => u.Username).ToList();
+                var actor = await _userManager.GetByIdAsync(actorId) ?? throw new ArgumentException(null, nameof(actorId));
                 await _notificationHubContext.Clients.Users(usernames).ReceiveNotification(new NotificationGetDto
                 {
                     Id = notificationToCreate.Id,
@@ -133,7 +139,7 @@ namespace ExamonimyWeb.Services.NotificationService
             }
 
             // else, we just need to update its receivers
-            var existingReceivers = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == notification.Id);
+            var existingReceivers = await _notificationReceiverRepository.GetRangeAsync(nR => nR.NotificationId == notification.Id);
             var existingReceiverIds = existingReceivers.Select(e => e.ReceiverId);
             var receiverIds = examPaperReviewers.Select(e => e.ReviewerId);
             var receiversToAdd = receiverIds
@@ -145,12 +151,10 @@ namespace ExamonimyWeb.Services.NotificationService
                 .ToList();
             _notificationReceiverRepository.DeleteRange(receiversToDelete);
             await _notificationReceiverRepository.InsertRangeAsync(receiversToAdd);
-            await _notificationReceiverRepository.SaveAsync();
-
-            // send noti via signalr
+            await _notificationReceiverRepository.SaveAsync();          
         }
 
-        public async Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId)
+        public async Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment)
         {
             // Create the notification
             var notificationToCreate = new Notification
@@ -170,6 +174,34 @@ namespace ExamonimyWeb.Services.NotificationService
             };
             await _notificationReceiverRepository.InsertAsync(notificationReceiverToCreate);
             await _notificationReceiverRepository.SaveAsync();
+
+            // Send SignalR noti to author
+            var author = await _userManager.GetByIdAsync(examPaperAuthorId) ?? throw new ArgumentException(null, nameof(examPaperAuthorId));
+            var authorUsername = author.Username;
+            var actor = await _userManager.GetByIdAsync(commenterId) ?? throw new ArgumentException(null, nameof(commenterId));
+            await _notificationHubContext.Clients.User(authorUsername).ReceiveNotification(new NotificationGetDto
+            {
+                Id = notificationToCreate.Id,
+                MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
+                ActorProfilePicture = actor.ProfilePicture,
+                Href = GetHref(notificationToCreate),
+                IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
+                NotifiedAt = notificationToCreate.CreatedAt,
+                IsRead = false
+            });
+
+            // Send the comment to author and reviewers via SignalR
+            var usernames = (await _examPaperManager.GetReviewersAsync(examPaperId)).Select(r => r.Username).ToList();
+            usernames.Add(authorUsername);
+            await _examPaperTimelineHubContext.Clients.Users(usernames).ReceiveComment(new ExamPaperReviewHistoryCommentGetDto
+            {
+                OperationId = (int)Operation.CommentExamPaper,
+                ActorName = actor.FullName,
+                CreatedAt = notificationToCreate.CreatedAt,
+                Comment = comment,
+                IsAuthor = await _examPaperManager.IsAuthorAsync(examPaperId, commenterId)
+            });
+
         }
     }
 }

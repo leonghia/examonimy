@@ -2,7 +2,6 @@
 using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.NotificationService;
@@ -15,8 +14,7 @@ namespace ExamonimyWeb.Controllers
     public class NotificationController : GenericController<Notification>
     {          
         private readonly INotificationService _notificationService;
-        private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;     
-        private const string _timezoneOffsetRequestHeaderKey = "TimezoneOffset";      
+        private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;        
 
         public NotificationController(IMapper mapper, IGenericRepository<Notification> notificationRepository, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(mapper, notificationRepository, userManager)
         {                    
@@ -57,7 +55,7 @@ namespace ExamonimyWeb.Controllers
         public async Task<IActionResult> MarkAsRead([FromRoute] int id)
         {
             var contextUser = await base.GetContextUser();
-            var notificationReceiver = await _notificationReceiverRepository.GetSingleAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
+            var notificationReceiver = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
             if (notificationReceiver is null)
                 return NotFound();
             notificationReceiver.IsRead = true;

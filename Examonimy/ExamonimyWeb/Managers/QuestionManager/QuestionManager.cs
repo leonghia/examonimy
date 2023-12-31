@@ -47,11 +47,11 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
-            var question = await _questionRepository.GetSingleByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
+            var question = await _questionRepository.GetByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
-                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetSingleAsync(q => q.QuestionId == question.Id, includedProperties);
+                    var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new MultipleChoiceQuestionWithOneCorrectAnswerViewModel
                     {                      
                         User = _mapper.Map<UserGetDto>(contextUser),                      
@@ -59,7 +59,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         ViewName = QuestionTypeNames.MultipleChoiceWithOneCorrectAnswer
                     };
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
-                    var multipleChoiceQuestionWithMultipleCorrectAnswers = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetSingleAsync(q => q.QuestionId == question.Id, includedProperties);
+                    var multipleChoiceQuestionWithMultipleCorrectAnswers = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new MultipleChoiceQuestionWithMultipleCorrectAnswersViewModel
                     {
                         User = _mapper.Map<UserGetDto>(contextUser),                      
@@ -67,7 +67,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         ViewName = QuestionTypeNames.MultipleChoiceWithMultipleCorrectAnswers
                     };
                 case (int)QuestionTypeId.TrueFalse:
-                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetSingleAsync(q => q.QuestionId == question.Id, includedProperties);
+                    var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new TrueFalseQuestionViewModel
                     {
                         User = _mapper.Map<UserGetDto>(contextUser),                      
@@ -75,7 +75,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         ViewName = QuestionTypeNames.TrueFalse
                     };
                 case (int)QuestionTypeId.ShortAnswer:
-                    var shortAnswerQuestion = await _shortAnswerQuestionRepository.GetSingleAsync(q => q.QuestionId == question.Id, includedProperties);
+                    var shortAnswerQuestion = await _shortAnswerQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new ShortAnswerQuestionViewModel
                     {
                         User = _mapper.Map<UserGetDto>(contextUser),                      
@@ -83,7 +83,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         ViewName = QuestionTypeNames.ShortAnswer
                     };
                 case (int)QuestionTypeId.FillInBlank:
-                    var fillInBlankQuestion = await _fillInBlankQuestionRepository.GetSingleAsync(q => q.QuestionId == question.Id, includedProperties);
+                    var fillInBlankQuestion = await _fillInBlankQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new FillInBlankQuestionViewModel
                     {
                         User = _mapper.Map<UserGetDto>(contextUser),                        
@@ -106,7 +106,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                 {
                     case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
                         Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == question.Id;
-                        var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetSingleAsync(predicate1, null);
+                        var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, null);
                         var questionToReturn1 = new MultipleChoiceQuestionWithOneCorrectAnswerGetDto
                         {
                             Id = question.Id,
@@ -125,7 +125,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         break;
                     case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
                         Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == question.Id;
-                        var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetSingleAsync(predicate2, null);
+                        var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, null);
                         var questionToReturn2 = new MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto
                         {
                             Id = question.Id,
@@ -144,7 +144,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         break;
                     case (int)QuestionTypeId.TrueFalse:
                         Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == question.Id;
-                        var specificQuestion3 = await _trueFalseQuestionRepository.GetSingleAsync(predicate3, null);
+                        var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, null);
                         var questionToReturn3 = new TrueFalseQuestionGetDto
                         {
                             Id = question.Id,
@@ -159,7 +159,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         break;
                     case (int)QuestionTypeId.ShortAnswer:
                         Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == question.Id;
-                        var specificQuestion4 = await _shortAnswerQuestionRepository.GetSingleAsync(predicate4, null);
+                        var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, null);
                         var questionToReturn4 = new ShortAnswerQuestionGetDto
                         {
                             Id = question.Id,
@@ -174,7 +174,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         break;
                     case (int)QuestionTypeId.FillInBlank:
                         Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == question.Id;
-                        var specificQuestion5 = await _fillInBlankQuestionRepository.GetSingleAsync(predicate5, null);
+                        var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, null);
                         var questionToReturn5 = new FillInBlankQuestionGetDto
                         {
                             Id = question.Id,
@@ -221,28 +221,28 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<QuestionGetDto> GetSpecificQuestionWithAnswerDtoAsync(int id)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
-            var question = await _questionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
                     Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == id;
-                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetSingleAsync(predicate1, includedProperties);
+                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, includedProperties);
                     return _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(specificQuestion1);
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
                     Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == id;
-                    var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetSingleAsync(predicate2, includedProperties);
+                    var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, includedProperties);
                     return _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(specificQuestion2);
                 case (int)QuestionTypeId.TrueFalse:
                     Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == id;
-                    var specificQuestion3 = await _trueFalseQuestionRepository.GetSingleAsync(predicate3, includedProperties);
+                    var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, includedProperties);
                     return _mapper.Map<TrueFalseQuestionGetDto>(specificQuestion3);
                 case (int)QuestionTypeId.ShortAnswer:
                     Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == id;
-                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetSingleAsync(predicate4, includedProperties);
+                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, includedProperties);
                     return _mapper.Map<ShortAnswerQuestionGetDto>(specificQuestion4);
                 case (int)QuestionTypeId.FillInBlank:
                     Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == id;
-                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetSingleAsync(predicate5, includedProperties);
+                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, includedProperties);
                     return _mapper.Map<FillInBlankQuestionGetDto>(specificQuestion5);
                 default:
                     throw new SwitchExpressionException(question.QuestionTypeId);
@@ -251,29 +251,29 @@ namespace ExamonimyWeb.Managers.QuestionManager
 
         public async Task<QuestionWithoutAnswerGetDto> GetSpecificQuestionWithoutAnswerDtoAsync(int questionId)
         {
-            var question = await _questionRepository.GetSingleByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
+            var question = await _questionRepository.GetByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
             var includedProps = new List<string> { "Question.QuestionType" };
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
                     Expression<Func<MultipleChoiceQuestionWithOneCorrectAnswer, bool>> predicate1 = q => q.QuestionId == questionId;
-                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetSingleAsync(predicate1, includedProps);
+                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(predicate1, includedProps);
                     return _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerWithoutAnswerGetDto>(specificQuestion1);
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
                     Expression<Func<MultipleChoiceQuestionWithMultipleCorrectAnswers, bool>> predicate2 = q => q.QuestionId == questionId;
-                    var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetSingleAsync(predicate2, includedProps);
+                    var specificQuestion2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(predicate2, includedProps);
                     return _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersWithoutAnswerGetDto>(specificQuestion2);
                 case (int)QuestionTypeId.TrueFalse:
                     Expression<Func<TrueFalseQuestion, bool>> predicate3 = q => q.QuestionId == questionId;
-                    var specificQuestion3 = await _trueFalseQuestionRepository.GetSingleAsync(predicate3, includedProps);
+                    var specificQuestion3 = await _trueFalseQuestionRepository.GetAsync(predicate3, includedProps);
                     return _mapper.Map<TrueFalseQuestionWithoutAnswerGetDto>(specificQuestion3);
                 case (int)QuestionTypeId.ShortAnswer:
                     Expression<Func<ShortAnswerQuestion, bool>> predicate4 = q => q.QuestionId == questionId;
-                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetSingleAsync(predicate4, includedProps);
+                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetAsync(predicate4, includedProps);
                     return _mapper.Map<ShortAnswerQuestionWithoutAnswerGetDto>(specificQuestion4);
                 case (int)QuestionTypeId.FillInBlank:
                     Expression<Func<FillInBlankQuestion, bool>> predicate5 = q => q.QuestionId == questionId;
-                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetSingleAsync(predicate5, includedProps);
+                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetAsync(predicate5, includedProps);
                     return _mapper.Map<FillInBlankQuestionWithoutAnswerGetDto>(specificQuestion5);
                 default:
                     throw new SwitchExpressionException(question.QuestionTypeId);
@@ -282,19 +282,19 @@ namespace ExamonimyWeb.Managers.QuestionManager
 
         public async Task<bool> DoesQuestionExistAsync(int questionId)
         {
-            return (await _questionRepository.GetSingleByIdAsync(questionId)) is not null;
+            return (await _questionRepository.GetByIdAsync(questionId)) is not null;
         }
 
         public async Task<bool> IsAuthorAsync(int questionId, int userId)
         {
             Expression<Func<Question, bool>> predicate = q => q.Id == questionId;
-            var question = await _questionRepository.GetSingleAsync(predicate, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(questionId));
+            var question = await _questionRepository.GetAsync(predicate, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(questionId));
             return question.Author!.Id == userId;
         }
 
         public async Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto)
         {
-            var question = await _questionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
             question.QuestionLevelId = questionUpdateDto.QuestionLevelId;
             question.QuestionContent = questionUpdateDto.QuestionContent;
             _questionRepository.Update(question);
@@ -302,7 +302,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             switch (question.QuestionTypeId)
             {
                 case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
-                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+                    var specificQuestion1 = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp1 = questionUpdateDto as MultipleChoiceQuestionWithOneCorrectAnswerUpdateDto;
                     specificQuestion1.ChoiceA = temp1!.ChoiceA;
                     specificQuestion1.ChoiceB = temp1.ChoiceB;
@@ -313,7 +313,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     await _multipleChoiceQuestionWithOneCorrectAnswerRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
-                    var specificQueston2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+                    var specificQueston2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp2 = questionUpdateDto as MultipleChoiceQuestionWithMultipleCorrectAnswersUpdateDto;
                     specificQueston2.ChoiceA = temp2!.ChoiceA;
                     specificQueston2.ChoiceB = temp2.ChoiceB;
@@ -324,21 +324,21 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.TrueFalse:
-                    var specificQuestion3 = await _trueFalseQuestionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+                    var specificQuestion3 = await _trueFalseQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp3 = questionUpdateDto as TrueFalseQuestionUpdateDto;
                     specificQuestion3.CorrectAnswer = QuestionAnswerValueHelper.GetAnswerValueFromCharForTrueFalse(temp3!.CorrectAnswer);
                     _trueFalseQuestionRepository.Update(specificQuestion3);
                     await _trueFalseQuestionRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.ShortAnswer:
-                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+                    var specificQuestion4 = await _shortAnswerQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp4 = questionUpdateDto as ShortAnswerQuestionUpdateDto;
                     specificQuestion4.CorrectAnswer = temp4!.CorrectAnswer;
                     _shortAnswerQuestionRepository.Update(specificQuestion4);
                     await _shortAnswerQuestionRepository.SaveAsync();
                     break;
                 case (int)QuestionTypeId.FillInBlank:
-                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+                    var specificQuestion5 = await _fillInBlankQuestionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
                     var temp5 = questionUpdateDto as FillInBlankQuestionUpdateDto;
                     specificQuestion5.CorrectAnswers = QuestionAnswerValueHelper.GetAnswerValuesFromListOfStringForBlanks(temp5!.CorrectAnswers.ToList());
                     _fillInBlankQuestionRepository.Update(specificQuestion5);
@@ -351,14 +351,14 @@ namespace ExamonimyWeb.Managers.QuestionManager
 
         public async Task DeleteThenSaveAsync(int id)
         {
-            var question = await _questionRepository.GetSingleByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
             _questionRepository.Delete(question);
             await _questionRepository.SaveAsync();
         }
 
         public async Task<Question?> GetSingleByIdAsync(object id)
         {
-            return await _questionRepository.GetSingleByIdAsync(id);
+            return await _questionRepository.GetByIdAsync(id);
         }
     }
 }

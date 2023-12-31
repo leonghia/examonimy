@@ -197,7 +197,7 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             await _examPaperManager.DeleteAsync(id);
-            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper });
+            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper, NotificationTypeIds.CommentExamPaper, NotificationTypeIds.ApproveExamPaper, NotificationTypeIds.RejectExamPaper });
             return NoContent();
         }
 
@@ -271,7 +271,7 @@ namespace ExamonimyWeb.Controllers
             // send notification to examPaperAuthor if the contextUser is not him
             if (!isAuthor)
             {
-                await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId);
+                await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId, comment.Comment);
             }
 
             return Created("", commentToReturn);

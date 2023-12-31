@@ -1,6 +1,7 @@
 ﻿using ExamonimyWeb.Entities;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -29,14 +30,14 @@ namespace ExamonimyWeb.Managers.UserManager
         {
             var operationResult = new OperationResult();
 
-            if (await _userRepository.GetSingleAsync(u => u.NormalizedUsername!.Equals(user.NormalizedUsername), null) is not null)
+            if (await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(user.NormalizedUsername), null) is not null)
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
                 operationResult.Errors.Add(new OperationError { Code = "username", Description = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác." });
                 return operationResult;
             }
-            if (await _userRepository.GetSingleAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
+            if (await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(user.NormalizedEmail), null) is not null)
             {
                 operationResult.Succeeded = false;
                 operationResult.Errors ??= new List<OperationError>();
@@ -57,12 +58,12 @@ namespace ExamonimyWeb.Managers.UserManager
 
         public async Task<User?> FindByEmailAsync(string email)
         {
-            return await _userRepository.GetSingleAsync(u => u.NormalizedEmail!.Equals(email.ToUpperInvariant()), new List<string> { "Role" });
+            return await _userRepository.GetAsync(u => u.NormalizedEmail!.Equals(email.ToUpperInvariant()), new List<string> { "Role" });
         }
 
         public async Task<User?> FindByUsernameAsync(string username)
         {
-            return await _userRepository.GetSingleAsync(u => u.NormalizedUsername!.Equals(username.ToUpperInvariant()), new List<string> { "Role" });
+            return await _userRepository.GetAsync(u => u.NormalizedUsername!.Equals(username.ToUpperInvariant()), new List<string> { "Role" });
         }
 
         public string HashPassword(string password, out string passwordSalt)
@@ -85,6 +86,16 @@ namespace ExamonimyWeb.Managers.UserManager
         public string GetRole(User user)
         {
             return user.Role!.Name;
+        }
+
+        public async Task<User?> GetByIdAsync(object id)
+        {
+            return await _userRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<User>> GetRangeAsync(Expression<Func<User, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
+        {
+            return await _userRepository.GetRangeAsync(predicate, includedProps, orderBy);
         }
     }
 }

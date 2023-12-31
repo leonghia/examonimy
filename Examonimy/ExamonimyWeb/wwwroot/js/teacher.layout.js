@@ -15,13 +15,13 @@ const notiDot = document.querySelector("#noti-dot");
 // States
 let notificationDropdownComponent;
 let notificationSignalRComponent;
-const signalRConnection = new signalR.HubConnectionBuilder()
+export const signalRConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
 // Function expressions
-const startSignalR = async () => {
+export const startSignalR = async () => {
     try {
         await signalRConnection.start();
         console.log("SignalR connected :)");
@@ -56,9 +56,6 @@ viewNotificationButton.addEventListener("click", async () => {
     notiDot.classList.add("hidden");
 });
 
-// On load
-init();
-
 signalRConnection.onclose(async () => {
     await startSignalR();
 });
@@ -74,4 +71,5 @@ signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
     }, 10000);
 });
 
-startSignalR();
+// On load
+init();

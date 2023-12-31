@@ -1,5 +1,6 @@
 ﻿using ExamonimyWeb.Entities;
 using ExamonimyWeb.Utilities;
+using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Managers.UserManager
 {
@@ -12,5 +13,7 @@ namespace ExamonimyWeb.Managers.UserManager
         string HashPassword(string password, out string passwordSalt);
         Task UpdateAsync(User user);
         string GetRole(User user);
+        Task<User?> GetByIdAsync(object id);
+        Task<IEnumerable<User>> GetRangeAsync(Expression<Func<User, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null);
     }
 }

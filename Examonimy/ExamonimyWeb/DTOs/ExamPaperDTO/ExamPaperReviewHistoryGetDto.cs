@@ -7,7 +7,7 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO;
 [JsonDerivedType(typeof(ExamPaperReviewHistoryCommentGetDto))]
 public class ExamPaperReviewHistoryGetDto
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string ActorName { get; set; }
     public string? ActorProfilePicture { get; set; }
     public required DateTime CreatedAt { get; set; }      

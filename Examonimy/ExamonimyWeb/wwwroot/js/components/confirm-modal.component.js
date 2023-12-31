@@ -1,5 +1,5 @@
 ﻿import { BaseComponent } from "./base.component.js";
-import { hideSpinnerForButtonWithCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 
 export class ConfirmModalComponent extends BaseComponent {
@@ -32,10 +32,15 @@ export class ConfirmModalComponent extends BaseComponent {
 
         this.#confirmButton.addEventListener("click", async () => {
             const spinnerOption = new SpinnerOption();
-            spinnerOption.fill = "fill-red-600";
-            showSpinnerForButton(this.#confirmButton.querySelector("#button-text"), this.#confirmButton, spinnerOption);
-            await this._trigger("confirm");
-            hideSpinnerForButtonWithCheckmark(this.#confirmButton, this.#confirmButton.querySelector("#button-text"), spinnerOption);
+            spinnerOption.fill = "fill-red-800";
+            showSpinnerForButton(this.#confirmButton, spinnerOption);
+            try {
+                await this._trigger("confirm");
+                hideSpinnerForButtonWithCheckmark(this.#confirmButton, spinnerOption);
+            } catch (err) {
+                console.error(err);
+                hideSpinnerForButtonWithoutCheckmark(this.#confirmButton, this.#option.ctaText, spinnerOption);
+            }
         });
 
         this.#cancelButton.addEventListener("click", () => {
@@ -92,8 +97,8 @@ export class ConfirmModalComponent extends BaseComponent {
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" id="confirm-btn" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"><span id="button-text">${this.#option.ctaText}</span></button>
-          <button type="button" id="cancel-btn" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Hủy</button>
+          <button type="button" id="confirm-btn" class="inline-flex w-full justify-center rounded-md bg-red-300 px-3 py-2 text-sm font-semibold text-red-800 shadow-sm hover:bg-red-400 hover:text-red-900 sm:ml-3 sm:w-auto"><span id="button-text">${this.#option.ctaText}</span></button>
+          <button type="button" id="cancel-btn" class="mt-3 inline-flex w-full justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 hover:text-gray-900 sm:mt-0 sm:w-auto">Hủy</button>
         </div>
       </div>
     </div>
