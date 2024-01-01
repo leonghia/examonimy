@@ -5,6 +5,7 @@ using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using LinqKit;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace ExamonimyWeb.Managers.ExamPaperManager
@@ -283,6 +284,11 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         public async Task<IEnumerable<User>> GetReviewersAsync(int examPaperId)
         {
             return (await _examPaperReviewerRepository.GetRangeAsync(epr => epr.ExamPaperId == examPaperId, new List<string> { "Reviewer" })).Select(epr => epr.Reviewer!);
+        }
+
+        public async Task<ExamPaper?> GetAsync(Expression<Func<ExamPaper, bool>> predicate, List<string>? includedProps = null)
+        {
+            return await _examPaperRepository.GetAsync(predicate, includedProps);
         }
     }
 }

@@ -177,13 +177,21 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("exam-paper/edit/{id:int}")]
         public async Task<IActionResult> RenderEditView([FromRoute] int id)
         {
-            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetAsync(ep => ep.Id == id, new List<string> { "Course", "Author" });
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
             if (!await _examPaperManager.IsAuthorAsync(id, contextUser.Id))
                 return Forbid();
-            return View("Edit", new ExamPaperEditViewModel { ExamPaperId = examPaper.Id, CourseId = examPaper.CourseId, User = _mapper.Map<UserGetDto>(contextUser) });
+            return View("Edit", new ExamPaperEditViewModel 
+            {
+                ExamPaperId = examPaper.Id,
+                CourseId = examPaper.CourseId,
+                User = _mapper.Map<UserGetDto>(contextUser),
+                ExamPaperCode = examPaper.ExamPaperCode,
+                CourseName = examPaper.Course!.Name,
+                AuthorName = examPaper.Author!.FullName
+            });
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -267,12 +275,9 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             var isAuthor = await _examPaperManager.IsAuthorAsync(id, contextUser.Id);
             if (!isAuthor && !await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
-            var commentToReturn = await _examPaperManager.CommentOnExamPaperReviewAsync(id, comment.Comment, contextUser);   
+            var commentToReturn = await _examPaperManager.CommentOnExamPaperReviewAsync(id, comment.Comment, contextUser);
             // send notification to examPaperAuthor if the contextUser is not him
-            if (!isAuthor)
-            {
-                await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId, comment.Comment);
-            }
+            await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId, comment.Comment);
 
             return Created("", commentToReturn);
         }

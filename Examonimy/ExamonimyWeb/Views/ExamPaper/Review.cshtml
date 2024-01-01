@@ -10,6 +10,9 @@
     var rejectExamPaper = (int)Operation.RejectExamPaper;
 }
 @model ExamPaperSingleViewModel
+@{
+    var editHref = $"/exam-paper/edit/{Model.ExamPaper.Id}";
+}
 <script src="~/js/pages/exam-paper-review.page.js" defer type="module"></script>
 <div>
     @await Html.PartialAsync("_PageHeadingPartial", "Review đề thi")
@@ -71,6 +74,16 @@
                     </div>
                 </div>
             </form>
+        </div>
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center"">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <a href="@editHref" target="_blank" class="inline-flex items-center gap-x-1.5 rounded-lg bg-gray-200 p-3 text-sm font-semibold text-gray-800 hover:bg-gray-300 hover:text-gray-900">                 
+                    Chỉnh sửa đề thi
+                </a>
+            </div>
         </div>
         <div id="question-list-container" class="space-y-10"></div>
     </div>

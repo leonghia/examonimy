@@ -156,39 +156,47 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public async Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment)
         {
-            // Create the notification
-            var notificationToCreate = new Notification
-            {
-                NotificationTypeId = NotificationTypeIds.CommentExamPaper,
-                EntityId = examPaperId,
-                ActorId = commenterId
-            };
-            await _notificationRepository.InsertAsync(notificationToCreate);
-            await _notificationRepository.SaveAsync();
-
-            // Create the notificationReceiver
-            var notificationReceiverToCreate = new NotificationReceiver 
-            {
-                NotificationId = notificationToCreate.Id,
-                ReceiverId = examPaperAuthorId
-            };
-            await _notificationReceiverRepository.InsertAsync(notificationReceiverToCreate);
-            await _notificationReceiverRepository.SaveAsync();
-
-            // Send SignalR noti to author
             var author = await _userManager.GetByIdAsync(examPaperAuthorId) ?? throw new ArgumentException(null, nameof(examPaperAuthorId));
             var authorUsername = author.Username;
             var actor = await _userManager.GetByIdAsync(commenterId) ?? throw new ArgumentException(null, nameof(commenterId));
-            await _notificationHubContext.Clients.User(authorUsername).ReceiveNotification(new NotificationGetDto
+            var createdAt = DateTime.UtcNow;
+
+            if (commenterId != examPaperAuthorId)
             {
-                Id = notificationToCreate.Id,
-                MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
-                ActorProfilePicture = actor.ProfilePicture,
-                Href = GetHref(notificationToCreate),
-                IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
-                NotifiedAt = notificationToCreate.CreatedAt,
-                IsRead = false
-            });
+                // Create the notification for the author
+                var notificationToCreate = new Notification
+                {
+                    NotificationTypeId = NotificationTypeIds.CommentExamPaper,
+                    EntityId = examPaperId,
+                    ActorId = commenterId
+                };
+                await _notificationRepository.InsertAsync(notificationToCreate);
+                await _notificationRepository.SaveAsync();
+
+                // Create the notificationReceiver for the author
+                var notificationReceiverToCreate = new NotificationReceiver
+                {
+                    NotificationId = notificationToCreate.Id,
+                    ReceiverId = examPaperAuthorId
+                };
+                await _notificationReceiverRepository.InsertAsync(notificationReceiverToCreate);
+                await _notificationReceiverRepository.SaveAsync();
+
+                // Send SignalR noti to author               
+                await _notificationHubContext.Clients.User(authorUsername).ReceiveNotification(new NotificationGetDto
+                {
+                    Id = notificationToCreate.Id,
+                    MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
+                    ActorProfilePicture = actor.ProfilePicture,
+                    Href = GetHref(notificationToCreate),
+                    IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
+                    NotifiedAt = notificationToCreate.CreatedAt,
+                    IsRead = false
+                });
+
+                createdAt = notificationToCreate.CreatedAt;
+            }
+            
 
             // Send the comment to author and reviewers via SignalR
             var usernames = (await _examPaperManager.GetReviewersAsync(examPaperId)).Select(r => r.Username).ToList();
@@ -197,7 +205,7 @@ namespace ExamonimyWeb.Services.NotificationService
             {
                 OperationId = (int)Operation.CommentExamPaper,
                 ActorName = actor.FullName,
-                CreatedAt = notificationToCreate.CreatedAt,
+                CreatedAt = createdAt,
                 Comment = comment,
                 IsAuthor = await _examPaperManager.IsAuthorAsync(examPaperId, commenterId),
                 ActorProfilePicture = actor.ProfilePicture

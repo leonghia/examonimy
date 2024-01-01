@@ -53,7 +53,7 @@ export class NotificationDropdownComponent {
     renderNotifications(notifications = [new Notification()]) {
         return notifications.reduce((pV, cV) => {
             return pV + `
-        <a data-is-read="${cV.isRead}" href="${cV.href}" data-notification-id="${cV.id}" class="noti flex p-2 dark:hover:bg-gray-700">
+        <a data-is-read="${cV.isRead}" href="${cV.href}" data-notification-id="${cV.id}" class="noti flex p-2">
             <div class="flex p-2 hover:bg-gray-100 rounded-md">
                 <div class="flex-shrink-0">
                     <img class="rounded-full w-11 h-11" src="${cV.actorProfilePicture}" alt="user profile picture">
@@ -75,16 +75,16 @@ export class NotificationDropdownComponent {
 
     render() {
         return `
-<div id="notification-dropdown" class="absolute right-0 z-20 mt-2 w-96 top-16 origin-top-right bg-white shadow-md divide-y divide-gray-100 rounded-lg dark:bg-gray-800 dark:divide-gray-700" aria-labelledby="dropdownNotificationButton">
-    <div class="block px-4 py-2 font-semibold text-center text-sm text-gray-700 rounded-t-lg dark:bg-gray-800 dark:text-white">
+<div id="notification-dropdown" class="absolute right-0 z-20 mt-2 w-96 top-16 origin-top-right bg-white shadow-md divide-y divide-gray-100 rounded-lg" aria-labelledby="dropdownNotificationButton">
+    <div class="block px-4 py-2 font-semibold text-center text-sm text-gray-700 rounded-t-lg">
         Thông báo
     </div>
-    <div class="divide-y divide-gray-100 dark:divide-gray-700">
+    <div class="divide-y divide-gray-100">
         ${this.#notifications.length ? this.renderNotifications(this.#notifications) : this.renderEmptyState()}
     </div>
-    <a href="#" class="${this.#notifications.length ? "" : "hidden"} block py-2 text-sm font-medium text-center text-gray-900 rounded-b-lg dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
+    <a href="#" class="${this.#notifications.length ? "" : "hidden"} block py-2 text-sm font-medium text-center text-gray-900 rounded-b-lg">
         <div class="inline-flex items-center ">
-            <svg class="w-4 h-4 me-2 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+            <svg class="w-4 h-4 me-2 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
                 <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
             </svg>
             Xem tất cả

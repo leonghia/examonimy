@@ -1,6 +1,7 @@
 ﻿using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Utilities;
+using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Managers.ExamPaperManager
 {
@@ -22,5 +23,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<List<ExamPaperReviewHistoryGetDto>> GetReviewHistories(int examPaperId);
         Task<ExamPaperReviewHistoryCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter);
         Task<IEnumerable<User>> GetReviewersAsync(int examPaperId);
+        Task<ExamPaper?> GetAsync(Expression<Func<ExamPaper, bool>> predicate, List<string>? includedProps = null);
     }
 }
