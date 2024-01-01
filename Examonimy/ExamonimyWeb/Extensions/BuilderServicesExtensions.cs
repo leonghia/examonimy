@@ -115,6 +115,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();       
         services.AddScoped<IGenericRepository<ExamPaperComment>, GenericRepository<ExamPaperComment>>();
         services.AddScoped<IGenericRepository<ExamPaperReviewHistory>, GenericRepository<ExamPaperReviewHistory>>();
+        services.AddScoped<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();

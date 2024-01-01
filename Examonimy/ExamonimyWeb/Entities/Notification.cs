@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ExamonimyWeb.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamonimyWeb.Entities
@@ -7,12 +8,7 @@ namespace ExamonimyWeb.Entities
     public class Notification
     {
         [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [ForeignKey(nameof(NotificationType))]
-        public required int NotificationTypeId { get; set; }
-        public NotificationType? NotificationType { get; set; }
+        public int Id { get; set; }      
 
         [Required]
         public required int EntityId { get; set; }
@@ -29,6 +25,9 @@ namespace ExamonimyWeb.Entities
 
         public ICollection<User>? Receivers { get; set; }
         public ICollection<NotificationReceiver>? NotificationReceivers { get; set; }
+
+        [Required]
+        public required Operation Operation { get; set; }
 
     }
 }

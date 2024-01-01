@@ -18,8 +18,9 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         private readonly IGenericRepository<ExamPaperReviewer> _examPaperReviewerRepository;
         private readonly IGenericRepository<ExamPaperComment> _examPaperCommentRepository;
         private readonly IGenericRepository<ExamPaperReviewHistory> _examPaperReviewHistoryRepository;
+        private readonly IGenericRepository<ExamPaperCommit> _examPaperCommitRepository;
 
-        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IQuestionManager questionManager, IGenericRepository<ExamPaper> examPaperRepository, IGenericRepository<ExamPaperReviewer> examPaperReviewerRepository, IGenericRepository<ExamPaperComment> examPaperCommentRepository, IGenericRepository<ExamPaperReviewHistory> examPaperReviewHistoryRepository)
+        public ExamPaperManager(IGenericRepository<ExamPaperQuestion> examPaperQuestionRepository, IQuestionManager questionManager, IGenericRepository<ExamPaper> examPaperRepository, IGenericRepository<ExamPaperReviewer> examPaperReviewerRepository, IGenericRepository<ExamPaperComment> examPaperCommentRepository, IGenericRepository<ExamPaperReviewHistory> examPaperReviewHistoryRepository, IGenericRepository<ExamPaperCommit> examPaperCommitRepository)
         {
             _examPaperQuestionRepository = examPaperQuestionRepository;         
             _questionManager = questionManager;
@@ -27,6 +28,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             _examPaperReviewerRepository = examPaperReviewerRepository;
             _examPaperCommentRepository = examPaperCommentRepository;
             _examPaperReviewHistoryRepository = examPaperReviewHistoryRepository;
+            _examPaperCommitRepository = examPaperCommitRepository;
         }
 
         public async Task AddReviewersAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers)
@@ -91,6 +93,9 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             // Delete all the related examPaperReviewHistories
             _examPaperReviewHistoryRepository.DeleteRange(eprh => eprh.ExamPaperId == examPaperId);
             await _examPaperReviewHistoryRepository.SaveAsync();
+
+            // Delete all the related examPaperCommits
+            // this is already done by onCascade.delete
 
             // Delete the examPaper itself         
             await _examPaperRepository.DeleteAsync(examPaperId);
@@ -236,11 +241,32 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return reviewerIds.Contains(userId);
         }
 
-        public async Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate)
+        public async Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate, string commitMessage)
         {
             _examPaperQuestionRepository.DeleteRange(ePQ => ePQ.ExamPaperId == examPaperId);
             await _examPaperQuestionRepository.InsertRangeAsync(examPaperQuestionsToUpdate);
             await _examPaperQuestionRepository.SaveAsync();
+
+            // insert the commit
+            var examPaperCommitToCreate = new ExamPaperCommit
+            {
+                ExamPaperId = examPaperId,
+                Message = commitMessage
+            };
+            await _examPaperCommitRepository.InsertAsync(examPaperCommitToCreate);
+            await _examPaperCommitRepository.SaveAsync();
+
+            // insert the history timeline
+            var examPaper = await GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
+            await _examPaperReviewHistoryRepository.InsertAsync(new ExamPaperReviewHistory
+            {
+                ExamPaperId = examPaperId,
+                ActorId = examPaper.AuthorId,
+                OperationId = (int)Operation.EditExamPaper,
+                EntityId = examPaperId,
+                CreatedAt = examPaperCommitToCreate.CommitedAt
+            });
+            await _examPaperReviewHistoryRepository.SaveAsync();
         }
 
         public async Task<ExamPaperReviewHistoryCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter)

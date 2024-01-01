@@ -6,5 +6,8 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO
     {
         [Required]
         public required ICollection<ExamPaperQuestionUpdateDto> ExamPaperQuestions { get; set; }
+
+        [Required]
+        public required string CommitMessage { get; set; }
     }
 }

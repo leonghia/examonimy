@@ -33,9 +33,9 @@ namespace ExamonimyWeb.Services.NotificationService
             _examPaperTimelineHubContext = examPaperTimelineHubContext;
         }
 
-        public async Task DeleteThenSaveAsync(int entityId, List<int> notificationTypeIds)
+        public async Task DeleteThenSaveAsync(int entityId, List<Operation> operations)
         {
-            var notificationsToDelete = (await _notificationRepository.GetRangeAsync(n => n.EntityId == entityId && notificationTypeIds.Contains(n.NotificationTypeId))).ToList();
+            var notificationsToDelete = (await _notificationRepository.GetRangeAsync(n => n.EntityId == entityId && operations.Contains(n.Operation))).ToList();
             var notificationsIdsToDelete = notificationsToDelete.Select(n => n.Id);
             _notificationReceiverRepository.DeleteRange(nR => notificationsIdsToDelete.Contains(nR.NotificationId));
             await _notificationReceiverRepository.SaveAsync();
@@ -45,26 +45,26 @@ namespace ExamonimyWeb.Services.NotificationService
 
         public string GetHref(Notification notification)
         {
-            switch (notification.NotificationTypeId)
+            switch (notification.Operation)
             {
-                case NotificationTypeIds.AskForReviewForExamPaper:
-                case NotificationTypeIds.CommentExamPaper:
+                case Operation.AskForReviewForExamPaper:
+                case Operation.CommentExamPaper:
                     var examPaperId = notification.EntityId;
                     return $"/exam-paper/{examPaperId}/review";
                 default:
-                    throw new SwitchExpressionException(notification.NotificationTypeId);
+                    throw new SwitchExpressionException(notification.Operation);
             }
         }
 
-        public string GetIconMarkup(int notificationTypeId)
+        public string GetIconMarkup(Operation operation)
         {
-            return notificationTypeId switch
+            return operation switch
             {
-                NotificationTypeIds.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
+                Operation.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
 
-                NotificationTypeIds.CommentExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z"" clip-rule=""evenodd"" /></svg></div>",
+                Operation.CommentExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z"" clip-rule=""evenodd"" /></svg></div>",
 
-                _ => throw new SwitchExpressionException(notificationTypeId)
+                _ => throw new SwitchExpressionException(operation)
             };
         }
 
@@ -72,17 +72,17 @@ namespace ExamonimyWeb.Services.NotificationService
         {
             var actor = await _userManager.GetByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
             var actorFullName = actor.FullName;
-            switch (notification.NotificationTypeId)
+            switch (notification.Operation)
             {
-                case NotificationTypeIds.AskForReviewForExamPaper:
+                case Operation.AskForReviewForExamPaper:
                     var examPaperId = notification.EntityId;
                     var course = await _examPaperManager.GetCourseAsync(examPaperId) ?? throw new ArgumentException(null, nameof(notification.EntityId));      
                     return new AskForReviewForExamPaperNotiMessage(actorFullName, course.Name, isRead).ToVietnamese();
-                case NotificationTypeIds.CommentExamPaper:
+                case Operation.CommentExamPaper:
                     var examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
                     return new CommentExamPaperNotiMessage(actorFullName, examPaper.ExamPaperCode, isRead).ToVietnamese();
                 default:
-                    throw new SwitchExpressionException(notification.NotificationTypeId);
+                    throw new SwitchExpressionException(notification.Operation);
     
         
             }
@@ -97,13 +97,13 @@ namespace ExamonimyWeb.Services.NotificationService
         public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
         {
           
-            var notification = await _notificationRepository.GetAsync(n => n.NotificationTypeId == NotificationTypeIds.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
+            var notification = await _notificationRepository.GetAsync(n => n.Operation == Operation.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
             // if this noti does not exist, we persist it and create its receivers
             if (notification is null)
             {
                 var notificationToCreate = new Notification
                 {
-                    NotificationTypeId = NotificationTypeIds.AskForReviewForExamPaper,
+                    Operation = Operation.AskForReviewForExamPaper,
                     EntityId = examPaperId,
                     ActorId = actorId
                 };
@@ -130,7 +130,7 @@ namespace ExamonimyWeb.Services.NotificationService
                     MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
                     ActorProfilePicture = actor.ProfilePicture,
                     Href = GetHref(notificationToCreate),
-                    IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
+                    IconMarkup = GetIconMarkup(notificationToCreate.Operation),
                     NotifiedAt = notificationToCreate.CreatedAt,
                     IsRead = false
                 });
@@ -166,7 +166,7 @@ namespace ExamonimyWeb.Services.NotificationService
                 // Create the notification for the author
                 var notificationToCreate = new Notification
                 {
-                    NotificationTypeId = NotificationTypeIds.CommentExamPaper,
+                    Operation = Operation.CommentExamPaper,
                     EntityId = examPaperId,
                     ActorId = commenterId
                 };
@@ -189,7 +189,7 @@ namespace ExamonimyWeb.Services.NotificationService
                     MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
                     ActorProfilePicture = actor.ProfilePicture,
                     Href = GetHref(notificationToCreate),
-                    IconMarkup = GetIconMarkup(notificationToCreate.NotificationTypeId),
+                    IconMarkup = GetIconMarkup(notificationToCreate.Operation),
                     NotifiedAt = notificationToCreate.CreatedAt,
                     IsRead = false
                 });
@@ -211,6 +211,20 @@ namespace ExamonimyWeb.Services.NotificationService
                 ActorProfilePicture = actor.ProfilePicture
             });
 
+        }
+
+        public async Task EditExamPaperAsync(int examPaperId)
+        {
+            // Send noti to the reviewers
+            var examPaper = await _examPaperManager.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
+            var notificationToCreate = new Notification
+            {
+                EntityId = examPaperId,
+                ActorId = examPaper.AuthorId,
+                Operation = Operation.EditExamPaper
+            };
+
+            // Insert timeline into client DOM
         }
     }
 }

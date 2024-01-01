@@ -21,8 +21,7 @@ namespace ExamonimyWeb.DatabaseContexts
             //modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
-            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
-            modelBuilder.ApplyConfiguration<NotificationType>(new NotificationTypeConfiguration());
+            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());           
 
             modelBuilder.Entity<ExamPaper>()
                 .HasMany(eP => eP.Questions)
@@ -133,9 +132,7 @@ namespace ExamonimyWeb.DatabaseContexts
 
         public required DbSet<ExamPaper> ExamPapers { get; init; }
 
-        public required DbSet<Notification> Notifications { get; init; }
-        
-        public required DbSet<NotificationType> NotificationTypes { get; init; }
+        public required DbSet<Notification> Notifications { get; init; }             
         public required DbSet<ExamPaperComment> ExamPaperComments { get; init; }
         public required DbSet<ExamPaperReviewHistory> ExamPaperReviewHistory { get; init; }
         public required DbSet<ExamPaperCommit> ExamPaperCommits { get; init; }

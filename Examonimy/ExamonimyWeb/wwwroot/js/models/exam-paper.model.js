@@ -27,6 +27,7 @@ export class ExamPaperCreate {
 
 export class ExamPaperUpdate {
     examPaperQuestions = [new ExamPaperQuestionUpdate()];
+    commitMessage = "";
 }
 
 export class ExamPaperReviewerCreate {

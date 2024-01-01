@@ -6,6 +6,7 @@
         CommentExamPaper,
         ApproveExamPaper,
         RejectExamPaper,
-        CreateExamPaper
+        CreateExamPaper,
+        EditExamPaper
     }
 }

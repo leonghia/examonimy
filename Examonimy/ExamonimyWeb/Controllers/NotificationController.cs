@@ -40,7 +40,7 @@ namespace ExamonimyWeb.Controllers
                         MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
                         ActorProfilePicture = notification.Notification!.Actor!.ProfilePicture,
                         Href = _notificationService.GetHref(notification.Notification!),
-                        IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.NotificationTypeId),
+                        IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.Operation),
                         NotifiedAt = notification.Notification.CreatedAt,
                         IsRead = notification.IsRead
                     });

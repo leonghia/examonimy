@@ -205,7 +205,7 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             await _examPaperManager.DeleteAsync(id);
-            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper, NotificationTypeIds.CommentExamPaper, NotificationTypeIds.ApproveExamPaper, NotificationTypeIds.RejectExamPaper });
+            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<Operation> { Operation.AskForReviewForExamPaper, Operation.CommentExamPaper, Operation.ApproveExamPaper, Operation.RejectExamPaper });
             return NoContent();
         }
 
@@ -231,7 +231,8 @@ namespace ExamonimyWeb.Controllers
                     return e;
                 })
                 .ToList();
-            await _examPaperManager.UpdateAsync(examPaper.Id, examPaperQuestionsToUpdate);         
+            await _examPaperManager.UpdateAsync(examPaper.Id, examPaperQuestionsToUpdate, examPaperUpdateDto.CommitMessage);
+            //await _notificationService.EditExamPaperAsync();
             return NoContent();
         }
 
