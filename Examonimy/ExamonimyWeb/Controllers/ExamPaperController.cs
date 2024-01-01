@@ -13,6 +13,7 @@ using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
@@ -72,17 +73,37 @@ namespace ExamonimyWeb.Controllers
             return View("Single", examPaperSingleViewModel);
         }
 
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpGet("exam-paper/{id}/review")]
+        public async Task<IActionResult> RenderReviewView([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id) && !await _examPaperManager.IsAuthorAsync(id, contextUser.Id)) return Forbid();
+            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
+
+            var examPaperSingleViewModel = new ExamPaperSingleViewModel
+            {
+                User = _mapper.Map<UserGetDto>(contextUser),
+                ExamPaper = examPaperToReturn
+            };
+            return View("Review", examPaperSingleViewModel);
+        }
+
         [CustomAuthorize(Roles = "Administrator,Teacher")]
-        [HttpGet("api/exam-paper/{examPaperId:int}/question")]
+        [HttpGet("api/exam-paper/{examPaperId:int}/question-with-answer")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetExamPaperQuestions([FromRoute] int examPaperId)
+        public async Task<IActionResult> GetExamPaperQuestionsWithAnswers([FromRoute] int examPaperId)
         {
             var examPaper = await _examPaperManager.GetByIdAsync(examPaperId);
             if (examPaper is null)
                 return NotFound();
-            var examPaperQuestionsToReturn = await _examPaperManager.GetExamPaperQuestionsAsync(examPaperId);
+            var examPaperQuestionsToReturn = await _examPaperManager.GetExamPaperQuestionsWithAnswersAsync(examPaperId);
             return Ok(examPaperQuestionsToReturn);
         }
+
+
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper")]
@@ -146,7 +167,7 @@ namespace ExamonimyWeb.Controllers
             var examPaper = _mapper.Map<ExamPaper>(examPaperCreateDto);
             examPaper.Status = (byte)ExamPaperStatus.Pending;
             examPaper.AuthorId = contextUser.Id;
-            await _examPaperManager.AddThenSaveAsync(examPaper);
+            await _examPaperManager.CreateAsync(examPaper);
             var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
             examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return CreatedAtRoute("GetExamPaperById", new { id = examPaper.Id }, examPaperToReturn);
@@ -156,13 +177,21 @@ namespace ExamonimyWeb.Controllers
         [HttpGet("exam-paper/edit/{id:int}")]
         public async Task<IActionResult> RenderEditView([FromRoute] int id)
         {
-            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            var examPaper = await _examPaperManager.GetAsync(ep => ep.Id == id, new List<string> { "Course", "Author" });
             if (examPaper is null)
                 return NotFound();
             var contextUser = await base.GetContextUser();
             if (!await _examPaperManager.IsAuthorAsync(id, contextUser.Id))
                 return Forbid();
-            return View("Edit", new ExamPaperEditViewModel { ExamPaperId = examPaper.Id, CourseId = examPaper.CourseId, User = _mapper.Map<UserGetDto>(contextUser) });
+            return View("Edit", new ExamPaperEditViewModel 
+            {
+                ExamPaperId = examPaper.Id,
+                CourseId = examPaper.CourseId,
+                User = _mapper.Map<UserGetDto>(contextUser),
+                ExamPaperCode = examPaper.ExamPaperCode,
+                CourseName = examPaper.Course!.Name,
+                AuthorName = examPaper.Author!.FullName
+            });
         }
 
         [CustomAuthorize(Roles = "Administrator,Teacher")]
@@ -175,8 +204,8 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
-            await _examPaperManager.DeleteThenSaveAsync(id);
-            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<int> { NotificationTypeIds.AskForReviewForExamPaper });
+            await _examPaperManager.DeleteAsync(id);
+            await _notificationService.DeleteThenSaveAsync(examPaper.Id, new List<Operation> { Operation.AskForReviewForExamPaper, Operation.CommentExamPaper, Operation.ApproveExamPaper, Operation.RejectExamPaper });
             return NoContent();
         }
 
@@ -202,7 +231,8 @@ namespace ExamonimyWeb.Controllers
                     return e;
                 })
                 .ToList();
-            await _examPaperManager.UpdateThenSaveAsync(examPaper.Id, examPaperQuestionsToUpdate);         
+            await _examPaperManager.UpdateAsync(examPaper.Id, examPaperQuestionsToUpdate, examPaperUpdateDto.CommitMessage);
+            await _notificationService.EditExamPaperAsync(examPaper.Id, examPaperUpdateDto.CommitMessage);
             return NoContent();
         }
 
@@ -218,10 +248,65 @@ namespace ExamonimyWeb.Controllers
             if (examPaper.AuthorId != contextUser.Id)
                 return Forbid();
             var examPaperReviewers = examPaperReviewerCreateDto.ReviewerIds.Select(id => new ExamPaperReviewer { ExamPaperId = examPaper.Id, ReviewerId = id }).ToList();
-            await _examPaperManager.AddReviewersThenSaveAsync(examPaper.Id, examPaperReviewers);
+            await _examPaperManager.AddReviewersAsync(examPaper.Id, examPaperReviewers);
             await _notificationService.RequestReviewerForExamPaperAsync(examPaper.Id, examPaperReviewers, contextUser.Id);
 
             return Accepted();
+        }
+
+        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [HttpGet("api/exam-paper/{id:int}/review-history")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetReviewHistories([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null)
+                return NotFound();
+            var histories = await _examPaperManager.GetReviewHistories(id);
+            return Ok(histories);
+        }
+
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpPost("api/exam-paper/{id:int}/review/comment")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> CommentOnExamPaperReview([FromRoute] int id, [FromBody] ExamPaperReviewCommentCreateDto comment)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            var isAuthor = await _examPaperManager.IsAuthorAsync(id, contextUser.Id);
+            if (!isAuthor && !await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            var commentToReturn = await _examPaperManager.CommentOnExamPaperReviewAsync(id, comment.Comment, contextUser);
+            // send notification to examPaperAuthor if the contextUser is not him
+            await _notificationService.CommentOnExamPaperReviewAsync(examPaper.Id, contextUser.Id, examPaper.AuthorId, comment.Comment);
+
+            return Created("", commentToReturn);
+        }
+
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpPut("api/exam-paper/{id:int}/review/approve")]
+        public async Task<IActionResult> ApproveExamPaperReview([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            await _examPaperManager.ApproveExamPaperReviewAsync(id, contextUser.Id);
+            await _notificationService.ApproveExamPaperReviewAsync(id, contextUser.Id);
+            return NoContent();
+        }
+
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpPut("api/exam-paper/{id:int}/review/reject")]
+        public async Task<IActionResult> RejectExamPaperReview([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            await _examPaperManager.RejectExamPaperReviewAsync(id, contextUser.Id);
+            await _notificationService.RejectExamPaperReviewAsync(id, contextUser.Id);
+            return NoContent();
         }
     }
 }

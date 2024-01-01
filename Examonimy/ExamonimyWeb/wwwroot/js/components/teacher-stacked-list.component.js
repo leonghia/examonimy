@@ -1,5 +1,5 @@
 ﻿import { postData } from "../helpers/ajax.helper.js";
-import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideSpinnerForButtonWithCheckmark, showSpinnerForButton, hideSpinnerForButtonWithoutCheckmark } from "../helpers/markup.helper.js";
 import { mapByFullName } from "../helpers/user.helper.js";
 import { ExamPaperReviewerCreate } from "../models/exam-paper.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
@@ -41,12 +41,12 @@ export class TeacherStackedListComponent extends BaseComponent {
         });
 
         this.#confirmButton.addEventListener("click", async () => {
+            showSpinnerForButton(this.#confirmButton);
             const teacherIds = Array.from(this.#container.querySelectorAll(".teacher")).filter(e => e.checked).map(e => Number(e.value));
-            try {
-                showSpinnerForButton(this.#confirmButton.querySelector(".button-text"), this.#confirmButton, this.#spinnerOption);
+            try {               
                 const examPaperReviewerCreate = new ExamPaperReviewerCreate(teacherIds);
                 await postData(`exam-paper/${this.#examPaperId}/reviewer`, examPaperReviewerCreate);
-                hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"), this.#spinnerOption);
+                hideSpinnerForButtonWithCheckmark(this.#confirmButton);
                 this.#confirmButton.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                     <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
@@ -57,7 +57,7 @@ export class TeacherStackedListComponent extends BaseComponent {
                     this.#container.innerHTML = "";
                 }, 1500);
             } catch (err) {
-                hideSpinnerForButton(this.#confirmButton, this.#confirmButton.querySelector(".button-text"), this.#spinnerOption);
+                hideSpinnerForButtonWithoutCheckmark(this.#confirmButton, "Xác nhận");
                 console.error(err);
             }
         });

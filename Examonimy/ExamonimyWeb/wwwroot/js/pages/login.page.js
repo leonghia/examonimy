@@ -1,17 +1,15 @@
 ﻿// Imports
 import { BASE_API_URL } from "../config.js";
-import { hideErrorMessageWhenInput, hideSpinnerForButton, showErrorMessagesForInputsFromResponse, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideErrorMessageWhenInput, hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showErrorMessagesForInputsFromResponse, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { UserLogin } from "../models/user.model.js";
 import { StatusCodes } from "../helpers/status-code.helper.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
-import { SpinnerOption } from "../models/spinner-option.model.js";
 // DOM selectors
 const htmlElement = document.documentElement;
 const loginForm = document.querySelector("#login-form");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const loginButton = document.querySelector("#login-btn");
-const loginButtonText = document.querySelector("#login-btn-text");
 const rememberMeCheckbox = document.querySelector("#remember-me");
 // States and rules
 
@@ -19,7 +17,7 @@ const rememberMeCheckbox = document.querySelector("#remember-me");
 
 // Event listeners
 loginButton.addEventListener("click", async () => {
-    showSpinnerForButton(loginButtonText, loginButton, new SpinnerOption());
+    showSpinnerForButton(loginButton);
     const userLogin = new UserLogin(
         emailInput.value,
         passwordInput.value,
@@ -32,13 +30,12 @@ loginButton.addEventListener("click", async () => {
             "Accept": "application/json; application/problem+json"
         },
         body: JSON.stringify(userLogin)
-    });
-
-    hideSpinnerForButton(loginButton, loginButtonText);
+    });   
 
     if (response.status === StatusCodes.Status422UnprocessableEntity) {
         const responseBody = await response.json();
         showErrorMessagesForInputsFromResponse(responseBody);     
+        hideSpinnerForButtonWithoutCheckmark(loginButton, "Đăng nhập");
     } else if (response.status === StatusCodes.Status401Unauthorized) {
         const responseBody = await response.json();     
         const problemDetails = new ProblemDetails();
@@ -54,10 +51,14 @@ loginButton.addEventListener("click", async () => {
   </div>
 </div>
         `);
+        hideSpinnerForButtonWithoutCheckmark(loginButton, "Đăng nhập");
     }  
 
-    if (response.redirected)
-        document.location.href = response.url;
+    if (response.redirected) {
+        hideSpinnerForButtonWithCheckmark(loginButton);
+        setTimeout(() => document.location.href = response.url, 1000);
+    }
+        
 });
 
 loginForm.addEventListener("click", event => {

@@ -6,7 +6,8 @@ import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
 import { Question } from "../models/question.model.js";
 import { ExamPaperQuestionListComponent } from "../components/exam-paper-question-list.component.js";
 import { ExamPaperUpdate } from "../models/exam-paper.model.js";
-import { hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { CommitModalComponent } from "../components/commit-modal.component.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 
 // DOM selectors
 const examPaperContainer = document.querySelector("#exam-paper-container");
@@ -14,12 +15,8 @@ const questionListPaletteContainer = document.querySelector("#question-list-pale
 const examPaperQuestionListContainer = document.querySelector("#exam-paper-question-list-container");
 const questionBankContainer = document.querySelector("#question-bank-container");
 const addEmptyQuestionButton = document.querySelector("#add-empty-question-btn");
-const tabButtonContainer = document.querySelector("#tab-button-container");
-const previewContainer = document.querySelector("#preview-container");
-const examPaperPreviewContainer = document.querySelector("#exam-paper-preview-container");
-const editorContainer = document.querySelector("#editor-container");
-const buttonContainer = document.querySelector("#button-container");
 const updateExamPaperButton = document.querySelector("#update-exam-paper-btn");
+const commitModalContainer = document.querySelector("#commit-modal-container");
 
 
 
@@ -28,10 +25,11 @@ const examPaperId = Number(examPaperContainer.dataset.examPaperId);
 const courseId = Number(questionBankContainer.dataset.courseId);
 let questionListPaletteComponent;
 let examPaperQuestionListComponent;
+let commitModalComponent;
 
 
 // Function expressions
-const deleteQuestionHandler = (questionId = 0) => {
+const emptyQuestionHandler = (questionId = 0) => {
     questionListPaletteComponent.enableQuestion(questionId);
 }
 
@@ -46,53 +44,40 @@ addEmptyQuestionButton.addEventListener("click", () => {
     examPaperQuestionListComponent.addEmptyQuestion();
 });
 
-tabButtonContainer.addEventListener("click", event => {
-    const clickedTabButton = event.target.closest(".tab-btn");
-    if (!clickedTabButton)
-        return;
-    Array.from(tabButtonContainer.querySelectorAll(".tab-btn")).forEach(tabButton => {
-        tabButton.classList.remove(..."bg-gray-200 text-gray-800".split(" "));
-        tabButton.classList.add(..."text-gray-600 hover:text-gray-800".split(" "));
-    });
-    clickedTabButton.classList.remove(..."text-gray-600 hover:text-gray-800".split(" "));
-    clickedTabButton.classList.add(..."bg-gray-200 text-gray-800".split(" "));
-    if (clickedTabButton.dataset.tab === "preview") {
-        editorContainer.classList.add("hidden");
-        previewContainer.classList.remove("hidden");
-        examPaperPreviewContainer.innerHTML = examPaperQuestionListComponent.getMarkup();
-        buttonContainer.classList.remove("hidden");
-    } else {
-        examPaperPreviewContainer.innerHTML = "";
-        previewContainer.classList.add("hidden");
-        editorContainer.classList.remove("hidden");
-        buttonContainer.classList.add("hidden");
-    }
-});
-
 updateExamPaperButton.addEventListener("click", async () => {
-    const buttonTextElement = updateExamPaperButton.querySelector(".button-text");
     const examPaperUpdate = new ExamPaperUpdate();
     examPaperUpdate.examPaperQuestions = examPaperQuestionListComponent.getExamPaperQuestionUpdates();
-    try {
-        
-        showSpinnerForButton(buttonTextElement, updateExamPaperButton);
-        await putData("exam-paper", examPaperId, examPaperUpdate);
-        hideSpinnerForButton(updateExamPaperButton, buttonTextElement);
-        document.location.href = `/exam-paper/${examPaperId}`;
-    } catch (err) {
-        console.error(err);
-    }
+    commitModalComponent = new CommitModalComponent(commitModalContainer, { title: "Cập nhật đề thi", ctaText: "Xác nhận" });
+    commitModalComponent.connectedCallback();
+    commitModalComponent.subscribe("cancel", () => {
+        commitModalComponent.disconnectedCallback();
+        commitModalComponent = undefined;
+    });
+    commitModalComponent.subscribe("confirm", async (commitMessage = "") => {
+        const examPaperUpdate = new ExamPaperUpdate(examPaperQuestionListComponent.getExamPaperQuestionUpdates(), commitMessage);
+        showSpinnerForButton(commitModalComponent.confirmButton);
+        try {
+            await putData("exam-paper", examPaperId, examPaperUpdate);
+            hideSpinnerForButtonWithCheckmark(commitModalComponent.confirmButton);
+            setTimeout(() => {
+                document.location.href = `/exam-paper/${examPaperId}/review`;
+            }, 1000);
+        } catch (err) {
+            console.error(err);
+            hideSpinnerForButtonWithoutCheckmark(commitModalComponent.confirmButton, commitModalComponent.option.ctaText);
+        }
+    });
 });
 
 // On load
 (async () => {
     try {
-        let res = await fetchData(`exam-paper/${examPaperId}/question`);
+        let res = await fetchData(`exam-paper/${examPaperId}/question-with-answer`);
         const examPaperQuestions = [new ExamPaperQuestion()];
         Object.assign(examPaperQuestions, res.data);
         examPaperQuestionListComponent = new ExamPaperQuestionListComponent(examPaperQuestionListContainer, examPaperQuestions);
         examPaperQuestionListComponent.connectedCallback();      
-        examPaperQuestionListComponent.subscribe("delete", deleteQuestionHandler);
+        examPaperQuestionListComponent.subscribe("empty", emptyQuestionHandler);
         examPaperQuestionListComponent.subscribe("drop", dropQuestionHandler);
 
 

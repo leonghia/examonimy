@@ -5,6 +5,8 @@
         AskForReviewForExamPaper,
         CommentExamPaper,
         ApproveExamPaper,
-        RejectExamPaper
+        RejectExamPaper,
+        CreateExamPaper,
+        EditExamPaper
     }
 }

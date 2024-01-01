@@ -1,6 +1,6 @@
 ﻿// Imports
 import { NotificationDropdownComponent } from "./components/notification-dropdown.component.js";
-import { NotificationSignalRComponent } from "./components/notification-signalr.component.js";
+import { ToastSignalRComponent } from "./components/toast-signalr.component.js";
 import { fetchData } from "./helpers/ajax.helper.js";
 import { Notification } from "./models/notification.model.js";
 import { RequestParams } from "./models/request-params.model.js";
@@ -14,17 +14,17 @@ const notiDot = document.querySelector("#noti-dot");
 
 // States
 let notificationDropdownComponent;
-let notificationSignalRComponent;
-const signalRConnection = new signalR.HubConnectionBuilder()
+let toastSignalRComponent;
+const notiHubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
     .build();
 
 // Function expressions
-const startSignalR = async () => {
+const startNotiHubConnection = async () => {
     try {
-        await signalRConnection.start();
-        console.log("SignalR connected :)");
+        await notiHubConnection.start();
+        console.log("notificationHub connected :)");
     } catch (err) {
         console.error(err);
     }
@@ -56,22 +56,22 @@ viewNotificationButton.addEventListener("click", async () => {
     notiDot.classList.add("hidden");
 });
 
-// On load
-init();
-
-signalRConnection.onclose(async () => {
-    await startSignalR();
+notiHubConnection.onclose(async () => {
+    await startNotiHubConnection();
 });
 
-signalRConnection.on("ReceiveNotification", (notification = Notification()) => {
-    notificationSignalRComponent = new NotificationSignalRComponent(document.querySelector("#notification-signalr-container"), notification);
-    notificationSignalRComponent.connectedCallback();
+notiHubConnection.on("ReceiveNotification", (notification = Notification()) => {
+    toastSignalRComponent = new ToastSignalRComponent(document.body, notification);
+    toastSignalRComponent.connectedCallback();
+
     notificationDropdownComponent.insertNoti(notification);
     notiDot.classList.remove("hidden");
     setTimeout(() => {
-        notificationSignalRComponent.disconnectedCallback();
-        notificationSignalRComponent = undefined;
+        toastSignalRComponent.disconnectedCallback();
+        toastSignalRComponent = undefined;
     }, 10000);
 });
 
-startSignalR();
+// On load
+startNotiHubConnection();
+init();

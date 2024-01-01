@@ -1,6 +1,7 @@
 ﻿using ExamonimyWeb.Entities;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -85,6 +86,16 @@ namespace ExamonimyWeb.Managers.UserManager
         public string GetRole(User user)
         {
             return user.Role!.Name;
+        }
+
+        public async Task<User?> GetByIdAsync(object id)
+        {
+            return await _userRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<User>> GetRangeAsync(Expression<Func<User, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
+        {
+            return await _userRepository.GetRangeAsync(predicate, includedProps, orderBy);
         }
     }
 }

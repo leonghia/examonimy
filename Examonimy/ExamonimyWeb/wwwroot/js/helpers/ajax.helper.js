@@ -76,7 +76,13 @@ export const postData = async (route = "", dataToPost) => {
             const problemDetails = new ProblemDetails();
             Object.assign(problemDetails, await res.json());
             throw problemDetails;
-        }     
+        }
+
+        const dataReturned = await res.text();
+
+        if (dataReturned) {
+            return JSON.parse(dataReturned);
+        }
 
     } catch (err) {
         throw err;
@@ -84,15 +90,15 @@ export const postData = async (route = "", dataToPost) => {
     
 }
 
-export const putData = async (route = "", id = 0, dataToPut) => {
-    const url = `${BASE_API_URL}/${route}/${id}`;
+export const putData = async (route = "", dataToPut = null) => {
+    const url = `${BASE_API_URL}/${route}`;
     try {
         const res = await fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(dataToPut)
+            body: JSON.stringify(dataToPut ?? {})
         });
 
         if (!res.ok) {

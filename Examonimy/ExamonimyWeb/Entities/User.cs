@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace ExamonimyWeb.Entities
 {
@@ -53,7 +52,7 @@ namespace ExamonimyWeb.Entities
         [DataType(DataType.DateTime)]
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
-        public string ProfilePicture { get; set; } = "https://nghia.b-cdn.net/examonimy/images/examonimy-default-pfp.jpg";
+        public string ProfilePicture { get; set; } = "~/images/examonimy-default-pfp.jpg";
 
         public ICollection<ExamPaper>? ExamPapersCreated { get; set; }      
         

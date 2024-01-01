@@ -1,5 +1,6 @@
 using ExamonimyWeb.Extensions;
-using ExamonimyWeb.Hubs;
+using ExamonimyWeb.Hubs.ExamPaperTimelineHub;
+using ExamonimyWeb.Hubs.NotificationHub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,5 +30,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<ExamPaperTimelineHub>("/examPaperTimelineHub");
 
 app.Run();

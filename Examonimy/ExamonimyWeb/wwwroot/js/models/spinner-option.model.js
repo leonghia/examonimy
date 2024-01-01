@@ -1,9 +1,9 @@
 ﻿export class SpinnerOption {
-    width = "w-4";
-    height = "h-4";
-    fill = "fill-violet-600";
+    width;
+    height;
+    fill;
 
-    constructor(width = "w-4", height = "h-4", fill = "fill-violet-600") {
+    constructor(fill = "fill-violet-800", width = "w-4", height = "h-4") {
         this.width = width;
         this.height = height;
         this.fill = fill;

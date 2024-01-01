@@ -1,6 +1,6 @@
 ﻿using ExamonimyWeb.DTOs.NotificationDTO;
 
-namespace ExamonimyWeb.Hubs;
+namespace ExamonimyWeb.Hubs.NotificationHub;
 
 public interface INotificationClient
 {

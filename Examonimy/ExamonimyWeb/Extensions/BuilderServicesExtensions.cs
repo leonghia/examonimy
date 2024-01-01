@@ -112,8 +112,10 @@ public static class BuilderServicesExtensions
         services.AddScoped<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
         services.AddScoped<IGenericRepository<ExamPaperReviewer>, GenericRepository<ExamPaperReviewer>>();
         services.AddScoped<IGenericRepository<Notification>, GenericRepository<Notification>>();
-        services.AddScoped<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();
-
+        services.AddScoped<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();       
+        services.AddScoped<IGenericRepository<ExamPaperComment>, GenericRepository<ExamPaperComment>>();
+        services.AddScoped<IGenericRepository<ExamPaperReviewHistory>, GenericRepository<ExamPaperReviewHistory>>();
+        services.AddScoped<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();

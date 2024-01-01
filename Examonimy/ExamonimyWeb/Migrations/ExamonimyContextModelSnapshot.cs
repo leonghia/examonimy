@@ -211,6 +211,9 @@ namespace ExamonimyWeb.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ExamPaperCode")
                         .IsRequired()
                         .HasMaxLength(16)
@@ -228,22 +231,147 @@ namespace ExamonimyWeb.Migrations
                     b.ToTable("ExamPapers");
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperComment", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CommentedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CommenterId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ExamPaperId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommenterId");
+
+                    b.HasIndex("ExamPaperId");
+
+                    b.ToTable("ExamPaperComments");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperCommit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CommitedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExamPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamPaperId");
+
+                    b.ToTable("ExamPaperCommits");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExamPaperId")
                         .HasColumnType("int");
 
                     b.Property<byte>("Number")
                         .HasColumnType("tinyint");
 
-                    b.HasKey("ExamPaperId", "QuestionId");
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamPaperId");
 
                     b.HasIndex("QuestionId");
 
                     b.ToTable("ExamPaperQuestion");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestionComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CommentedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CommenterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamPaperQuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommenterId");
+
+                    b.HasIndex("ExamPaperQuestionId");
+
+                    b.ToTable("ExamPaperQuestionComment");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("ExamPaperId");
+
+                    b.ToTable("ExamPaperReviewHistory");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
@@ -255,6 +383,9 @@ namespace ExamonimyWeb.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ExamPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ReviewerId")
@@ -363,14 +494,12 @@ namespace ExamonimyWeb.Migrations
                     b.Property<string>("Href")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NotificationTypeId")
+                    b.Property<int>("Operation")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ActorId");
-
-                    b.HasIndex("NotificationTypeId");
 
                     b.ToTable("Notifications");
                 });
@@ -391,39 +520,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("ReceiverId");
 
                     b.ToTable("NotificationReceiver");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.NotificationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Entity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Operation")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Entity = 0,
-                            Operation = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Entity = 1,
-                            Operation = 1
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Question", b =>
@@ -697,6 +793,36 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperComment", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.User", "Commenter")
+                        .WithMany()
+                        .HasForeignKey("CommenterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany()
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Commenter");
+
+                    b.Navigation("ExamPaper");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperCommit", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany()
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExamPaper");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.ExamPaper", null)
@@ -710,6 +836,42 @@ namespace ExamonimyWeb.Migrations
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestionComment", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.User", "Commenter")
+                        .WithMany()
+                        .HasForeignKey("CommenterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaperQuestion", null)
+                        .WithMany("ExamPaperQuestionComments")
+                        .HasForeignKey("ExamPaperQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Commenter");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewHistory", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.User", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany()
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("ExamPaper");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperReviewer", b =>
@@ -772,15 +934,7 @@ namespace ExamonimyWeb.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExamonimyWeb.Entities.NotificationType", "NotificationType")
-                        .WithMany()
-                        .HasForeignKey("NotificationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Actor");
-
-                    b.Navigation("NotificationType");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.NotificationReceiver", b =>
@@ -875,6 +1029,11 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("ExamPaperQuestions");
 
                     b.Navigation("ExamPaperReviewers");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
+                {
+                    b.Navigation("ExamPaperQuestionComments");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>

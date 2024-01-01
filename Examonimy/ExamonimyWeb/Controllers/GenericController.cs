@@ -25,9 +25,9 @@ namespace ExamonimyWeb.Controllers
             _userManager = userManager;
         }
 
-        protected async Task<ActionResult> Get<TGetDto>(RequestParams? requestParams, Expression<Func<TEntity, bool>>? filterPredicate, List<string>? includedProperties)
+        protected async Task<ActionResult> Get<TGetDto>(RequestParams? requestParams, Expression<Func<TEntity, bool>>? predicate, List<string>? includedProperties)
         {
-            var items = await _genericRepository.GetPagedListAsync(requestParams, null, filterPredicate, includedProperties);
+            var items = await _genericRepository.GetPagedListAsync(requestParams, predicate, includedProperties);
 
             var itemsToReturn = items.Select(e => _mapper.Map<TGetDto>(e));
 

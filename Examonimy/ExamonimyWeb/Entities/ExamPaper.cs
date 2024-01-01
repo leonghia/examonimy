@@ -31,5 +31,7 @@ namespace ExamonimyWeb.Entities
 
         public ICollection<User>? Reviewers { get; set; }
         public ICollection<ExamPaperReviewer>? ExamPaperReviewers { get; set; }
+
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

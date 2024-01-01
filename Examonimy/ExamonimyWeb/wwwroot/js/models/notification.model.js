@@ -4,6 +4,6 @@
     iconMarkup = "";
     actorProfilePicture = "";
     href = "";
-    dateTimeAgo = "";
+    notifiedAt = "";
     isRead = false;
 }

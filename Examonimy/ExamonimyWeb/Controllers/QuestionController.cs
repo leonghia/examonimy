@@ -63,30 +63,29 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] RequestParamsForQuestion? questionRequestParams)
         {
-            Expression<Func<Question, bool>>? searchPredicate = null; 
+            var predicate = PredicateBuilder.New<Question>(true);
+
             if (questionRequestParams?.SearchQuery is not null)
             {
-                searchPredicate = q => q.QuestionContent.ToUpper().Contains(questionRequestParams.SearchQuery.ToUpper());
-            }
-
-            var filterPredicate = PredicateBuilder.New<Question>(true);
+                predicate = predicate.And(q => q.QuestionContent.ToUpper().Contains(questionRequestParams.SearchQuery.ToUpper()));
+            }           
 
             if (questionRequestParams?.CourseId is not null)
             {
-                filterPredicate = filterPredicate.And(q => q.CourseId == questionRequestParams.CourseId);
+                predicate = predicate.And(q => q.CourseId == questionRequestParams.CourseId);
             }
 
             if (questionRequestParams?.QuestionTypeId is not null)
             {
-                filterPredicate = filterPredicate.And(q => q.QuestionTypeId == questionRequestParams.QuestionTypeId);
+                predicate = predicate.And(q => q.QuestionTypeId == questionRequestParams.QuestionTypeId);
             }
 
             if (questionRequestParams?.QuestionLevelId is not null)
             {
-                filterPredicate = filterPredicate.And(q => q.QuestionLevelId == questionRequestParams.QuestionLevelId);
+                predicate = predicate.And(q => q.QuestionLevelId == questionRequestParams.QuestionLevelId);
             }
 
-            var questions = await _questionRepository.GetPagedListAsync(questionRequestParams, searchPredicate, filterPredicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
+            var questions = await _questionRepository.GetPagedListAsync(questionRequestParams, predicate, new List<string> { "Course", "QuestionType", "QuestionLevel", "Author" });
             var questionsToReturn = await _questionManager.GetQuestionsAsync(questions);         
             
 
@@ -135,7 +134,7 @@ namespace ExamonimyWeb.Controllers
             var user = await base.GetContextUser();
             if (!await _questionManager.IsAuthorAsync(id, user.Id))
                 return Forbid();
-            var questionToReturn = await _questionManager.GetSpecificQuestionDtoAsync(id);
+            var questionToReturn = await _questionManager.GetSpecificQuestionWithAnswerDtoAsync(id);
             return Ok(questionToReturn);
         }
 

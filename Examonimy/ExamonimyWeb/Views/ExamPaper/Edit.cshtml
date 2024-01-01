@@ -8,14 +8,13 @@
 @model ExamPaperEditViewModel
 @await Html.PartialAsync("_PageHeadingPartial", "Chỉnh sửa đề thi")
 
-<!-- Tab -->
-<div>
-    <div class="hidden sm:block">
-        <nav id="tab-button-container" class="flex space-x-4" aria-label="Tabs">
-            <!-- Current: "bg-gray-200 text-gray-800", Default: "text-gray-600 hover:text-gray-800" -->
-            <button type="button" data-tab="edit" class="tab-btn bg-gray-200 text-gray-800 rounded-md px-3 py-2 text-sm font-medium">Chỉnh sửa</button>
-            <button type="button" data-tab="preview" class="tab-btn text-gray-600 hover:text-gray-800 rounded-md px-3 py-2 text-sm font-medium">Xem trước</button>           
-        </nav>
+<!-- Info container -->
+<div class="flex items-center justify-between">
+    <p class="text-sm text-gray-700">Mã đề: @Model.ExamPaperCode - Môn học: @Model.CourseName - Tác giả: @Model.AuthorName</p>
+    <!-- Button container -->
+    <div id="button-container" class="flex items-center justify-end">
+        <button type="button" id="update-exam-paper-btn" class="w-24 rounded-md bg-violet-300 px-3.5 py-2.5 text-sm font-semibold text-violet-800 hover:bg-violet-400 hover:text-violet-900"><span class="button-text">Cập nhật</span></button>
+        <div id="commit-modal-container"></div>
     </div>
 </div>
 
@@ -48,20 +47,6 @@
             </div>
         </div>      
     </div>
-</div>
-
-<!-- Preview -->
-<div id="preview-container" class="w-1/2 mx-auto hidden">
-    @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Xem trước", "Vui lòng kiểm tra lại đề thi lần cuối trước khi bạn nhấn cập nhật."))
-    <div id="exam-paper-preview-container">
-
-    </div>    
-</div>
-
-<!-- Update button -->
-<div id="button-container" class="flex items-center gap-x-5 justify-end hidden">
-    <a href="/exam-paper" class="font-semibold text-violet-700 hover:text-violet-600">Huỷ</a>
-    <button type="button" id="update-exam-paper-btn" class="w-28 rounded-md bg-violet-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600"><span class="button-text">Cập nhật</span></button>
 </div>
 
 <script src="~/js/pages/exam-paper-edit.page.js" type="module"></script>

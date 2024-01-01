@@ -1,6 +1,6 @@
 ﻿// Imports
 import { CourseGridComponent } from "../components/course-grid.component.js";
-import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite, hideSpinnerForButton, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite, hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
@@ -117,14 +117,14 @@ const onClickStepperHandler = async (stepOrder = 0) => {
 
 
 const postExamPaper = async (examPaperCreate = new ExamPaperCreate()) => {
-    showSpinnerForButton(createExamPaperButton.querySelector(".button-text-el"), createExamPaperButton);
+    showSpinnerForButton(createExamPaperButton);
     try {
-        await postData("exam-paper", examPaperCreate);      
-        document.location.href = "/exam-paper";
+        await postData("exam-paper", examPaperCreate);   
+        hideSpinnerForButtonWithCheckmark(createExamPaperButton);
+        setTimeout(() => document.location.href = "/exam-paper", 1000);
     } catch (err) {
         console.error(err);
-    } finally {
-        hideSpinnerForButton(createExamPaperButton, createExamPaperButton.querySelector(".button-text-el"));
+        hideSpinnerForButtonWithoutCheckmark(createExamPaperButton);
     }
 }
 

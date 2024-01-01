@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ExamonimyWeb.Enums
+﻿namespace ExamonimyWeb.Enums
 {
     public enum ExamPaperStatus
     {
         Pending,
-        Approved
+        Approved,
+        Rejected
     }
 }
