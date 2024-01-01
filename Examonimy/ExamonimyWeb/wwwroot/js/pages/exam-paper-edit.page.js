@@ -6,7 +6,7 @@ import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
 import { Question } from "../models/question.model.js";
 import { ExamPaperQuestionListComponent } from "../components/exam-paper-question-list.component.js";
 import { ExamPaperUpdate } from "../models/exam-paper.model.js";
-import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { CommitModalComponent } from "../components/commit-modal.component.js";
 
 // DOM selectors
 const examPaperContainer = document.querySelector("#exam-paper-container");
@@ -15,6 +15,7 @@ const examPaperQuestionListContainer = document.querySelector("#exam-paper-quest
 const questionBankContainer = document.querySelector("#question-bank-container");
 const addEmptyQuestionButton = document.querySelector("#add-empty-question-btn");
 const updateExamPaperButton = document.querySelector("#update-exam-paper-btn");
+const commitModalContainer = document.querySelector("#commit-modal-container");
 
 
 
@@ -23,6 +24,7 @@ const examPaperId = Number(examPaperContainer.dataset.examPaperId);
 const courseId = Number(questionBankContainer.dataset.courseId);
 let questionListPaletteComponent;
 let examPaperQuestionListComponent;
+let commitModalComponent;
 
 
 // Function expressions
@@ -44,16 +46,12 @@ addEmptyQuestionButton.addEventListener("click", () => {
 updateExamPaperButton.addEventListener("click", async () => {
     const examPaperUpdate = new ExamPaperUpdate();
     examPaperUpdate.examPaperQuestions = examPaperQuestionListComponent.getExamPaperQuestionUpdates();
-    try {
-        
-        showSpinnerForButton(updateExamPaperButton);
-        await putData("exam-paper", examPaperId, examPaperUpdate);
-        hideSpinnerForButtonWithCheckmark(updateExamPaperButton);
-        document.location.href = `/exam-paper/${examPaperId}`;
-    } catch (err) {
-        console.error(err);
-        hideSpinnerForButtonWithoutCheckmark(updateExamPaperButton, "Cập nhật");
-    }
+    commitModalComponent = new CommitModalComponent(commitModalContainer, { title: "Cập nhật đề thi", ctaText: "Xác nhận" });
+    commitModalComponent.connectedCallback();
+    commitModalComponent.subscribe("cancel", () => {
+        commitModalComponent.disconnectedCallback();
+        commitModalComponent = undefined;
+    });
 });
 
 // On load

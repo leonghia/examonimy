@@ -18,8 +18,9 @@ export const showSpinnerForButton = (button = new HTMLButtonElement(), spinnerOp
 }
 
 export const hideSpinnerForButtonWithCheckmark = (button = new HTMLButtonElement(), spinnerOption = new SpinnerOption()) => {
-    button.classList.remove(..."bg-gray-300 pointer-events-none".split(" "));
+    button.classList.remove("bg-gray-300");
     button.classList.add(spinnerOption.fill);
+    button.classList.add("pointer-events-none");
     button.innerHTML = `
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-violet-800">
   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
