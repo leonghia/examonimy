@@ -284,7 +284,7 @@ namespace ExamonimyWeb.Controllers
         }
 
         [CustomAuthorize(Roles = "Teacher")]
-        [HttpPatch("api/exam-paper/{id:int}/review")]
+        [HttpPut("api/exam-paper/{id:int}/review/approve")]
         public async Task<IActionResult> ApproveExamPaperReview([FromRoute] int id)
         {
             var examPaper = await _examPaperManager.GetByIdAsync(id);
@@ -292,7 +292,7 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
             await _examPaperManager.ApproveExamPaperReviewAsync(id, contextUser.Id);
-            //await _notificationService.ApproveExamPaperReviewAsync();
+            await _notificationService.ApproveExamPaperReviewAsync(id, contextUser.Id);
             return NoContent();
         }
     }

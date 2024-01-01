@@ -6,5 +6,6 @@ namespace ExamonimyWeb.Hubs.ExamPaperTimelineHub
     {
         Task ReceiveComment(ExamPaperReviewHistoryCommentGetDto eprhc);
         Task ReceiveEdit(ExamPaperReviewHistoryEditGetDto eprhe);
+        Task ReceiveApprove(ExamPaperReviewHistoryGetDto eprh);
     }
 }

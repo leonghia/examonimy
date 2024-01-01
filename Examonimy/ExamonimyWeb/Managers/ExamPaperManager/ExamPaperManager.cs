@@ -337,9 +337,31 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         public async Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId)
         {
             var examPaperReviewer = await _examPaperReviewerRepository.GetAsync(epr => epr.ExamPaperId == examPaperId && epr.ReviewerId == reviewerId) ?? throw new ArgumentException();
-            if (examPaperReviewer.ReviewStatus == ExamPaperStatus.Approved) return;
+            if (examPaperReviewer.ReviewStatus == ExamPaperStatus.Approved)
+                return;
             examPaperReviewer.ReviewStatus = ExamPaperStatus.Approved;
             await _examPaperReviewerRepository.SaveAsync();
+
+            var examPaperReviewers = await _examPaperReviewerRepository.GetRangeAsync(epr => epr.ExamPaperId == examPaperId);
+            if (examPaperReviewers.All(epr => epr.ReviewStatus == ExamPaperStatus.Approved))
+            {
+                var examPaper = await _examPaperRepository.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
+                examPaper.Status = ExamPaperStatus.Approved;
+                _examPaperRepository.Update(examPaper);
+                await _examPaperRepository.SaveAsync();
+            }
+
+            // add to the history timeline
+            var examPaperReviewHistoryToCreate = new ExamPaperReviewHistory
+            {
+                ExamPaperId = examPaperId,
+                ActorId = reviewerId,
+                OperationId = (int)Operation.ApproveExamPaper,
+                EntityId = examPaperId,
+                CreatedAt = DateTime.UtcNow
+            };
+            await _examPaperReviewHistoryRepository.InsertAsync(examPaperReviewHistoryToCreate);
+            await _examPaperReviewHistoryRepository.SaveAsync();
         }
     }
 }

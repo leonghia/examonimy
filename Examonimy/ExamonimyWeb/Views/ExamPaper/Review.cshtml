@@ -14,16 +14,7 @@
     var editHref = $"/exam-paper/edit/{Model.ExamPaper.Id}";
 }
 <script src="~/js/pages/exam-paper-review.page.js" defer type="module"></script>
-<div>
-    @await Html.PartialAsync("_PageHeadingPartial", "Review đề thi")
-    <div class="flex justify-between">
-        <div>
-            <a href="/exam-paper" class="text-sm font-semibold text-gray-800 hover:text-gray-900 rounded-md bg-gray-200 hover:bg-gray-300 py-3 px-4">              
-                Quay về
-            </a>
-        </div>     
-    </div>
-</div>
+@await Html.PartialAsync("_PageHeadingPartial", "Review đề thi")
 <div id="exam-paper-container" data-exam-paper-id="@Model.ExamPaper.Id" class="flex gap-x-16">
 
     <div class="basis-1/2 space-y-10">

@@ -12,6 +12,7 @@ namespace ExamonimyWeb.Extensions
             {
                 ExamPaperStatus.Pending => "Chờ duyệt",
                 ExamPaperStatus.Approved => "Đã duyệt",
+                ExamPaperStatus.Rejected => "Từ chối",
                 _ => throw new ArgumentException(null, nameof(examPaperStatus))
             };
         }
@@ -23,6 +24,7 @@ namespace ExamonimyWeb.Extensions
             {
                 ExamPaperStatus.Pending => "Chờ duyệt",
                 ExamPaperStatus.Approved => "Đã duyệt",
+                ExamPaperStatus.Rejected => "Từ chối",
                 _ => throw new ArgumentException(null, nameof(examPaperStatus))
             };
         }

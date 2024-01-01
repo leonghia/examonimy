@@ -150,7 +150,33 @@ export class ExamPaperTimelineComponent {
         </div>
     </div>
 </li>
-                `;           
+                `;  
+            case Operation.ApproveExamPaper:
+                return acc + `
+<li>
+    <div class="relative pb-8">
+        ${i === this.#examPaperReviewHistories.length - 1 ? `` : `<span class="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>`}
+        <div class="relative flex items-start space-x-3">
+            <div>
+                <div class="relative px-1">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white">                                               
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-gray-500">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="min-w-0 flex-1 py-1.5">
+                <div class="text-sm text-gray-500">
+                    <span class="font-medium text-gray-900">${v.actorName}</span>
+                    đã đồng ý phê duyệt đề thi                   
+                    <span class="whitespace-nowrap">${convertToAgo(new Date(v.createdAt))}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+                `;
             default:
                 return;
         }

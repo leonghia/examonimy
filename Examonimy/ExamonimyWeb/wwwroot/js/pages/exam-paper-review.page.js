@@ -1,7 +1,7 @@
 ﻿// Imports
 import { ExamPaperTimelineComponent } from "../components/exam-paper-timeline.component.js";
 import { QuestionPreviewComponent } from "../components/question-preview.component.js";
-import { fetchData, postData } from "../helpers/ajax.helper.js";
+import { fetchData, postData, putData } from "../helpers/ajax.helper.js";
 import { hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { Operation } from "../helpers/operation.helper.js";
 import { ExamPaperQuestion } from "../models/exam-paper-question.model.js";
@@ -112,9 +112,19 @@ submitReviewButton.addEventListener("click", async () => {
             break;
         case Operation.ApproveExamPaper:
             // approve exam paper
+            try {
+                await putData(`exam-paper/${examPaperId}/review/approve`);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                hideSpinnerForButtonWithoutCheckmark(submitReviewButton, "Gửi đi");
+            }           
             break;
         case Operation.RejectExamPaper:
             // reject exam paper
+            console.log("reject");
+            break;
+        default:
             break;
     }
 });
@@ -128,6 +138,10 @@ examPaperTimelineHubConnection.on("ReceiveComment", (eprhc = ExamPaperReviewHist
 });
 
 examPaperTimelineHubConnection.on("ReceiveEdit", (eprh = new ExamPaperReviewHistory()) => {
+    receiveHistoryHandler(eprh);
+});
+
+examPaperTimelineHubConnection.on("ReceiveApprove", (eprh = new ExamPaperReviewHistory) => {
     receiveHistoryHandler(eprh);
 });
 
