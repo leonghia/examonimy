@@ -5,6 +5,7 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO;
 
 [JsonDerivedType(typeof(ExamPaperReviewHistoryAddReviewerGetDto))]
 [JsonDerivedType(typeof(ExamPaperReviewHistoryCommentGetDto))]
+[JsonDerivedType(typeof(ExamPaperReviewHistoryEditGetDto))]
 public class ExamPaperReviewHistoryGetDto
 {
     public int Id { get; set; }

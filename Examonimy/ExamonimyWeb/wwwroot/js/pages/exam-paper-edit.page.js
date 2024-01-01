@@ -7,6 +7,7 @@ import { Question } from "../models/question.model.js";
 import { ExamPaperQuestionListComponent } from "../components/exam-paper-question-list.component.js";
 import { ExamPaperUpdate } from "../models/exam-paper.model.js";
 import { CommitModalComponent } from "../components/commit-modal.component.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 
 // DOM selectors
 const examPaperContainer = document.querySelector("#exam-paper-container");
@@ -51,6 +52,20 @@ updateExamPaperButton.addEventListener("click", async () => {
     commitModalComponent.subscribe("cancel", () => {
         commitModalComponent.disconnectedCallback();
         commitModalComponent = undefined;
+    });
+    commitModalComponent.subscribe("confirm", async (commitMessage = "") => {
+        const examPaperUpdate = new ExamPaperUpdate(examPaperQuestionListComponent.getExamPaperQuestionUpdates(), commitMessage);
+        showSpinnerForButton(commitModalComponent.confirmButton);
+        try {
+            await putData("exam-paper", examPaperId, examPaperUpdate);
+            hideSpinnerForButtonWithCheckmark(commitModalComponent.confirmButton);
+            setTimeout(() => {
+                document.location.href = `/exam-paper/${examPaperId}/review`;
+            }, 1000);
+        } catch (err) {
+            console.error(err);
+            hideSpinnerForButtonWithoutCheckmark(commitModalComponent.confirmButton, commitModalComponent.option.ctaText);
+        }
     });
 });
 

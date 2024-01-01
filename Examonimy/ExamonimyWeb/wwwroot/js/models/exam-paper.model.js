@@ -28,6 +28,11 @@ export class ExamPaperCreate {
 export class ExamPaperUpdate {
     examPaperQuestions = [new ExamPaperQuestionUpdate()];
     commitMessage = "";
+
+    constructor(examPaperQuestions = [new ExamPaperQuestionUpdate()], commitMessage = "") {
+        this.examPaperQuestions = examPaperQuestions;
+        this.commitMessage = commitMessage;
+    }
 }
 
 export class ExamPaperReviewerCreate {
@@ -57,6 +62,14 @@ export class ExamPaperReviewHistoryComment extends ExamPaperReviewHistory {
 
 export class ExamPaperReviewHistoryAddReviewer extends ExamPaperReviewHistory {
     reviewerName = "";
+
+    constructor() {
+        super();
+    }
+}
+
+export class ExamPaperReviewHistoryEdit extends ExamPaperReviewHistory {
+    commitMessage = "";
 
     constructor() {
         super();

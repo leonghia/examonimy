@@ -24,5 +24,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<ExamPaperReviewHistoryCommentGetDto> CommentOnExamPaperReviewAsync(int examPaperId, string comment, User commenter);
         Task<IEnumerable<User>> GetReviewersAsync(int examPaperId);
         Task<ExamPaper?> GetAsync(Expression<Func<ExamPaper, bool>> predicate, List<string>? includedProps = null);
+        Task<User> GetAuthorAsync(int examPaperId);
     }
 }

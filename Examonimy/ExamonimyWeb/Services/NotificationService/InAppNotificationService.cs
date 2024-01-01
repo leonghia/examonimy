@@ -49,8 +49,9 @@ namespace ExamonimyWeb.Services.NotificationService
             {
                 case Operation.AskForReviewForExamPaper:
                 case Operation.CommentExamPaper:
+                case Operation.EditExamPaper:
                     var examPaperId = notification.EntityId;
-                    return $"/exam-paper/{examPaperId}/review";
+                    return $"/exam-paper/{examPaperId}/review";              
                 default:
                     throw new SwitchExpressionException(notification.Operation);
             }
@@ -63,6 +64,8 @@ namespace ExamonimyWeb.Services.NotificationService
                 Operation.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
 
                 Operation.CommentExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z"" clip-rule=""evenodd"" /></svg></div>",
+
+                Operation.EditExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"" /><path d=""M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"" /></svg></div>",
 
                 _ => throw new SwitchExpressionException(operation)
             };
@@ -81,6 +84,9 @@ namespace ExamonimyWeb.Services.NotificationService
                 case Operation.CommentExamPaper:
                     var examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
                     return new CommentExamPaperNotiMessage(actorFullName, examPaper.ExamPaperCode, isRead).ToVietnamese();
+                case Operation.EditExamPaper:
+                    examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
+                    return new EditExamPaperNotiMessage(actorFullName, isRead, examPaper.ExamPaperCode).ToVietnamese();
                 default:
                     throw new SwitchExpressionException(notification.Operation);
     
@@ -213,9 +219,9 @@ namespace ExamonimyWeb.Services.NotificationService
 
         }
 
-        public async Task EditExamPaperAsync(int examPaperId)
+        public async Task EditExamPaperAsync(int examPaperId, string commitMessage)
         {
-            // Send noti to the reviewers
+            // Insert into database
             var examPaper = await _examPaperManager.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
             var notificationToCreate = new Notification
             {
@@ -223,8 +229,43 @@ namespace ExamonimyWeb.Services.NotificationService
                 ActorId = examPaper.AuthorId,
                 Operation = Operation.EditExamPaper
             };
+            await _notificationRepository.InsertAsync(notificationToCreate);
+            await _notificationRepository.SaveAsync();
 
+            var reviewers = await _examPaperManager.GetReviewersAsync(examPaperId);
+            var receiversToCreate = reviewers.Select(r => new NotificationReceiver
+            {
+                ReceiverId = r.Id,
+                NotificationId = notificationToCreate.Id
+            }).ToList();
+            await _notificationReceiverRepository.InsertRangeAsync(receiversToCreate);
+            await _notificationReceiverRepository.SaveAsync();
+
+
+            // Send noti to the reviewers
+            var actor = await _examPaperManager.GetAuthorAsync(examPaperId);
+            var reviewerUsernames = reviewers.Select(r => r.Username).ToList();
+            await _notificationHubContext.Clients.Users(reviewerUsernames).ReceiveNotification(new NotificationGetDto
+            {
+                MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
+                IconMarkup = GetIconMarkup(notificationToCreate.Operation),
+                ActorProfilePicture = actor.ProfilePicture,
+                Href = GetHref(notificationToCreate),
+                NotifiedAt = notificationToCreate.CreatedAt,
+                IsRead = false
+            });
+
+            var usernames = new List<string>(reviewerUsernames.Count + 1);
+            usernames.AddRange(reviewerUsernames);
+            usernames.Add(actor.Username);
             // Insert timeline into client DOM
+            await _examPaperTimelineHubContext.Clients.Users(usernames).ReceiveEdit(new ExamPaperReviewHistoryEditGetDto
+            {
+                ActorName = actor.FullName,
+                CreatedAt = notificationToCreate.CreatedAt,
+                OperationId = (int)Operation.EditExamPaper,
+                CommitMessage = commitMessage
+            });
         }
     }
 }

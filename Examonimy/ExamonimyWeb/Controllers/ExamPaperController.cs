@@ -232,7 +232,7 @@ namespace ExamonimyWeb.Controllers
                 })
                 .ToList();
             await _examPaperManager.UpdateAsync(examPaper.Id, examPaperQuestionsToUpdate, examPaperUpdateDto.CommitMessage);
-            //await _notificationService.EditExamPaperAsync();
+            await _notificationService.EditExamPaperAsync(examPaper.Id, examPaperUpdateDto.CommitMessage);
             return NoContent();
         }
 

@@ -16,6 +16,7 @@ export class CommitModalComponent extends BaseComponent {
 
     #cancelButton;
     #confirmButton;
+    #commitTextarea;
 
     constructor(container = new HTMLElement(), option = { title: "", ctaText: "" }) {
         super();
@@ -27,25 +28,23 @@ export class CommitModalComponent extends BaseComponent {
         this.#container.innerHTML = this.#render();
         this.#cancelButton = this.#container.querySelector("#cancel-btn");
         this.#confirmButton = this.#container.querySelector("#confirm-btn");
+        this.#commitTextarea = this.#container.querySelector("#commit");
 
         this.#confirmButton.addEventListener("click", async () => {
-            showSpinnerForButton(this.#confirmButton);
-            try {
-                // get the textarea value
-                await this._trigger("confirm");
-                hideSpinnerForButtonWithCheckmark(this.#confirmButton);
-                setTimeout(() => {
-                    this._trigger("success");
-                }, 1500);
-            } catch (err) {
-                console.error(err);
-                hideSpinnerForButtonWithoutCheckmark(this.#confirmButton, this.#option.ctaText);
-            }
+            this._trigger("confirm", this.#commitTextarea.value);
         });
 
         this.#cancelButton.addEventListener("click", () => {
             this._trigger("cancel");
         });
+    }
+
+    get confirmButton() {
+        return this.#confirmButton;
+    }
+
+    get option() {
+        return this.#option;
     }
 
     disconnectedCallback() {

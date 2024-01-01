@@ -3,5 +3,6 @@
     CommentExamPaper: 1,
     ApproveExamPaper: 2,
     RejectExamPaper: 3,
-    CreateExamPaper: 4
+    CreateExamPaper: 4,
+    EditExamPaper: 5
 }

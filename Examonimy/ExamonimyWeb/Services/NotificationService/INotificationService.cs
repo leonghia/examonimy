@@ -13,6 +13,6 @@ namespace ExamonimyWeb.Services.NotificationService
         Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams);
         Task DeleteThenSaveAsync(int entityId, List<Operation> operations);
         Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment);
-        
+        Task EditExamPaperAsync(int examPaperId, string commitMessage);
     }
 }

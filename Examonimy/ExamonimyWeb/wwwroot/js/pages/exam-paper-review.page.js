@@ -46,6 +46,11 @@ const initTimeline = async () => {
     } 
 }
 
+const receiveHistoryHandler = (data) => {
+    examPaperTimelineComponent.insertHistory(data);
+    examPaperTimelineComponent.populate();
+}
+
 // Event listeners
 questionListContainer.addEventListener("click", event => {
     const clickedToggleAnswerButton = event.target.closest(".toggle-answer-btn");
@@ -119,8 +124,11 @@ examPaperTimelineHubConnection.onclose(async () => {
 });
 
 examPaperTimelineHubConnection.on("ReceiveComment", (eprhc = ExamPaperReviewHistoryComment()) => {
-    examPaperTimelineComponent.insertHistory(eprhc);
-    examPaperTimelineComponent.populate();
+    receiveHistoryHandler(eprhc);
+});
+
+examPaperTimelineHubConnection.on("ReceiveEdit", (eprh = new ExamPaperReviewHistory()) => {
+    receiveHistoryHandler(eprh);
 });
 
 // On load

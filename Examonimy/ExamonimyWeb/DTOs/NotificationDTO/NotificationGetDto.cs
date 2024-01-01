@@ -2,7 +2,7 @@
 {
     public class NotificationGetDto
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
         public required string MessageMarkup { get; set; }
         public required string IconMarkup { get; set; }
         public required string ActorProfilePicture { get; set; }  

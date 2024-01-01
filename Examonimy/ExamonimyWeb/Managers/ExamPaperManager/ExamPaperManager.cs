@@ -220,6 +220,16 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                             IsAuthor = await IsAuthorAsync(examPaperId, h.ActorId) 
                         });
                         break;
+                    case (int)Operation.EditExamPaper:
+                        var examPaperCommit = await _examPaperCommitRepository.GetByIdAsync(h.EntityId) ?? throw new ArgumentException(null, nameof(h.EntityId));
+                        results.Add(new ExamPaperReviewHistoryEditGetDto
+                        {
+                            ActorName = h.Actor!.FullName,
+                            CreatedAt = h.CreatedAt,
+                            OperationId = h.OperationId,
+                            CommitMessage = examPaperCommit.Message
+                        });
+                        break;
                     default:
                         throw new SwitchExpressionException(h.OperationId);
                 }
@@ -263,7 +273,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                 ExamPaperId = examPaperId,
                 ActorId = examPaper.AuthorId,
                 OperationId = (int)Operation.EditExamPaper,
-                EntityId = examPaperId,
+                EntityId = examPaperCommitToCreate.Id,
                 CreatedAt = examPaperCommitToCreate.CommitedAt
             });
             await _examPaperReviewHistoryRepository.SaveAsync();
@@ -315,6 +325,12 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         public async Task<ExamPaper?> GetAsync(Expression<Func<ExamPaper, bool>> predicate, List<string>? includedProps = null)
         {
             return await _examPaperRepository.GetAsync(predicate, includedProps);
+        }
+
+        public async Task<User> GetAuthorAsync(int examPaperId)
+        {
+            var examPaper = await _examPaperRepository.GetAsync(ep => ep.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));
+            return examPaper.Author!;
         }
     }
 }
