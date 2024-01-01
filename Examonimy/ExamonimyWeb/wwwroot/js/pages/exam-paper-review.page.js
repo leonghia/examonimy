@@ -122,7 +122,13 @@ submitReviewButton.addEventListener("click", async () => {
             break;
         case Operation.RejectExamPaper:
             // reject exam paper
-            console.log("reject");
+            try {
+                await putData(`exam-paper/${examPaperId}/review/reject`);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                hideSpinnerForButtonWithoutCheckmark(submitReviewButton, "Gửi đi");
+            }
             break;
         default:
             break;
@@ -142,6 +148,10 @@ examPaperTimelineHubConnection.on("ReceiveEdit", (eprh = new ExamPaperReviewHist
 });
 
 examPaperTimelineHubConnection.on("ReceiveApprove", (eprh = new ExamPaperReviewHistory) => {
+    receiveHistoryHandler(eprh);
+});
+
+examPaperTimelineHubConnection.on("ReceiveReject", (eprh = new ExamPaperReviewHistory) => {
     receiveHistoryHandler(eprh);
 });
 

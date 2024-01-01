@@ -13,7 +13,6 @@
 @{
     var editHref = $"/exam-paper/edit/{Model.ExamPaper.Id}";
 }
-<script src="~/js/pages/exam-paper-review.page.js" defer type="module"></script>
 @await Html.PartialAsync("_PageHeadingPartial", "Review đề thi")
 <div id="exam-paper-container" data-exam-paper-id="@Model.ExamPaper.Id" class="flex gap-x-16">
 
@@ -83,9 +82,10 @@
             <h5 class="text-sm font-bold text-gray-900 mb-6">Dòng thời gian</h5>
             <div id="exam-paper-timeline-container"></div>
         </div>
-    </div>
-      
+    </div>   
 </div>
+
+<script src="~/js/pages/exam-paper-review.page.js" defer type="module"></script>
 
 
 

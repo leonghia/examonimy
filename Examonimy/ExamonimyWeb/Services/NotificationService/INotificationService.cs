@@ -15,5 +15,6 @@ namespace ExamonimyWeb.Services.NotificationService
         Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment);
         Task EditExamPaperAsync(int examPaperId, string commitMessage);
         Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId);
+        Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId);
     }
 }

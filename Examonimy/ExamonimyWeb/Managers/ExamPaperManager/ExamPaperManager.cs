@@ -340,6 +340,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             if (examPaperReviewer.ReviewStatus == ExamPaperStatus.Approved)
                 return;
             examPaperReviewer.ReviewStatus = ExamPaperStatus.Approved;
+            _examPaperReviewerRepository.Update(examPaperReviewer);
             await _examPaperReviewerRepository.SaveAsync();
 
             var examPaperReviewers = await _examPaperReviewerRepository.GetRangeAsync(epr => epr.ExamPaperId == examPaperId);
@@ -361,6 +362,37 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
                 CreatedAt = DateTime.UtcNow
             };
             await _examPaperReviewHistoryRepository.InsertAsync(examPaperReviewHistoryToCreate);
+            await _examPaperReviewHistoryRepository.SaveAsync();
+        }
+
+        public async Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId)
+        {
+            var examPaperReviewer = await _examPaperReviewerRepository.GetAsync(epr => epr.ExamPaperId == examPaperId && epr.ReviewerId == reviewerId) ?? throw new ArgumentException();
+            if (examPaperReviewer.ReviewStatus == ExamPaperStatus.Rejected)
+                return;
+            examPaperReviewer.ReviewStatus = ExamPaperStatus.Rejected;
+            _examPaperReviewerRepository.Update(examPaperReviewer);
+            await _examPaperReviewerRepository.SaveAsync();
+
+            var examPaperReviewers = await _examPaperReviewerRepository.GetRangeAsync(epr => epr.ExamPaperId == examPaperId);
+            if (examPaperReviewers.All(epr => epr.ReviewStatus == ExamPaperStatus.Rejected))
+            {
+                var examPaper = await _examPaperRepository.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
+                examPaper.Status = ExamPaperStatus.Rejected;
+                _examPaperRepository.Update(examPaper);
+                await _examPaperRepository.SaveAsync();
+            }
+
+            // add to the history timeline
+            var examPaperReviewHistory = new ExamPaperReviewHistory
+            {
+                ExamPaperId = examPaperId,
+                ActorId = reviewerId,
+                OperationId = (int)Operation.RejectExamPaper,
+                EntityId = examPaperId,
+                CreatedAt  = DateTime.UtcNow
+            };
+            await _examPaperReviewHistoryRepository.InsertAsync(examPaperReviewHistory);
             await _examPaperReviewHistoryRepository.SaveAsync();
         }
     }
