@@ -282,5 +282,18 @@ namespace ExamonimyWeb.Controllers
 
             return Created("", commentToReturn);
         }
+
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpPatch("api/exam-paper/{id:int}/review")]
+        public async Task<IActionResult> ApproveExamPaperReview([FromRoute] int id)
+        {
+            var examPaper = await _examPaperManager.GetByIdAsync(id);
+            if (examPaper is null) return NotFound();
+            var contextUser = await base.GetContextUser();
+            if (!await _examPaperManager.IsReviewerAsync(id, contextUser.Id)) return Forbid();
+            await _examPaperManager.ApproveExamPaperReviewAsync(id, contextUser.Id);
+            //await _notificationService.ApproveExamPaperReviewAsync();
+            return NoContent();
+        }
     }
 }

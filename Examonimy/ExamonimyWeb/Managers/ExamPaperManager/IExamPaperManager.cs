@@ -25,5 +25,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<IEnumerable<User>> GetReviewersAsync(int examPaperId);
         Task<ExamPaper?> GetAsync(Expression<Func<ExamPaper, bool>> predicate, List<string>? includedProps = null);
         Task<User> GetAuthorAsync(int examPaperId);
+        Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId);
     }
 }

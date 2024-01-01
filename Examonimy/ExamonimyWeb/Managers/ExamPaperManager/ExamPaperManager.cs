@@ -5,6 +5,7 @@ using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Repositories.GenericRepository;
 using ExamonimyWeb.Utilities;
 using LinqKit;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -331,6 +332,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         {
             var examPaper = await _examPaperRepository.GetAsync(ep => ep.Id == examPaperId, new List<string> { "Author" }) ?? throw new ArgumentException(null, nameof(examPaperId));
             return examPaper.Author!;
+        }
+
+        public async Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId)
+        {
+            var examPaperReviewer = await _examPaperReviewerRepository.GetAsync(epr => epr.ExamPaperId == examPaperId && epr.ReviewerId == reviewerId) ?? throw new ArgumentException();
+            if (examPaperReviewer.ReviewStatus == ExamPaperStatus.Approved) return;
+            examPaperReviewer.ReviewStatus = ExamPaperStatus.Approved;
+            await _examPaperReviewerRepository.SaveAsync();
         }
     }
 }

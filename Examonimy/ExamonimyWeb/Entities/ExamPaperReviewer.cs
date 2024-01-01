@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ExamonimyWeb.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExamonimyWeb.Entities
 {
@@ -10,5 +11,6 @@ namespace ExamonimyWeb.Entities
         public required int ReviewerId { get; set; }
         public ExamPaper? ExamPaper { get; set; }
         public User? Reviewer { get; set; }
+        public ExamPaperStatus ReviewStatus { get; set; } = ExamPaperStatus.Pending;
     }
 }
