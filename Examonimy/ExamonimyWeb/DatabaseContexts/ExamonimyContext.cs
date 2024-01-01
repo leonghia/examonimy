@@ -109,6 +109,15 @@ namespace ExamonimyWeb.DatabaseContexts
                 .Property(h => h.CreatedAt)
                 .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
+            modelBuilder.Entity<ExamPaperCommit>()
+                .HasOne(epc => epc.ExamPaper)
+                .WithMany()
+                .HasForeignKey(epc => epc.ExamPaperId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<ExamPaperCommit>()
+                .Property(epc => epc.CommitedAt)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
@@ -129,5 +138,6 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<NotificationType> NotificationTypes { get; init; }
         public required DbSet<ExamPaperComment> ExamPaperComments { get; init; }
         public required DbSet<ExamPaperReviewHistory> ExamPaperReviewHistory { get; init; }
+        public required DbSet<ExamPaperCommit> ExamPaperCommits { get; init; }
     }
 }
