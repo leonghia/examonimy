@@ -18,5 +18,7 @@ namespace ExamonimyWeb.Entities
         public User? Teacher { get; set; }
 
         public ICollection<Student>? Students { get; set; }
+
+        public ICollection<Exam>? Exams { get; set; }
     }
 }

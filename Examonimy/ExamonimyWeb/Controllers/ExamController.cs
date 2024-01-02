@@ -5,8 +5,11 @@ namespace ExamonimyWeb.Controllers;
 [Route("")]
 public class ExamController : Controller
 {
-    public IActionResult Index()
+
+    [HttpGet("exam")]
+    public IActionResult RenderIndexView()
     {
+        
         return View();
     }
 }

@@ -118,6 +118,14 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.Entity<ExamPaperCommit>()
                 .Property(epc => epc.CommitedAt)
                 .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.From)
+                .HasConversion(f => f, f => DateTime.SpecifyKind(f, DateTimeKind.Utc));
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.To)
+                .HasConversion(t => t, t => DateTime.SpecifyKind(t, DateTimeKind.Utc));
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
@@ -141,5 +149,7 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<MainClass> MainClasses { get; init; }
 
         public required DbSet<Student> Students { get; init; }
+
+        public required DbSet<Exam> Exams { get; init; }
     }
 }
