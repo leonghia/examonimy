@@ -116,6 +116,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IGenericRepository<ExamPaperComment>, GenericRepository<ExamPaperComment>>();
         services.AddScoped<IGenericRepository<ExamPaperReviewHistory>, GenericRepository<ExamPaperReviewHistory>>();
         services.AddScoped<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
+        services.AddScoped<IGenericRepository<Exam>, GenericRepository<Exam>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();
