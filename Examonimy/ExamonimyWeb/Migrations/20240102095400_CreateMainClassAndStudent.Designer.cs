@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20240102095400_CreateMainClassAndStudent")]
+    partial class CreateMainClassAndStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -435,38 +438,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("MainClasses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "T2210M",
-                            TeacherId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "T2204M",
-                            TeacherId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "T2207A",
-                            TeacherId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "T2305E",
-                            TeacherId = 1
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "T2210A",
-                            TeacherId = 1
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.MultipleChoiceQuestionWithMultipleCorrectAnswers", b =>

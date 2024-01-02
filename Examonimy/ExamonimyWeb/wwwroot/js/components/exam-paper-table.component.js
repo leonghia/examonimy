@@ -116,10 +116,10 @@ export class ExamPaperTableComponent {
         <div class="flex -space-x-4 rtl:space-x-reverse">  
             <div class="reviewer-container flex -space-x-4 rtl:space-x-reverse">
                 ${examPaper.reviewers.reduce((acc, v) => {
-                    return acc + `<img title="${v.fullName}" data-user-id="${v.id}" class="reviewer-img w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="${v.profilePicture}" alt="profile picture of user ${v.userName}">`;
+                    return acc + `<img title="${v.fullName}" data-user-id="${v.id}" class="reviewer-img w-10 h-10 border-2 border-white rounded-full shadow-sm" src="${v.profilePicture}" alt="profile picture of user ${v.userName}">`;
                 }, "")}
             </div>           
-            <button type="button" class="add-reviewer-btn flex items-center justify-center w-10 h-10 text-xs font-medium text-gray-800 bg-gray-200 border-2 border-white rounded-full hover:text-gray-900 hover:bg-gray-300 dark:border-gray-800" title="Thêm kiểm duyệt viên">
+            <button type="button" class="add-reviewer-btn flex items-center justify-center w-10 h-10 text-xs font-medium text-gray-800 bg-gray-200 border-2 border-white rounded-full hover:text-gray-900 hover:bg-gray-300" title="Thêm kiểm duyệt viên">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-slot="icon" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                 </svg>
