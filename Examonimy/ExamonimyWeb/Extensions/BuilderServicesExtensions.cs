@@ -1,10 +1,11 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Managers.ExamManager;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Profiles;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Services.TokenService;
@@ -124,6 +125,7 @@ public static class BuilderServicesExtensions
         services.AddScoped<IQuestionManager, QuestionManager>();
         services.AddScoped<IExamPaperManager, ExamPaperManager>();
         services.AddScoped<INotificationService, InAppNotificationService>();
+        services.AddScoped<IExamManager, ExamManager>();
 
         services.AddSingleton<IUserIdProvider, UsernameBasedUserIdProvider>();
 

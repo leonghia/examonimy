@@ -1,0 +1,31 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Tạo kỳ thi";
+    Layout = "_TeacherLayout";
+}
+@await Html.PartialAsync("_PageHeadingPartial", "Tạo kỳ thi")
+<div class="flex h-96">
+    <div class="basis-1/2">      
+        <div>
+            <h2 class="text-base font-semibold text-gray-900">Chọn môn học</h2>
+            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+        </div>
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-full overflow-y-auto">
+            <legend class="sr-only">Danh sách môn học</legend>
+            <div class="divide-y divide-gray-200">
+                <div class="relative flex items-start pb-4 pt-3.5">
+                    <div class="min-w-0 flex-1 text-sm leading-6">
+                        <label for="account-checking" class="font-medium text-gray-900">Checking</label>
+                        <p id="account-checking-description" class="text-gray-500">CIBC ••••6610</p>
+                    </div>
+                    <div class="ml-3 flex h-6 items-center">
+                        <input id="account-checking" name="course" type="radio" class="h-4 w-4 border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
+                    </div>
+                </div>               
+            </div>
+        </fieldset>
+    </div>
+</div>
+

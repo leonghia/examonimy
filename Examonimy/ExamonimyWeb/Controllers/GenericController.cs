@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

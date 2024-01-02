@@ -27,5 +27,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<User> GetAuthorAsync(int examPaperId);
         Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId);
         Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId);
+        Task<IDictionary<int, int>> CountGroupByCourseIdAsync();
     }
 }

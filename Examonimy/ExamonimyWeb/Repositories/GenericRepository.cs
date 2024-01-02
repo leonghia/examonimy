@@ -1,15 +1,16 @@
 ﻿using ExamonimyWeb.DatabaseContexts;
+using ExamonimyWeb.Entities;
 using ExamonimyWeb.Extensions;
 using ExamonimyWeb.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace ExamonimyWeb.Repositories.GenericRepository
+namespace ExamonimyWeb.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         private readonly ExamonimyContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly DbSet<TEntity> _dbSet;
 
         public GenericRepository(ExamonimyContext context)
         {
@@ -23,24 +24,24 @@ namespace ExamonimyWeb.Repositories.GenericRepository
                 return await _dbSet.CountAsync(filterPredicate);
             else
                 return await _dbSet.CountAsync();
-        }       
+        }
 
         public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filterPredicate, List<string>? includedProperties = null)
         {
             IQueryable<TEntity> query = _dbSet;
-            query = query.Where<TEntity>(filterPredicate);          
+            query = query.Where(filterPredicate);
 
             if (includedProperties is not null)
             {
-                foreach (var includedProperty in includedProperties) 
+                foreach (var includedProperty in includedProperties)
                 {
-                    query = query.Include<TEntity>(includedProperty);
+                    query = query.Include(includedProperty);
                 }
             }
 
-            return await query.FirstOrDefaultAsync<TEntity>();
+            return await query.FirstOrDefaultAsync();
 
-        }       
+        }
 
         public async Task InsertAsync(TEntity entity)
         {
@@ -61,7 +62,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             requestParams ??= new RequestParams();
 
-            IQueryable<TEntity> query = _dbSet;           
+            IQueryable<TEntity> query = _dbSet;
 
             if (predicate is not null)
             {
@@ -113,7 +114,7 @@ namespace ExamonimyWeb.Repositories.GenericRepository
 
         public async Task<IEnumerable<TEntity>> GetRangeAsync(Expression<Func<TEntity, bool>>? predicate = null, List<string>? includedProps = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
-            IQueryable<TEntity> query = _dbSet;           
+            IQueryable<TEntity> query = _dbSet;
 
             if (predicate is not null)
             {
@@ -140,6 +141,15 @@ namespace ExamonimyWeb.Repositories.GenericRepository
         {
             var entityToDelete = await _dbSet.FindAsync(id) ?? throw new ArgumentException(null, nameof(id));
             _dbSet.Remove(entityToDelete);
+        }
+
+        public async Task<IDictionary<int, int>> CountGroupByPropIdAsync(Expression<Func<TEntity, int>> keySelector)
+        {
+            IQueryable<TEntity> query = _dbSet;
+            return await query
+                .GroupBy(keySelector)
+                .Select(e => new { Key = e.Key, Count = e.Count() })
+                .ToDictionaryAsync(e => e.Key, e => e.Count);          
         }
     }
 }

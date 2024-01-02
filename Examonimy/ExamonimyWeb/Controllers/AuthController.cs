@@ -2,7 +2,7 @@
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.TokenService;
 using ExamonimyWeb.Utilities;

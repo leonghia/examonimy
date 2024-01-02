@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
+using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.ExamManager;
+using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +19,16 @@ public class ExamController : GenericController<Exam>
 {
     private readonly IMapper _mapper;
     private readonly IExamManager _examManager;
+    private readonly IExamPaperManager _examPaperManager;
+    private readonly IGenericRepository<Course> _courseRepository;
     private const int _timeAllowedInMinutes = 40;
 
-    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager) : base(mapper, genericRepository, userManager)
+    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository) : base(mapper, genericRepository, userManager)
     {
         _mapper = mapper;
         _examManager = examManager;
+        _examPaperManager = examPaperManager;
+        _courseRepository = courseRepository;
     }
 
     [CustomAuthorize(Roles = "Teacher")]
@@ -51,5 +57,27 @@ public class ExamController : GenericController<Exam>
         });
 
         return Ok(examsToReturn);
+    }
+
+    [CustomAuthorize(Roles = "Teacher")]
+    [HttpGet("exam/create")]
+    public async Task<IActionResult> RenderCreateView()
+    {
+        var contextUser = await base.GetContextUser();
+        var dict = await _examPaperManager.CountGroupByCourseIdAsync();
+        var courses = await _courseRepository.GetRangeAsync(null, null, q => q.OrderBy(c => c.Name));
+        var coursesToReturn = courses.Select(c => new CourseGetDto
+        {
+            Id = c.Id,
+            NumbersOfExamPapers = dict.TryGetValue(c.Id, out var numbers) ? numbers : 0,
+            Name = c.Name,
+            CourseCode = c.CourseCode
+        }).ToList();
+        var viewModel = new ExamCreateViewModel
+        {
+            User = _mapper.Map<UserGetDto>(contextUser),
+            Courses = coursesToReturn
+        };
+        return View("Create", viewModel);
     }
 }

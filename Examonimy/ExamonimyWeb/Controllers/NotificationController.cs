@@ -3,7 +3,7 @@ using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;

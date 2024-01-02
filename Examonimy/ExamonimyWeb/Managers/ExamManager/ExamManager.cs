@@ -1,5 +1,5 @@
 ﻿using ExamonimyWeb.Entities;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using System.Linq.Expressions;
 

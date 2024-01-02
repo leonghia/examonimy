@@ -6,7 +6,7 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
 using ExamonimyWeb.Helpers;
 using ExamonimyWeb.Models;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;

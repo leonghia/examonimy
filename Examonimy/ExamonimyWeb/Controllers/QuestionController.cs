@@ -7,7 +7,7 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;

@@ -7,3 +7,10 @@
     to = "";
     timeAllowedInMinutes = 0;
 }
+
+export class ExamCreate {
+    mainClassId;
+    examPaperId;
+    from;
+    to;
+}

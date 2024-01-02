@@ -6,7 +6,7 @@ using ExamonimyWeb.Hubs.ExamPaperTimelineHub;
 using ExamonimyWeb.Hubs.NotificationHub;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using ExamonimyWeb.Utilities.NotificationMessages;
 using Microsoft.AspNetCore.SignalR;
