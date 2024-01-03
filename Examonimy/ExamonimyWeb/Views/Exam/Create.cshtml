@@ -51,6 +51,47 @@
         </fieldset>
     </div>
 </div>
-
+<div class="flex h-96 gap-x-10">
+    <div class="basis-1/2">
+        <div>
+            <h2 class="text-base font-semibold text-gray-900">Chọn môn học</h2>
+            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+        </div>
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-full overflow-y-auto">
+            <div id="course-list-container" class="divide-y divide-gray-200">
+                @foreach (var c in Model.Courses)
+                {
+                    <div class="relative flex items-center pb-4 pt-3.5">
+                        <div class="min-w-0 flex-1 text-sm leading-6">
+                            <label for="course-@c.Id" class="font-medium text-gray-900">@c.Name</label>
+                            <p class="text-gray-500">@c.NumbersOfExamPapers đề thi</p>
+                        </div>
+                        <div class="ml-3 flex h-6 items-center">
+                            <input id="course-@c.Id" name="course" value="@c.Id" type="radio" class="h-4 w-4 border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
+                        </div>
+                    </div>
+                }
+            </div>
+        </fieldset>
+    </div>
+    <div class="basis-1/2">
+        <div>
+            <h2 class="text-base font-semibold text-gray-900">Chọn đề thi</h2>
+            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn đề thi.</p>
+        </div>
+        <fieldset class="mt-4 bg-white p-6 rounded-lg h-full overflow-y-auto flex flex-col">
+            <p class="mb-4 text-sm font-semibold text-gray-500">Đề thi môn: <span id="selected-course">Chưa chọn</span></p>
+            <div id="exam-paper-list-container" class="divide-y divide-gray-200 hidden">
+            </div>
+            <div id="empty-exam-paper" class="py-12 grow flex items-center justify-center">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-12 w-12 text-gray-400 mx-auto">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-semibold text-gray-900">Không có đề thi nào</h3>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
 <script src="~/js/pages/exam-create.page.js" type="module" defer></script>
-
