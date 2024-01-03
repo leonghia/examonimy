@@ -10,6 +10,7 @@ const courseListContainer = document.querySelector("#course-list-container");
 const selectedCourseElement = document.querySelector("#selected-course");
 const examPaperListContainer = document.querySelector("#exam-paper-list-container");
 const emptyExamPaper = document.querySelector("#empty-exam-paper");
+const classListContainer = document.querySelector("#class-list-container");
 
 
 // States
@@ -64,6 +65,14 @@ examPaperListContainer.addEventListener("click", event => {
     if (clickedRadio) {
         examCreate.examPaperId = Number(clickedRadio.value);
         return;
+    }
+});
+
+classListContainer.addEventListener("click", event => {
+    const clickedRadio = event.target.closest("input");
+    if (clickedRadio) {
+        examCreate.mainClassId = Number(clickedRadio.value);
+        console.log(examCreate.mainClassId);
     }
 });
 

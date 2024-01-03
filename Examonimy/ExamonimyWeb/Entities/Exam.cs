@@ -8,10 +8,8 @@ namespace ExamonimyWeb.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(MainClass))]
-        public required int MainClassId { get; set; }
-        public MainClass? MainClass { get; set; }
+        public ICollection<MainClass>? MainClasses { get; set; }
+        public ICollection<ExamMainClass>? ExamMainClasses { get; set; }
 
         [Required]
         [ForeignKey(nameof(ExamPaper))]

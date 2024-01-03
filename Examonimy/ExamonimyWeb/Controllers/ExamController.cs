@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
+using ExamonimyWeb.DTOs.ClassDTO;
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
 using ExamonimyWeb.DTOs.UserDTO;
@@ -21,14 +22,16 @@ public class ExamController : GenericController<Exam>
     private readonly IExamManager _examManager;
     private readonly IExamPaperManager _examPaperManager;
     private readonly IGenericRepository<Course> _courseRepository;
+    private readonly IGenericRepository<MainClass> _mainClassRepository;
     private const int _timeAllowedInMinutes = 40;
 
-    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository) : base(mapper, genericRepository, userManager)
+    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository) : base(mapper, genericRepository, userManager)
     {
         _mapper = mapper;
         _examManager = examManager;
         _examPaperManager = examPaperManager;
         _courseRepository = courseRepository;
+        _mainClassRepository = mainClassRepository;
     }
 
     [CustomAuthorize(Roles = "Teacher")]
@@ -43,20 +46,21 @@ public class ExamController : GenericController<Exam>
     [HttpGet("api/exam")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
-        var contextUser = await base.GetContextUser();
-        var exams = await _examManager.GetPagedListAsync(requestParams, e => e.MainClass!.TeacherId == contextUser.Id);
-        var examsToReturn = exams.Select(e => new ExamGetDto
-        {
-            Id = e.Id,
-            MainClassName = e.MainClass!.Name,
-            ExamPaperCode = e.ExamPaper!.ExamPaperCode,
-            CourseName = e.ExamPaper.Course!.Name,
-            From = e.From,
-            To = e.To,
-            TimeAllowedInMinutes = _timeAllowedInMinutes
-        });
+        //var contextUser = await base.GetContextUser();
+        //var exams = await _examManager.GetPagedListAsync(requestParams, e => e.MainClass!.TeacherId == contextUser.Id);
+        //var examsToReturn = exams.Select(e => new ExamGetDto
+        //{
+        //    Id = e.Id,
+        //    MainClassName = e.MainClass!.Name,
+        //    ExamPaperCode = e.ExamPaper!.ExamPaperCode,
+        //    CourseName = e.ExamPaper.Course!.Name,
+        //    From = e.From,
+        //    To = e.To,
+        //    TimeAllowedInMinutes = _timeAllowedInMinutes
+        //});
 
-        return Ok(examsToReturn);
+        //return Ok(examsToReturn);
+        throw new NotImplementedException();
     }
 
     [CustomAuthorize(Roles = "Teacher")]
@@ -73,10 +77,17 @@ public class ExamController : GenericController<Exam>
             Name = c.Name,
             CourseCode = c.CourseCode
         }).ToList();
+        var classes = await _mainClassRepository.GetRangeAsync(c => c.TeacherId == contextUser.Id);
+        var classesToReturn = classes.Select(c => new MainClassGetDto
+        {
+            Id = c.Id,
+            Name = c.Name
+        }).ToList();
         var viewModel = new ExamCreateViewModel
         {
             User = _mapper.Map<UserGetDto>(contextUser),
-            Courses = coursesToReturn
+            Courses = coursesToReturn,
+            MainClasses = classesToReturn
         };
         return View("Create", viewModel);
     }

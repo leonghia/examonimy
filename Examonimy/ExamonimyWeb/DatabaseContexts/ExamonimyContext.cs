@@ -43,6 +43,11 @@ namespace ExamonimyWeb.DatabaseContexts
                 r => r.HasOne(ePR => ePR.ExamPaper).WithMany(eP => eP.ExamPaperReviewers).HasForeignKey(ePR => ePR.ExamPaperId)
                 );
 
+            modelBuilder.Entity<Exam>()
+                .HasMany(e => e.MainClasses)
+                .WithMany(c => c.Exams)
+                .UsingEntity<ExamMainClass>("ExamMainClasses");
+
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Actor)
                 .WithMany(a => a.NotificationsTriggered)

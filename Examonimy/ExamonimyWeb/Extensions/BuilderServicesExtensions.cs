@@ -99,25 +99,26 @@ public static class BuilderServicesExtensions
                 
             });              
 
-        services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
-        services.AddScoped<IGenericRepository<Course>, GenericRepository<Course>>();
-        services.AddScoped<IGenericRepository<Question>, GenericRepository<Question>>();
-        services.AddScoped<IGenericRepository<QuestionType>, GenericRepository<QuestionType>>();
-        services.AddScoped<IGenericRepository<QuestionLevel>, GenericRepository<QuestionLevel>>();
-        services.AddScoped<IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>, GenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>>();
-        services.AddScoped<IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>, GenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>>();
-        services.AddScoped<IGenericRepository<TrueFalseQuestion>, GenericRepository<TrueFalseQuestion>>();
-        services.AddScoped<IGenericRepository<ShortAnswerQuestion>, GenericRepository<ShortAnswerQuestion>>();
-        services.AddScoped<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
-        services.AddScoped<IGenericRepository<ExamPaper>, GenericRepository<ExamPaper>>();
-        services.AddScoped<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
-        services.AddScoped<IGenericRepository<ExamPaperReviewer>, GenericRepository<ExamPaperReviewer>>();
-        services.AddScoped<IGenericRepository<Notification>, GenericRepository<Notification>>();
-        services.AddScoped<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();       
-        services.AddScoped<IGenericRepository<ExamPaperComment>, GenericRepository<ExamPaperComment>>();
-        services.AddScoped<IGenericRepository<ExamPaperReviewHistory>, GenericRepository<ExamPaperReviewHistory>>();
-        services.AddScoped<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
-        services.AddScoped<IGenericRepository<Exam>, GenericRepository<Exam>>();
+        services.AddTransient<IGenericRepository<User>, GenericRepository<User>>();
+        services.AddTransient<IGenericRepository<Course>, GenericRepository<Course>>();
+        services.AddTransient<IGenericRepository<Question>, GenericRepository<Question>>();
+        services.AddTransient<IGenericRepository<QuestionType>, GenericRepository<QuestionType>>();
+        services.AddTransient<IGenericRepository<QuestionLevel>, GenericRepository<QuestionLevel>>();
+        services.AddTransient<IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>, GenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>>();
+        services.AddTransient<IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>, GenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>>();
+        services.AddTransient<IGenericRepository<TrueFalseQuestion>, GenericRepository<TrueFalseQuestion>>();
+        services.AddTransient<IGenericRepository<ShortAnswerQuestion>, GenericRepository<ShortAnswerQuestion>>();
+        services.AddTransient<IGenericRepository<FillInBlankQuestion>, GenericRepository<FillInBlankQuestion>>();
+        services.AddTransient<IGenericRepository<ExamPaper>, GenericRepository<ExamPaper>>();
+        services.AddTransient<IGenericRepository<ExamPaperQuestion>, GenericRepository<ExamPaperQuestion>>();
+        services.AddTransient<IGenericRepository<ExamPaperReviewer>, GenericRepository<ExamPaperReviewer>>();
+        services.AddTransient<IGenericRepository<Notification>, GenericRepository<Notification>>();
+        services.AddTransient<IGenericRepository<NotificationReceiver>, GenericRepository<NotificationReceiver>>();       
+        services.AddTransient<IGenericRepository<ExamPaperComment>, GenericRepository<ExamPaperComment>>();
+        services.AddTransient<IGenericRepository<ExamPaperReviewHistory>, GenericRepository<ExamPaperReviewHistory>>();
+        services.AddTransient<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
+        services.AddTransient<IGenericRepository<Exam>, GenericRepository<Exam>>();
+        services.AddTransient<IGenericRepository<MainClass>, GenericRepository<MainClass>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();

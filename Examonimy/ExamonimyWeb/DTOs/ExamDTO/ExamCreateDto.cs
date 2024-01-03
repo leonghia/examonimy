@@ -5,7 +5,7 @@ namespace ExamonimyWeb.DTOs.ExamDTO
     public class ExamCreateDto
     {
         [Required]
-        public required int MainClassId { get; set; }
+        public required ICollection<int> MainClassIds { get; set; }
 
         [Required]
         public required int ExamPaperId { get; set; }

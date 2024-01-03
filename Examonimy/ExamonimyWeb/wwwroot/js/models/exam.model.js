@@ -1,6 +1,6 @@
 ﻿export class Exam {
     id = 0;
-    mainClassName = "";
+    mainClasses = [""];
     examPaperCode = "";
     courseName = "";
     from = "";
@@ -9,8 +9,8 @@
 }
 
 export class ExamCreate {
-    mainClassId;
-    examPaperId;
-    from;
-    to;
+    mainClassIds = [0];
+    examPaperId = 0;
+    from = new Date();
+    to = new Date();
 }

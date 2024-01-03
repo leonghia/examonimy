@@ -20,5 +20,6 @@ namespace ExamonimyWeb.Entities
         public ICollection<Student>? Students { get; set; }
 
         public ICollection<Exam>? Exams { get; set; }
+        public ICollection<ExamMainClass>? ExamMainClasses { get; set; }
     }
 }

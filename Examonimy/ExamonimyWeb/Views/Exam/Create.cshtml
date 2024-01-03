@@ -7,13 +7,18 @@
 }
 @model ExamCreateViewModel
 @await Html.PartialAsync("_PageHeadingPartial", "Tạo kỳ thi")
-<div class="flex h-96 gap-x-10">
+<div class="flex gap-x-10">
     <div class="basis-1/2">      
-        <div>
-            <h2 class="text-base font-semibold text-gray-900">Chọn môn học</h2>
-            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">01</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn môn học</h2>
+                <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+            </div>
         </div>
-        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-full overflow-y-auto">
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-96 overflow-y-auto">
             <div id="course-list-container" class="divide-y divide-gray-200">
                 @foreach(var c in Model.Courses)
                 {
@@ -31,11 +36,16 @@
         </fieldset>
     </div>
     <div class="basis-1/2">
-        <div>
-            <h2 class="text-base font-semibold text-gray-900">Chọn đề thi</h2>
-            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn đề thi.</p>
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">02</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn đề thi</h2>
+                <p class="mt-1 text-sm text-gray-500">Vui lòng chọn đề thi. Các đề thi thuộc môn học đã chọn sẽ xuất hiện ở đây.</p>
+            </div>           
         </div>
-        <fieldset class="mt-4 bg-white p-6 rounded-lg h-full overflow-y-auto flex flex-col">
+        <fieldset class="mt-4 bg-white p-6 rounded-lg h-96 overflow-y-auto flex flex-col">
             <p class="mb-4 text-sm font-semibold text-gray-500">Đề thi môn: <span id="selected-course">Chưa chọn</span></p>
             <div id="exam-paper-list-container" class="divide-y divide-gray-200 hidden">
                 
@@ -51,23 +61,27 @@
         </fieldset>
     </div>
 </div>
-<div class="flex h-96 gap-x-10">
+<div class="flex gap-x-10">
     <div class="basis-1/2">
-        <div>
-            <h2 class="text-base font-semibold text-gray-900">Chọn môn học</h2>
-            <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">03</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn lớp học</h2>
+                <p class="mt-1 text-sm text-gray-500">Danh sách các lớp học bạn hiện đang giảng dạy. Bạn có thể chọn nhiều lớp học cùng lúc.</p>
+            </div>           
         </div>
-        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-full overflow-y-auto">
-            <div id="course-list-container" class="divide-y divide-gray-200">
-                @foreach (var c in Model.Courses)
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-96 overflow-y-auto">
+            <div id="class-list-container" class="divide-y divide-gray-200">
+                @foreach (var c in Model.MainClasses)
                 {
                     <div class="relative flex items-center pb-4 pt-3.5">
                         <div class="min-w-0 flex-1 text-sm leading-6">
-                            <label for="course-@c.Id" class="font-medium text-gray-900">@c.Name</label>
-                            <p class="text-gray-500">@c.NumbersOfExamPapers đề thi</p>
+                            <label for="class-@c.Id" class="font-medium text-gray-900">@c.Name</label>                          
                         </div>
                         <div class="ml-3 flex h-6 items-center">
-                            <input id="course-@c.Id" name="course" value="@c.Id" type="radio" class="h-4 w-4 border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
+                            <input id="class-@c.Id" name="class" value="@c.Id" type="checkbox" class="h-4 w-4 border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
                         </div>
                     </div>
                 }
@@ -79,7 +93,7 @@
             <h2 class="text-base font-semibold text-gray-900">Chọn đề thi</h2>
             <p class="mt-1 text-sm text-gray-500">Vui lòng chọn đề thi.</p>
         </div>
-        <fieldset class="mt-4 bg-white p-6 rounded-lg h-full overflow-y-auto flex flex-col">
+        <fieldset class="mt-4 bg-white p-6 rounded-lg h-96 overflow-y-auto flex flex-col">
             <p class="mb-4 text-sm font-semibold text-gray-500">Đề thi môn: <span id="selected-course">Chưa chọn</span></p>
             <div id="exam-paper-list-container" class="divide-y divide-gray-200 hidden">
             </div>
