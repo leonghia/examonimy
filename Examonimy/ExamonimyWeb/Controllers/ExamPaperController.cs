@@ -64,7 +64,7 @@ namespace ExamonimyWeb.Controllers
             var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);                       
+            var examPaperToReturn = _mapper.Map<ExamPaperFullGetDto>(examPaper);                       
             var examPaperSingleViewModel = new ExamPaperSingleViewModel
             {
                 User = userToReturn,
@@ -88,14 +88,14 @@ namespace ExamonimyWeb.Controllers
         }
 
 
-
-        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [RequestHeaderMatchesMediaType("Accept", "application/vnd.examonimy.exampaper.full+json")]
+        [CustomAuthorize(Roles = "Teacher")]
         [HttpGet("api/exam-paper")]
-        [Produces("application/json")]
-        public async Task<IActionResult> Get([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
+        [Produces("application/vnd.examonimy.exampaper.full+json")]
+        public async Task<IActionResult> GetFullRange([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
         {
             var examPapers = await _examPaperManager.GetPagedListAsync(requestParamsForExamPaper);
-            var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperGetDto>(eP)).ToArray();
+            var examPapersToReturn = examPapers.Select(eP => _mapper.Map<ExamPaperFullGetDto>(eP)).ToArray();
 
             for (var i = 0; i < examPapersToReturn.Length; i++)
             {
@@ -116,6 +116,23 @@ namespace ExamonimyWeb.Controllers
             return Ok(examPapersToReturn);
         }
 
+        [RequestHeaderMatchesMediaType("Accept", "application/json")]
+        [CustomAuthorize(Roles = "Teacher")]
+        [HttpGet("api/exam-paper")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRange([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
+        {
+
+            var examPapers = await _examPaperManager.GetPagedListAsync(requestParamsForExamPaper);
+            var examPapersToReturn = examPapers.Select(ep => new ExamPaperGetDto
+            {
+                Id = ep.Id,
+                ExamPaperCode = ep.ExamPaperCode,
+                AuthorName = ep.Author!.FullName
+            });
+            return Ok(examPapersToReturn);
+        }
+
         [CustomAuthorize(Roles = "Administrator,Teacher")]
         [HttpGet("api/exam-paper/{id}", Name = "GetExamPaperById")]
         [Produces("application/json")]
@@ -124,7 +141,7 @@ namespace ExamonimyWeb.Controllers
             var examPaper = await _examPaperManager.GetByIdAsync(id);
             if (examPaper is null)
                 return NotFound();
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);           
+            var examPaperToReturn = _mapper.Map<ExamPaperFullGetDto>(examPaper);           
             examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return Ok(examPaperToReturn);
         }
@@ -152,7 +169,7 @@ namespace ExamonimyWeb.Controllers
             examPaper.Status = (byte)ExamPaperStatus.Pending;
             examPaper.AuthorId = contextUser.Id;
             await _examPaperManager.CreateAsync(examPaper);
-            var examPaperToReturn = _mapper.Map<ExamPaperGetDto>(examPaper);
+            var examPaperToReturn = _mapper.Map<ExamPaperFullGetDto>(examPaper);
             examPaperToReturn.NumbersOfQuestion = await _examPaperManager.CountNumbersOfQuestions(examPaper.Id);
             return CreatedAtRoute("GetExamPaperById", new { id = examPaper.Id }, examPaperToReturn);
         }

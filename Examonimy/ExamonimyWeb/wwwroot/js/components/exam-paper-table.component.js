@@ -153,23 +153,31 @@ export class ExamPaperTableComponent {
 
     #render() {
         return `
-<table class="min-w-full">
-    <thead class="bg-white">
-        <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
-            <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100 bg-white">
-        ${this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState()}
-    </tbody>
-</table>
+<div class="">
+  <div class="mt-8 flow-root">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full align-middle bg-white px-6 py-2 rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="">
+                <tr>
+                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
+                    <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                ${this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState()}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
         `;
     }
 }

@@ -2,8 +2,9 @@
 import { GetResponse } from "../models/get-response.model.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 import { RequestParams } from "../models/request-params.model.js";
+import { MediaType } from "./media-type.helper.js";
 
-export const fetchData = async (route = "", requestParams = new RequestParams()) => {
+export const fetchData = async (route = "", requestParams = new RequestParams(), mediaType = MediaType.Default) => {
     const getResponse = new GetResponse();
     const url = new URL(`${BASE_API_URL}/${route}`);
     for (const [k, v] of Object.entries(requestParams)) {
@@ -15,7 +16,7 @@ export const fetchData = async (route = "", requestParams = new RequestParams())
         const res = await fetch(url, {
             method: "GET",
             headers: {
-                "Accept": "application/json",
+                "Accept": mediaType,
                 "TimezoneOffset": new Date().getTimezoneOffset()
             }
         });
@@ -41,12 +42,12 @@ export const fetchData = async (route = "", requestParams = new RequestParams())
     }
 }
 
-export const fetchDataById = async (route = "", id = 0) => {
+export const fetchDataById = async (route = "", id = 0, mediaType = MediaType.Default) => {
     try {
         const res = await fetch(`${BASE_API_URL}/${route}/${id}`, {
             method: "GET",
             headers: {
-                "Accept": "application/json",
+                "Accept": mediaType,
                 "TimezoneOffset": new Date().getTimezoneOffset()
             }
         });

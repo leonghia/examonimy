@@ -399,5 +399,13 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         {
             return await _examPaperRepository.CountGroupByPropIdAsync(ep => ep.CourseId);
         }
+
+        public async Task<IEnumerable<ExamPaper>> GetRangeAsync(int? courseId = null)
+        {
+            if (courseId is not null)
+                return await _examPaperRepository.GetRangeAsync(ep => ep.CourseId == courseId, new List<string> { "Author" });
+            return await _examPaperRepository.GetRangeAsync(null, new List<string> { "Author" });
+
+        }
     }
 }
