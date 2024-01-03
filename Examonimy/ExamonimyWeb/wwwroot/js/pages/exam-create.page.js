@@ -3,7 +3,7 @@ import { fetchData } from "../helpers/ajax.helper.js";
 import { MediaType } from "../helpers/media-type.helper.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { ExamPaperRequestParams } from "../models/request-params.model.js";
-import { ExamCreate } from "../models/exam.model.js";
+import { Exam, ExamCreate } from "../models/exam.model.js";
 
 // DOM selectors
 const courseListContainer = document.querySelector("#course-list-container");
@@ -71,8 +71,8 @@ examPaperListContainer.addEventListener("click", event => {
 classListContainer.addEventListener("click", event => {
     const clickedRadio = event.target.closest("input");
     if (clickedRadio) {
-        examCreate.mainClassId = Number(clickedRadio.value);
-        console.log(examCreate.mainClassId);
+        examCreate.mainClassIds = Array.from(classListContainer.querySelectorAll('input[name="class"]:checked')).map(i => Number(i.value));
+        console.log(examCreate.mainClassIds);
     }
 });
 
