@@ -3,7 +3,7 @@ import { fetchData } from "../helpers/ajax.helper.js";
 import { MediaType } from "../helpers/media-type.helper.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { ExamPaperRequestParams } from "../models/request-params.model.js";
-import { Exam, ExamCreate } from "../models/exam.model.js";
+import { ExamCreate } from "../models/exam.model.js";
 
 // DOM selectors
 const courseListContainer = document.querySelector("#course-list-container");
@@ -11,7 +11,7 @@ const selectedCourseElement = document.querySelector("#selected-course");
 const examPaperListContainer = document.querySelector("#exam-paper-list-container");
 const emptyExamPaper = document.querySelector("#empty-exam-paper");
 const classListContainer = document.querySelector("#class-list-container");
-
+const postButton = document.querySelector("#post-button");
 
 // States
 const examCreate = new ExamCreate();
@@ -72,9 +72,13 @@ classListContainer.addEventListener("click", event => {
     const clickedRadio = event.target.closest("input");
     if (clickedRadio) {
         examCreate.mainClassIds = Array.from(classListContainer.querySelectorAll('input[name="class"]:checked')).map(i => Number(i.value));
-        console.log(examCreate.mainClassIds);
+        return;
     }
 });
 
+postButton.addEventListener("click", () => {
+    // construct the time schedule
+
+});
 
 // On load

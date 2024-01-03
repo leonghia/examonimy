@@ -102,11 +102,11 @@
             <p class="basis-7 font-semibold text-gray-700 text-sm">Từ</p>
             <div class="flex items-center gap-x-3">
                 <div class="max-w-14">
-                    <input type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                    <input id="from-hour" type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
                 </div>
                 <p class="font-semibold text-gray-700 text-sm">:</p>
                 <div class="max-w-14">
-                    <input type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                    <input id="from-minute" type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
                 </div>
             </div>          
             <div class="relative max-w-72">
@@ -115,18 +115,18 @@
                         <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                     </svg>
                 </div>
-                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày bắt đầu">
+                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" id="from-date" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày bắt đầu">
             </div>
         </fieldset>
         <fieldset class="pl-4 flex items-center gap-x-8">
             <p class="basis-7 font-semibold text-gray-700 text-sm">Đến</p>
             <div class="flex items-center gap-x-3">
                 <div class="max-w-14">
-                    <input type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                    <input id="to-hour" type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
                 </div>
                 <p class="font-semibold text-gray-700 text-sm">:</p>
                 <div class="max-w-14">
-                    <input type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                    <input id="to-minute" type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
                 </div>
             </div>
             <div class="relative max-w-72">
@@ -135,10 +135,13 @@
                         <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                     </svg>
                 </div>
-                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày kết thúc">
+                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" id="to-date" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày kết thúc">
             </div>
         </fieldset>
     </div>
+</div>
+<div class="flex justify-end">
+    <button type="button" id="post-btn" class="bg-violet-300 rounded-lg font-semibold px-6 py-4 text-violet-800 hover:text-violet-900 hover:bg-violet-400">Tạo kỳ thi</button>
 </div>
 <script src="~/js/datepicker.js" defer></script>
 <script src="~/js/pages/exam-create.page.js" type="module" defer></script>
