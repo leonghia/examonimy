@@ -17,9 +17,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamonimyWeb.Controllers;
 
 [Route("")]
-public class ExamController : GenericController<Exam>
+public class ExamController : BaseController
 {
     private readonly IMapper _mapper;
+    private readonly IUserManager _userManager;
     private readonly IExamManager _examManager;
     private readonly IExamPaperManager _examPaperManager;
     private readonly IGenericRepository<Course> _courseRepository;
@@ -27,9 +28,10 @@ public class ExamController : GenericController<Exam>
     private readonly INotificationService _notificationService;
     private const int _timeAllowedInMinutes = 40;
 
-    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository, INotificationService notificationService) : base(mapper, genericRepository, userManager)
+    public ExamController(IMapper mapper, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository, INotificationService notificationService) : base(userManager)
     {
         _mapper = mapper;
+        _userManager = userManager;
         _examManager = examManager;
         _examPaperManager = examPaperManager;
         _courseRepository = courseRepository;
@@ -37,12 +39,13 @@ public class ExamController : GenericController<Exam>
         _notificationService = notificationService;
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Teacher,Student")]
     [HttpGet("exam")]
     public async Task<IActionResult> RenderIndexView()
     {
         var contextUser = await base.GetContextUser();
-        return View("Index", new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
+        var role = _userManager.GetRole(contextUser);
+        return View(role, new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
     }
 
     [CustomAuthorize(Roles = "Teacher")]
@@ -101,7 +104,7 @@ public class ExamController : GenericController<Exam>
     public async Task<IActionResult> Create([FromBody] ExamCreateDto examCreateDto)
     {      
         if (!ModelState.IsValid) return base.ValidationProblem(ModelState);
-        var examPaper = await _examPaperManager.GetAsync(ep => ep.Id == examCreateDto.ExamPaperId, new List<string> { "Course.Name" });
+        var examPaper = await _examPaperManager.GetAsync(ep => ep.Id == examCreateDto.ExamPaperId, new List<string> { "Course" });
         if (examPaper is null) return NotFound();
         foreach (var id in examCreateDto.MainClassIds)
         {

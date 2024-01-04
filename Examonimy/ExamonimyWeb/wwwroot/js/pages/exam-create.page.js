@@ -1,5 +1,5 @@
 ﻿// Imports
-import { fetchData } from "../helpers/ajax.helper.js";
+import { fetchData, postData } from "../helpers/ajax.helper.js";
 import { MediaType } from "../helpers/media-type.helper.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { ExamPaperRequestParams } from "../models/request-params.model.js";
@@ -84,17 +84,18 @@ courseListContainer.addEventListener("click", event => {
     }
 });
 
-postButton.addEventListener("click", () => {
+postButton.addEventListener("click", async () => {
     const spinnerOption = new SpinnerOption("fill-violet-800", "w-5", "h-5");
     showSpinnerForButton(postButton, spinnerOption);
-
     examCreate.mainClassIds = Array.from(classListContainer.querySelectorAll('input[name="class"]:checked')).map(i => +i.value);
     examCreate.examPaperId = +examPaperListContainer.querySelector('input[name="exam-paper"]:checked').value;
     examCreate.from = constructFrom();
     examCreate.to = constructTo();
     console.log(examCreate);
     try {
-        setTimeout(() => hideSpinnerForButtonWithCheckmark(postButton, spinnerOption), 2000);
+        await postData("exam", examCreate);
+        hideSpinnerForButtonWithCheckmark(postButton, spinnerOption);
+        setTimeout(() => document.location.href = "/exam", 1000);
     } catch (err) {
         console.error(err);
         hideSpinnerForButtonWithoutCheckmark(postButton, "Tạo kỳ thi", spinnerOption);

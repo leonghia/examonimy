@@ -13,13 +13,12 @@ using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class ExamPaperController : GenericController<ExamPaper>
+    public class ExamPaperController : BaseController
     {
         private readonly IMapper _mapper;        
         private readonly IUserManager _userManager;     
@@ -27,7 +26,7 @@ namespace ExamonimyWeb.Controllers
         private readonly IExamPaperManager _examPaperManager;
         private readonly INotificationService _notificationService;
 
-        public ExamPaperController(IMapper mapper, IGenericRepository<ExamPaper> examPaperRepository, IUserManager userManager, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(mapper, examPaperRepository, userManager)
+        public ExamPaperController(IMapper mapper, IUserManager userManager, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(userManager)
         {
             _mapper = mapper;          
             _userManager = userManager;          

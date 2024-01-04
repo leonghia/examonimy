@@ -11,12 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class CourseController : GenericController<Course>
+    public class CourseController : BaseController
     {
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
 
-        public CourseController(IMapper mapper, IGenericRepository<Course> courseRepository, IUserManager userManager, IExamPaperManager examPaperManager) : base(mapper, courseRepository, userManager)
+        public CourseController(IGenericRepository<Course> courseRepository, IUserManager userManager, IExamPaperManager examPaperManager) : base(userManager)
         {
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;

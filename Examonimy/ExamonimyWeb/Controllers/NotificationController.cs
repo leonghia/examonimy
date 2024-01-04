@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
-using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories;
@@ -11,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class NotificationController : GenericController<Notification>
+    public class NotificationController : BaseController
     {          
         private readonly INotificationService _notificationService;
         private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;        
 
-        public NotificationController(IMapper mapper, IGenericRepository<Notification> notificationRepository, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(mapper, notificationRepository, userManager)
+        public NotificationController(IMapper mapper, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(userManager)
         {                    
             _notificationService = notificationService;
             _notificationReceiverRepository = notificationReceiverRepository;

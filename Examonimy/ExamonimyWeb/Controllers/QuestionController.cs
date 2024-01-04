@@ -17,7 +17,7 @@ using System.Text.Json;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class QuestionController : GenericController<Question>
+    public class QuestionController : BaseController
     {
         private readonly IUserManager _userManager;
         private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ namespace ExamonimyWeb.Controllers
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IQuestionManager _questionManager;
 
-        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<Course> courseRepository, IQuestionManager questionManager) : base(mapper, questionRepository, userManager)
+        public QuestionController(IUserManager userManager, IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<QuestionType> questionTypeRepository, IGenericRepository<QuestionLevel> questionLevelRepository, IGenericRepository<Course> courseRepository, IQuestionManager questionManager) : base(userManager)
         {
             _userManager = userManager;
             _mapper = mapper;

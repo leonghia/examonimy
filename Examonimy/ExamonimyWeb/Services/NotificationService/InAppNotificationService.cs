@@ -414,7 +414,7 @@ public class InAppNotificationService : INotificationService
         var studentUsernames = new List<string>();
         foreach (var mainClassId in mainClassIds)
         {
-            var students = await _studentRepository.GetRangeAsync(s => s.MainClassId == mainClassId, new List<string> { "User.Username" });
+            var students = await _studentRepository.GetRangeAsync(s => s.MainClassId == mainClassId, new List<string> { "User" });
             var receivers = students.Select(s => new NotificationReceiver
             {
                 ReceiverId = s.UserId,

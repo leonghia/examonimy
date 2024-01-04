@@ -13,7 +13,7 @@ using System.Dynamic;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class AuthController : GenericController<User>
+    public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
@@ -41,7 +41,7 @@ namespace ExamonimyWeb.Controllers
         };
 
 
-        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService, IGenericRepository<User> userRepository) : base(mapper, userRepository, userManager)
+        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService) : base(userManager)
         {
             _authService = authService;
             _mapper = mapper;

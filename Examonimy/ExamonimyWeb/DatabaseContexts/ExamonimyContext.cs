@@ -1,6 +1,5 @@
 ﻿using ExamonimyWeb.Configurations;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Managers.UserManager;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamonimyWeb.DatabaseContexts
@@ -47,7 +46,10 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.Entity<Exam>()
                 .HasMany(e => e.MainClasses)
                 .WithMany(c => c.Exams)
-                .UsingEntity<ExamMainClass>("ExamMainClasses");
+                .UsingEntity<ExamMainClass>(
+                l => l.HasOne(emc => emc.MainClass).WithMany(mc => mc.ExamMainClasses).HasForeignKey(emc => emc.MainClassId),
+                r => r.HasOne(emc => emc.Exam).WithMany(e => e.ExamMainClasses).HasForeignKey(emc => emc.ExamId)
+                );
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Actor)
@@ -156,6 +158,6 @@ namespace ExamonimyWeb.DatabaseContexts
 
         public required DbSet<Student> Students { get; init; }
 
-        public required DbSet<Exam> Exams { get; init; }
+        public required DbSet<Exam> Exams { get; init; }     
     }
 }

@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20240104154710_AddIdToExamMainClass")]
+    partial class AddIdToExamMainClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,29 @@ namespace ExamonimyWeb.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ExamMainClasses", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MainClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.HasIndex("MainClassId");
+
+                    b.ToTable("ExamMainClasses");
+                });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Course", b =>
                 {
@@ -219,29 +245,6 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("ExamPaperId");
 
                     b.ToTable("Exams");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamMainClass", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ExamId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MainClassId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamId");
-
-                    b.HasIndex("MainClassId");
-
-                    b.ToTable("ExamMainClass");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
@@ -931,18 +934,7 @@ namespace ExamonimyWeb.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>
-                {
-                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
-                        .WithMany()
-                        .HasForeignKey("ExamPaperId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ExamPaper");
-                });
-
-            modelBuilder.Entity("ExamonimyWeb.Entities.ExamMainClass", b =>
+            modelBuilder.Entity("ExamMainClasses", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.Exam", "Exam")
                         .WithMany("ExamMainClasses")
@@ -959,6 +951,17 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Exam");
 
                     b.Navigation("MainClass");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany()
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExamPaper");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
