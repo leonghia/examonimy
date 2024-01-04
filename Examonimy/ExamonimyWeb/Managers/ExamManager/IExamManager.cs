@@ -7,7 +7,7 @@ namespace ExamonimyWeb.Managers.ExamManager
 {
     public interface IExamManager
     {
-        Task<PagedList<Exam>> GetPagedListAsync(RequestParams? requestParams = null, Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null);
+        Task<PagedList<Exam>> GetExamsByTeacherAsync(int teacherId, RequestParams? requestParams = null);
         Task<IEnumerable<Exam>> GetRangeAsync(Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null);
         Task CreateExamAsync(Exam examToCreate, List<int> mainClassIds);
     }

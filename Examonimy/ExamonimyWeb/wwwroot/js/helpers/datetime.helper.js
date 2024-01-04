@@ -21,4 +21,9 @@ export const convertToAgo = (datetime = new Date()) => {
     if (ts / day < 365)
         return `${Math.floor(ts / week)} tuần trước`;
     return `${Math.floor(ts / year)} năm trước`;
-}
+};
+
+export const DateTimeLocaleStringStyle = {
+    timeStyle: "short",
+    dateStyle: "short"
+};
