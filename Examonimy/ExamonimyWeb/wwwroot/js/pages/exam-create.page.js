@@ -4,6 +4,9 @@ import { MediaType } from "../helpers/media-type.helper.js";
 import { ExamPaper } from "../models/exam-paper.model.js";
 import { ExamPaperRequestParams } from "../models/request-params.model.js";
 import { ExamCreate } from "../models/exam.model.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
+
 
 // DOM selectors
 const courseListContainer = document.querySelector("#course-list-container");
@@ -11,7 +14,16 @@ const selectedCourseElement = document.querySelector("#selected-course");
 const examPaperListContainer = document.querySelector("#exam-paper-list-container");
 const emptyExamPaper = document.querySelector("#empty-exam-paper");
 const classListContainer = document.querySelector("#class-list-container");
-const postButton = document.querySelector("#post-button");
+const postButton = document.querySelector("#post-btn");
+const fromHourInput = document.querySelector("#from-hour");
+const fromMinuteInput = document.querySelector("#from-minute");
+const fromDateInput = document.querySelector("#from-date");
+const toHourInput = document.querySelector("#to-hour");
+const toMinuteInput = document.querySelector("#to-minute");
+const toDateInput = document.querySelector("#to-date");
+
+
+
 
 // States
 const examCreate = new ExamCreate();
@@ -50,6 +62,18 @@ const populateExamPapers = (examPapers = [new ExamPaper()]) => {
     `));
 }
 
+const constructFrom = () => {
+    const fromDateArr = fromDateInput.value.split("/");
+    const fromDateTime = new Date(+fromDateArr[2], +fromDateArr[1] - 1, +fromDateArr[0], +fromHourInput.value, +fromMinuteInput.value);
+    return fromDateTime.toISOString();
+}
+
+const constructTo = () => {
+    const toDateArr = toDateInput.value.split("/");
+    const toDateTime = new Date(+toDateArr[2], +toDateArr[1] - 1, +toDateArr[0], +toHourInput.value, +toMinuteInput.value);
+    return toDateTime.toISOString();
+}
+
 // Event listeners
 courseListContainer.addEventListener("click", event => {
     const clickedRadio = event.target.closest("input");
@@ -60,25 +84,21 @@ courseListContainer.addEventListener("click", event => {
     }
 });
 
-examPaperListContainer.addEventListener("click", event => {
-    const clickedRadio = event.target.closest("input");
-    if (clickedRadio) {
-        examCreate.examPaperId = Number(clickedRadio.value);
-        return;
-    }
-});
-
-classListContainer.addEventListener("click", event => {
-    const clickedRadio = event.target.closest("input");
-    if (clickedRadio) {
-        examCreate.mainClassIds = Array.from(classListContainer.querySelectorAll('input[name="class"]:checked')).map(i => Number(i.value));
-        return;
-    }
-});
-
 postButton.addEventListener("click", () => {
-    // construct the time schedule
+    const spinnerOption = new SpinnerOption("fill-violet-800", "w-5", "h-5");
+    showSpinnerForButton(postButton, spinnerOption);
 
+    examCreate.mainClassIds = Array.from(classListContainer.querySelectorAll('input[name="class"]:checked')).map(i => +i.value);
+    examCreate.examPaperId = +examPaperListContainer.querySelector('input[name="exam-paper"]:checked').value;
+    examCreate.from = constructFrom();
+    examCreate.to = constructTo();
+    console.log(examCreate);
+    try {
+        setTimeout(() => hideSpinnerForButtonWithCheckmark(postButton, spinnerOption), 2000);
+    } catch (err) {
+        console.error(err);
+        hideSpinnerForButtonWithoutCheckmark(postButton, "Tạo kỳ thi", spinnerOption);
+    }
 });
 
 // On load
