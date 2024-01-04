@@ -52,21 +52,19 @@ public class ExamController : BaseController
     [HttpGet("api/exam")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
-        //var contextUser = await base.GetContextUser();
-        //var exams = await _examManager.GetPagedListAsync(requestParams, e => e.MainClass!.TeacherId == contextUser.Id);
-        //var examsToReturn = exams.Select(e => new ExamGetDto
-        //{
-        //    Id = e.Id,
-        //    MainClassName = e.MainClass!.Name,
-        //    ExamPaperCode = e.ExamPaper!.ExamPaperCode,
-        //    CourseName = e.ExamPaper.Course!.Name,
-        //    From = e.From,
-        //    To = e.To,
-        //    TimeAllowedInMinutes = _timeAllowedInMinutes
-        //});
-
-        //return Ok(examsToReturn);
-        throw new NotImplementedException();
+        var contextUser = await base.GetContextUser();
+        var exams = await _examManager.GetExamsByTeacherAsync(contextUser.Id, requestParams);
+        var examsToReturn = exams.Select(e => new ExamGetDto
+        {
+            From = e.From,
+            To = e.To,
+            TimeAllowedInMinutes = _timeAllowedInMinutes,
+            MainClasses = e.MainClasses!.Select(mc => mc.Name).ToList(),
+            Id = e.Id,
+            ExamPaperCode = e.ExamPaper!.ExamPaperCode,
+            CourseName = e.ExamPaper!.Course!.Name
+        });
+        return Ok(examsToReturn);
     }
 
     [CustomAuthorize(Roles = "Teacher")]

@@ -1,10 +1,12 @@
-﻿import { Exam } from "../models/exam.model.js";
+﻿import { LOCALES } from "../config.js";
+import { DateTimeLocaleStringStyle } from "../helpers/datetime.helper.js";
+import { Exam } from "../models/exam.model.js";
 
 export class ExamTableComponent {
     #container;
     #exams;
 
-    constructor(container = new HTMLElement(), exams) {
+    constructor(container = new HTMLElement(), exams = [new Exam()]) {
         this.#container = container;
         this.#exams = exams;
     }
@@ -43,9 +45,10 @@ export class ExamTableComponent {
 <tr>
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">${i + 1}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.courseName}</td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.mainClassName}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.examPaperCode}</td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.timeAllowedInMinutes}</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.mainClasses.join(", ")}</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.timeAllowedInMinutes} phút</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${new Date(cur.from).toLocaleString(LOCALES, DateTimeLocaleStringStyle)} - ${new Date(cur.to).toLocaleString(LOCALES, DateTimeLocaleStringStyle)}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <div class="flex items-center justify-end gap-x-2 sm:justify-start">
             <div class="flex-none rounded-full p-1 ${this.#getIconStylingForExamStatus(new Date(cur.from), new Date(cur.to))}">
@@ -85,9 +88,10 @@ export class ExamTableComponent {
             <tr>
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0">STT</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
-              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Lớp</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
+              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Lớp</th>             
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời lượng</th>
+              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời gian mở truy cập</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>             
             </tr>
           </thead>
