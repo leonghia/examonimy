@@ -23,6 +23,7 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
             modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
             modelBuilder.ApplyConfiguration<MainClass>(new MainClassConfiguration());
+            modelBuilder.ApplyConfiguration<Student>(new StudentConfiguration());
 
             modelBuilder.Entity<ExamPaper>()
                 .HasMany(eP => eP.Questions)

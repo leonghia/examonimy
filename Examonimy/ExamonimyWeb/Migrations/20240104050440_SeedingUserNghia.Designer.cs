@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20240104050440_SeedingUserNghia")]
+    partial class SeedingUserNghia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -808,38 +811,6 @@ namespace ExamonimyWeb.Migrations
                         .IsUnique();
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 2,
-                            MainClassId = 1,
-                            RollNumber = "TH2209059"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            MainClassId = 1,
-                            RollNumber = "TH2209079"
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            MainClassId = 1,
-                            RollNumber = "TH2209080"
-                        },
-                        new
-                        {
-                            UserId = 5,
-                            MainClassId = 1,
-                            RollNumber = "TH2209065"
-                        },
-                        new
-                        {
-                            UserId = 16,
-                            MainClassId = 1,
-                            RollNumber = "TH2209053"
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.TrueFalseQuestion", b =>
@@ -921,6 +892,21 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 16,
+                            Email = "leonghiacnn@gmail.com",
+                            FullName = "Lã Trọng Nghĩa",
+                            NormalizedEmail = "LEONGHIACNN@GMAIL.COM",
+                            NormalizedUsername = "NGHIALA",
+                            PasswordHash = "113A985434C47C1313E94842A4B438ED1111431C177C347B03A876D7C6D90390BEBCBEF4EAB0A1EE3E54A0F2A02170B221056BA7D4321C334CB9AC63517203FC",
+                            PasswordSalt = "5C785F369C7EDBD2AE6934EE0B14FF9F3E9CF56B82093F8F6C77A507FFE71A36C4C7EEACBEC3DB1C06ACF4484BC0DF03D5D6D6D4C8E337EABFD15BA6B0BC4FB0",
+                            ProfilePicture = "~/images/examonimy-default-pfp.jpg",
+                            RoleId = 3,
+                            Username = "nghiala"
+                        });
                 });
 
             modelBuilder.Entity("ExamMainClasses", b =>

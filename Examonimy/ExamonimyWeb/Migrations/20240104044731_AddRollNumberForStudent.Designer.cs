@@ -4,6 +4,7 @@ using ExamonimyWeb.DatabaseContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamonimyWeb.Migrations
 {
     [DbContext(typeof(ExamonimyContext))]
-    partial class ExamonimyContextModelSnapshot : ModelSnapshot
+    [Migration("20240104044731_AddRollNumberForStudent")]
+    partial class AddRollNumberForStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -808,38 +811,6 @@ namespace ExamonimyWeb.Migrations
                         .IsUnique();
 
                     b.ToTable("Students");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 2,
-                            MainClassId = 1,
-                            RollNumber = "TH2209059"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            MainClassId = 1,
-                            RollNumber = "TH2209079"
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            MainClassId = 1,
-                            RollNumber = "TH2209080"
-                        },
-                        new
-                        {
-                            UserId = 5,
-                            MainClassId = 1,
-                            RollNumber = "TH2209065"
-                        },
-                        new
-                        {
-                            UserId = 16,
-                            MainClassId = 1,
-                            RollNumber = "TH2209053"
-                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.TrueFalseQuestion", b =>
