@@ -7,6 +7,7 @@
         ApproveExamPaper,
         RejectExamPaper,
         CreateExamPaper,
-        EditExamPaper
+        EditExamPaper,
+        UpcomingExam
     }
 }

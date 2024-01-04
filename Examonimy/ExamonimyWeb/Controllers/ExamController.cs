@@ -10,6 +10,7 @@ using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
 using ExamonimyWeb.Repositories;
+using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,15 +24,17 @@ public class ExamController : GenericController<Exam>
     private readonly IExamPaperManager _examPaperManager;
     private readonly IGenericRepository<Course> _courseRepository;
     private readonly IGenericRepository<MainClass> _mainClassRepository;
+    private readonly INotificationService _notificationService;
     private const int _timeAllowedInMinutes = 40;
 
-    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository) : base(mapper, genericRepository, userManager)
+    public ExamController(IMapper mapper, IGenericRepository<Exam> genericRepository, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository, INotificationService notificationService) : base(mapper, genericRepository, userManager)
     {
         _mapper = mapper;
         _examManager = examManager;
         _examPaperManager = examPaperManager;
         _courseRepository = courseRepository;
         _mainClassRepository = mainClassRepository;
+        _notificationService = notificationService;
     }
 
     [CustomAuthorize(Roles = "Teacher")]
@@ -90,5 +93,42 @@ public class ExamController : GenericController<Exam>
             MainClasses = classesToReturn
         };
         return View("Create", viewModel);
+    }
+
+    [CustomAuthorize(Roles = "Teacher")]
+    [HttpPost("api/exam")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> Create([FromBody] ExamCreateDto examCreateDto)
+    {      
+        if (!ModelState.IsValid) return base.ValidationProblem(ModelState);
+        var examPaper = await _examPaperManager.GetAsync(ep => ep.Id == examCreateDto.ExamPaperId, new List<string> { "Course.Name" });
+        if (examPaper is null) return NotFound();
+        foreach (var id in examCreateDto.MainClassIds)
+        {
+            var mainClass = await _mainClassRepository.GetByIdAsync(id);
+            if (mainClass is null) return NotFound();
+        }
+        var examToCreate = new Exam
+        {
+            ExamPaperId = examCreateDto.ExamPaperId,
+            From = examCreateDto.From,
+            To = examCreateDto.To
+        };
+        await _examManager.CreateExamAsync(examToCreate, examCreateDto.MainClassIds.ToList());
+
+        var teacherId = (await base.GetContextUser()).Id;
+        await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList(), examPaper.Course!.Name);
+        var mainClasses = (await _mainClassRepository.GetRangeAsync(c => examCreateDto.MainClassIds.Contains(c.Id))).Select(c => c.Name).ToList();       
+        var examToReturn = new ExamGetDto
+        {
+            Id = examToCreate.Id,
+            MainClasses = mainClasses,
+            ExamPaperCode = examPaper.ExamPaperCode,
+            CourseName = examPaper.Course.Name,
+            From = examToCreate.From,
+            To = examToCreate.To,
+            TimeAllowedInMinutes = _timeAllowedInMinutes
+        };
+        return Created("", examToReturn);
     }
 }

@@ -28,24 +28,7 @@ namespace ExamonimyWeb.Controllers
         public async Task<IActionResult> Get([FromQuery] RequestParams requestParams)
         {
             var contextUser = await base.GetContextUser();
-            var notifications = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
-            var notificationsToReturn = new List<NotificationGetDto>();
-            if (notifications.Any())
-            {
-                foreach (var notification in notifications)
-                {
-                    notificationsToReturn.Add(new NotificationGetDto
-                    {
-                        Id = notification.NotificationId,
-                        MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
-                        ActorProfilePicture = notification.Notification!.Actor!.ProfilePicture,
-                        Href = _notificationService.GetHref(notification.Notification!),
-                        IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.Operation),
-                        NotifiedAt = notification.Notification.CreatedAt,
-                        IsRead = notification.IsRead
-                    });
-                }
-            }
+            var notificationsToReturn = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
             
             return Ok(notificationsToReturn);
         }

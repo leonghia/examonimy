@@ -119,6 +119,8 @@ public static class BuilderServicesExtensions
         services.AddTransient<IGenericRepository<ExamPaperCommit>, GenericRepository<ExamPaperCommit>>();
         services.AddTransient<IGenericRepository<Exam>, GenericRepository<Exam>>();
         services.AddTransient<IGenericRepository<MainClass>, GenericRepository<MainClass>>();
+        services.AddTransient<IGenericRepository<ExamMainClass>, GenericRepository<ExamMainClass>>();
+        services.AddTransient<IGenericRepository<Student>, GenericRepository<Student>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();
