@@ -6,7 +6,7 @@ using ExamonimyWeb.Hubs.ExamPaperTimelineHub;
 using ExamonimyWeb.Hubs.NotificationHub;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using ExamonimyWeb.Utilities.NotificationMessages;
 using Microsoft.AspNetCore.SignalR;
@@ -22,8 +22,9 @@ public class InAppNotificationService : INotificationService
     private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
     private readonly IUserManager _userManager;
     private readonly IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> _examPaperTimelineHubContext;
+    private readonly IGenericRepository<Student> _studentRepository;
 
-    public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext, IUserManager userManager, IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> examPaperTimelineHubContext)
+    public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext, IUserManager userManager, IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> examPaperTimelineHubContext, IGenericRepository<Student> studentRepository)
     {
         _examPaperManager = examPaperManager;
         _notificationRepository = notificationRepository;
@@ -31,6 +32,7 @@ public class InAppNotificationService : INotificationService
         _notificationHubContext = notificationHubContext;
         _userManager = userManager;
         _examPaperTimelineHubContext = examPaperTimelineHubContext;
+        _studentRepository = studentRepository;
     }
 
     public async Task DeleteThenSaveAsync(int entityId, List<Operation> operations)
@@ -43,7 +45,7 @@ public class InAppNotificationService : INotificationService
         await _notificationRepository.SaveAsync();
     }
 
-    public string GetHref(Notification notification)
+    private string GetHref(Notification notification)
     {
         switch (notification.Operation)
         {
@@ -53,13 +55,15 @@ public class InAppNotificationService : INotificationService
             case Operation.ApproveExamPaper:
             case Operation.RejectExamPaper:
                 var examPaperId = notification.EntityId;
-                return $"/exam-paper/{examPaperId}/review";              
+                return $"/exam-paper/{examPaperId}/review";
+            case Operation.UpcomingExam:
+                return $"/exam";
             default:
                 throw new SwitchExpressionException(notification.Operation);
         }
     }
 
-    public string GetIconMarkup(Operation operation)
+    private string GetIconMarkup(Operation operation)
     {
         return operation switch
         {
@@ -71,13 +75,13 @@ public class InAppNotificationService : INotificationService
 
             Operation.ApproveExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-purple-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"" clip-rule=""evenodd"" /></svg></div>",
 
-            Operation.RejectExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-red-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-3 h-3 text-white""><path d=""M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"" /></svg></div>",
+            Operation.RejectExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-red-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-3 h-3 text-white""><path d=""M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"" /></svg></div>",          
 
             _ => throw new SwitchExpressionException(operation)
         };
     }
 
-    public async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead)
+    private async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead, string? relatedProp = null)
     {
         var actor = await _userManager.GetByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
         var actorFullName = actor.FullName;
@@ -99,15 +103,36 @@ public class InAppNotificationService : INotificationService
             case Operation.RejectExamPaper:
                 examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
                 return new RejectExamPaperNotiMessage(actorFullName, examPaper.ExamPaperCode, isRead).ToVietnamese();
+            case Operation.UpcomingExam:
+                if (relatedProp is null) throw new ArgumentNullException("courseName");
+                return new UpcomingExamNotiMessage(actorFullName, isRead, relatedProp).ToVietnamese();
             default:
                 throw new SwitchExpressionException(notification.Operation);  
         }
     }
 
-    public async Task<IEnumerable<NotificationReceiver>> GetNotificationsAsync(int receiverId, RequestParams requestParams)
+    public async Task<IEnumerable<NotificationGetDto>> GetNotificationsAsync(int receiverId, RequestParams requestParams)
     {
-        var notificationReceivers = await _notificationReceiverRepository.GetPagedListAsync(requestParams, nR => nR.ReceiverId == receiverId, new List<string> { "Notification", "Notification.Actor" }, q => q.OrderByDescending(nR => nR.Notification!.CreatedAt));
-        return notificationReceivers;
+        var notificationReceivers = await _notificationReceiverRepository.GetPagedListAsync(requestParams, nR => nR.ReceiverId == receiverId, new List<string> { "Notification", "Notification.Actor" }, q => q.OrderByDescending(nR => nR.Notification!.CreatedAt));     
+        var notificationsToReturn = new List<NotificationGetDto>();
+        if (notificationReceivers.Any())
+        {
+            foreach (var notificationReceiver in notificationReceivers)
+            {
+                notificationsToReturn.Add(new NotificationGetDto
+                {
+                    Id = notificationReceiver.NotificationId,
+                    MessageMarkup = await GetMessageMarkupAsync(notificationReceiver.Notification!, notificationReceiver.IsRead),
+                    ActorProfilePicture = notificationReceiver.Notification!.Actor!.ProfilePicture,
+                    Href = GetHref(notificationReceiver.Notification!),
+                    IconMarkup = GetIconMarkup(notificationReceiver.Notification!.Operation),
+                    NotifiedAt = notificationReceiver.Notification.CreatedAt,
+                    IsRead = notificationReceiver.IsRead,
+                    Operation = (int)notificationReceiver.Notification.Operation
+                });
+            }
+        }
+        return notificationsToReturn;
     }
 
     public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
@@ -148,7 +173,8 @@ public class InAppNotificationService : INotificationService
                 Href = GetHref(notificationToCreate),
                 IconMarkup = GetIconMarkup(notificationToCreate.Operation),
                 NotifiedAt = notificationToCreate.CreatedAt,
-                IsRead = false
+                IsRead = false,
+                Operation = (int)notificationToCreate.Operation
             });
 
             return;
@@ -207,7 +233,8 @@ public class InAppNotificationService : INotificationService
                 Href = GetHref(notificationToCreate),
                 IconMarkup = GetIconMarkup(notificationToCreate.Operation),
                 NotifiedAt = notificationToCreate.CreatedAt,
-                IsRead = false
+                IsRead = false,
+                Operation = (int)notificationToCreate.Operation
             });
 
             createdAt = notificationToCreate.CreatedAt;
@@ -262,7 +289,8 @@ public class InAppNotificationService : INotificationService
             ActorProfilePicture = actor.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
-            IsRead = false
+            IsRead = false,
+            Operation = (int)notificationToCreate.Operation
         });
 
         var usernames = new List<string>(reviewerUsernames.Count + 1);
@@ -308,7 +336,8 @@ public class InAppNotificationService : INotificationService
             ActorProfilePicture = reviewer.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
-            IsRead = false
+            IsRead = false,
+            Operation = (int)notificationToCreate.Operation
         });
 
         // insert timeline into client DOM
@@ -352,7 +381,8 @@ public class InAppNotificationService : INotificationService
             ActorProfilePicture = reviewer.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
-            IsRead = false
+            IsRead = false,
+            Operation = (int)notificationToCreate.Operation
         });
 
         // insert timeline into client DOM
@@ -364,5 +394,51 @@ public class InAppNotificationService : INotificationService
             CreatedAt = notificationToCreate.CreatedAt,
             OperationId = (int)notificationToCreate.Operation
         });
+    }
+
+    public async Task NotifyAboutUpcomingExamAsync(int teacherId, int examId, List<int> mainClassIds, string courseName)
+    {      
+       // create the notification
+       var notificationToCreate = new Notification
+       {
+           EntityId = examId,
+           ActorId = teacherId,
+           Operation = Operation.UpcomingExam
+       };
+        await _notificationRepository.InsertAsync(notificationToCreate);
+        await _notificationRepository.SaveAsync();
+
+
+        // create the notificationReceiver
+        var notificationReceiversToCreate = new List<NotificationReceiver>();
+        var studentUsernames = new List<string>();
+        foreach (var mainClassId in mainClassIds)
+        {
+            var students = await _studentRepository.GetRangeAsync(s => s.MainClassId == mainClassId, new List<string> { "User" });
+            var receivers = students.Select(s => new NotificationReceiver
+            {
+                ReceiverId = s.UserId,
+                NotificationId = notificationToCreate.Id
+            });
+            notificationReceiversToCreate.AddRange(receivers);
+            var usernames = students.Select(s => s.User!.Username);
+            studentUsernames.AddRange(usernames);
+        }
+        await _notificationReceiverRepository.InsertRangeAsync(notificationReceiversToCreate);
+        await _notificationReceiverRepository.SaveAsync();
+
+
+        // send signalR noti to students
+        await _notificationHubContext.Clients.Users(studentUsernames).ReceiveNotification(new NotificationGetDto
+        {
+            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false, courseName),
+            IconMarkup = null,
+            ActorProfilePicture = null,
+            Href = GetHref(notificationToCreate),
+            NotifiedAt =  notificationToCreate.CreatedAt,
+            IsRead = false,
+            Operation = (int)notificationToCreate.Operation
+        });
+
     }
 }

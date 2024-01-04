@@ -69,7 +69,7 @@ namespace ExamonimyWeb.Profiles
                 .ForMember(dest => dest.QuestionContent, opt => opt.MapFrom(src => src.Question!.QuestionContent))
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Question!.Author))
                 .ForMember(dest => dest.CorrectAnswers, opt => opt.MapFrom(src => QuestionAnswerValueHelper.GetAnswerValuesFromStringForBlanks(src.CorrectAnswers)));
-            CreateMap<ExamPaper, ExamPaperGetDto>()
+            CreateMap<ExamPaper, ExamPaperFullGetDto>()
                 .ForMember(dest => dest.StatusAsString, opt => opt.MapFrom(src => src.Status.ToVietnameseString()));
             CreateMap<ExamPaperCreateDto, ExamPaper>();
             CreateMap<ExamPaperQuestionCreateDto, ExamPaperQuestion>();

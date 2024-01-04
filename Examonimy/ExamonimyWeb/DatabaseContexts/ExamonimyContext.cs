@@ -1,6 +1,5 @@
 ﻿using ExamonimyWeb.Configurations;
 using ExamonimyWeb.Entities;
-using ExamonimyWeb.Managers.UserManager;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamonimyWeb.DatabaseContexts
@@ -21,7 +20,9 @@ namespace ExamonimyWeb.DatabaseContexts
             //modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
-            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());           
+            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
+            modelBuilder.ApplyConfiguration<MainClass>(new MainClassConfiguration());
+            modelBuilder.ApplyConfiguration<Student>(new StudentConfiguration());
 
             modelBuilder.Entity<ExamPaper>()
                 .HasMany(eP => eP.Questions)
@@ -40,6 +41,14 @@ namespace ExamonimyWeb.DatabaseContexts
                 .UsingEntity<ExamPaperReviewer>(
                 l => l.HasOne(ePR => ePR.Reviewer).WithMany(r => r.ExamPaperReviewers).HasForeignKey(ePR => ePR.ReviewerId),
                 r => r.HasOne(ePR => ePR.ExamPaper).WithMany(eP => eP.ExamPaperReviewers).HasForeignKey(ePR => ePR.ExamPaperId)
+                );
+
+            modelBuilder.Entity<Exam>()
+                .HasMany(e => e.MainClasses)
+                .WithMany(c => c.Exams)
+                .UsingEntity<ExamMainClass>(
+                l => l.HasOne(emc => emc.MainClass).WithMany(mc => mc.ExamMainClasses).HasForeignKey(emc => emc.MainClassId),
+                r => r.HasOne(emc => emc.Exam).WithMany(e => e.ExamMainClasses).HasForeignKey(emc => emc.ExamId)
                 );
 
             modelBuilder.Entity<Notification>()
@@ -117,6 +126,14 @@ namespace ExamonimyWeb.DatabaseContexts
             modelBuilder.Entity<ExamPaperCommit>()
                 .Property(epc => epc.CommitedAt)
                 .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.From)
+                .HasConversion(f => f, f => DateTime.SpecifyKind(f, DateTimeKind.Utc));
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.To)
+                .HasConversion(t => t, t => DateTime.SpecifyKind(t, DateTimeKind.Utc));
         }
         public required DbSet<User> Users { get; init; }
         public required DbSet<Role> Roles { get; init; }
@@ -136,5 +153,11 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<ExamPaperComment> ExamPaperComments { get; init; }
         public required DbSet<ExamPaperReviewHistory> ExamPaperReviewHistory { get; init; }
         public required DbSet<ExamPaperCommit> ExamPaperCommits { get; init; }
+
+        public required DbSet<MainClass> MainClasses { get; init; }
+
+        public required DbSet<Student> Students { get; init; }
+
+        public required DbSet<Exam> Exams { get; init; }     
     }
 }

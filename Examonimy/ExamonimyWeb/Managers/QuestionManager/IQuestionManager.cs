@@ -1,7 +1,7 @@
 ﻿using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Models;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 
 namespace ExamonimyWeb.Managers.QuestionManager
 {
@@ -21,6 +21,6 @@ namespace ExamonimyWeb.Managers.QuestionManager
         Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
         Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto);
         Task DeleteThenSaveAsync(int id);
-        Task<Question?> GetSingleByIdAsync(object id);
+        Task<Question?> GetSingleByIdAsync(object id);       
     }
 }

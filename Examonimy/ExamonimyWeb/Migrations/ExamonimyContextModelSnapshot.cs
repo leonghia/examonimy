@@ -197,6 +197,53 @@ namespace ExamonimyWeb.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExamPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("To")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamPaperId");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamMainClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MainClassId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.HasIndex("MainClassId");
+
+                    b.ToTable("ExamMainClass");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
                 {
                     b.Property<int>("Id")
@@ -412,6 +459,61 @@ namespace ExamonimyWeb.Migrations
                     b.HasKey("QuestionId");
 
                     b.ToTable("FillInBlankQuestions");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.MainClass", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("MainClasses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "T2210M",
+                            TeacherId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "T2204M",
+                            TeacherId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "T2207A",
+                            TeacherId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "T2305E",
+                            TeacherId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "T2210A",
+                            TeacherId = 1
+                        });
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.MultipleChoiceQuestionWithMultipleCorrectAnswers", b =>
@@ -693,6 +795,61 @@ namespace ExamonimyWeb.Migrations
                     b.ToTable("ShortAnswerQuestions");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.Student", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MainClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RollNumber")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("MainClassId");
+
+                    b.HasIndex("RollNumber")
+                        .IsUnique();
+
+                    b.ToTable("Students");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 2,
+                            MainClassId = 1,
+                            RollNumber = "TH2209059"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            MainClassId = 1,
+                            RollNumber = "TH2209079"
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            MainClassId = 1,
+                            RollNumber = "TH2209080"
+                        },
+                        new
+                        {
+                            UserId = 5,
+                            MainClassId = 1,
+                            RollNumber = "TH2209065"
+                        },
+                        new
+                        {
+                            UserId = 16,
+                            MainClassId = 1,
+                            RollNumber = "TH2209053"
+                        });
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.TrueFalseQuestion", b =>
                 {
                     b.Property<int>("QuestionId")
@@ -772,6 +929,36 @@ namespace ExamonimyWeb.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.ExamPaper", "ExamPaper")
+                        .WithMany()
+                        .HasForeignKey("ExamPaperId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExamPaper");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.ExamMainClass", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.Exam", "Exam")
+                        .WithMany("ExamMainClasses")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.MainClass", "MainClass")
+                        .WithMany("ExamMainClasses")
+                        .HasForeignKey("MainClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+
+                    b.Navigation("MainClass");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
@@ -904,6 +1091,17 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.MainClass", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.User", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.MultipleChoiceQuestionWithMultipleCorrectAnswers", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.Question", "Question")
@@ -1002,6 +1200,25 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.Student", b =>
+                {
+                    b.HasOne("ExamonimyWeb.Entities.MainClass", "MainClass")
+                        .WithMany("Students")
+                        .HasForeignKey("MainClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExamonimyWeb.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MainClass");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.TrueFalseQuestion", b =>
                 {
                     b.HasOne("ExamonimyWeb.Entities.Question", "Question")
@@ -1024,6 +1241,11 @@ namespace ExamonimyWeb.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("ExamonimyWeb.Entities.Exam", b =>
+                {
+                    b.Navigation("ExamMainClasses");
+                });
+
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaper", b =>
                 {
                     b.Navigation("ExamPaperQuestions");
@@ -1034,6 +1256,13 @@ namespace ExamonimyWeb.Migrations
             modelBuilder.Entity("ExamonimyWeb.Entities.ExamPaperQuestion", b =>
                 {
                     b.Navigation("ExamPaperQuestionComments");
+                });
+
+            modelBuilder.Entity("ExamonimyWeb.Entities.MainClass", b =>
+                {
+                    b.Navigation("ExamMainClasses");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("ExamonimyWeb.Entities.Notification", b =>

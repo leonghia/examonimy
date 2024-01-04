@@ -3,10 +3,12 @@
     public class CourseGetDto
     {
 
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
         public required string Name { get; set; }
 
         public required string CourseCode { get; set; }
+
+        public required int NumbersOfExamPapers { get; set; }
     }
 }

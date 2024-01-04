@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using ExamonimyWeb.Attributes;
-using ExamonimyWeb.DTOs.NotificationDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class NotificationController : GenericController<Notification>
+    public class NotificationController : BaseController
     {          
         private readonly INotificationService _notificationService;
         private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;        
 
-        public NotificationController(IMapper mapper, IGenericRepository<Notification> notificationRepository, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(mapper, notificationRepository, userManager)
+        public NotificationController(IMapper mapper, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(userManager)
         {                    
             _notificationService = notificationService;
             _notificationReceiverRepository = notificationReceiverRepository;
@@ -28,24 +27,7 @@ namespace ExamonimyWeb.Controllers
         public async Task<IActionResult> Get([FromQuery] RequestParams requestParams)
         {
             var contextUser = await base.GetContextUser();
-            var notifications = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
-            var notificationsToReturn = new List<NotificationGetDto>();
-            if (notifications.Any())
-            {
-                foreach (var notification in notifications)
-                {
-                    notificationsToReturn.Add(new NotificationGetDto
-                    {
-                        Id = notification.NotificationId,
-                        MessageMarkup = await _notificationService.GetMessageMarkupAsync(notification.Notification!, notification.IsRead),
-                        ActorProfilePicture = notification.Notification!.Actor!.ProfilePicture,
-                        Href = _notificationService.GetHref(notification.Notification!),
-                        IconMarkup = _notificationService.GetIconMarkup(notification.Notification!.Operation),
-                        NotifiedAt = notification.Notification.CreatedAt,
-                        IsRead = notification.IsRead
-                    });
-                }
-            }
+            var notificationsToReturn = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
             
             return Ok(notificationsToReturn);
         }

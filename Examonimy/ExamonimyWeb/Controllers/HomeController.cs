@@ -9,18 +9,16 @@ using System.Diagnostics;
 
 namespace ExamonimyWeb.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IUserManager _userManager;
-        private readonly IAuthService _authService;
+        private readonly IUserManager _userManager;       
         private readonly IMapper _mapper;
 
-        public HomeController(ILogger<HomeController> logger, IUserManager userManager, IAuthService authService, IMapper mapper)
+        public HomeController(ILogger<HomeController> logger, IUserManager userManager, IAuthService authService, IMapper mapper) : base(userManager)
         {
             _logger = logger;
-            _userManager = userManager;
-            _authService = authService;
+            _userManager = userManager;           
             _mapper = mapper;
         }
 
@@ -28,10 +26,7 @@ namespace ExamonimyWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var username = HttpContext.User.Identity!.Name;           
-            var user = await _userManager.FindByUsernameAsync(username!);
-            if (user is null)
-                return Forbid();
+            var user = await base.GetContextUser();
             var role = _userManager.GetRole(user);          
             var authorizedViewModel = new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(user) };
             return View(role, authorizedViewModel);

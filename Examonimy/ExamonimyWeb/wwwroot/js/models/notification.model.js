@@ -6,4 +6,5 @@
     href = "";
     notifiedAt = "";
     isRead = false;
+    operation = 0;
 }

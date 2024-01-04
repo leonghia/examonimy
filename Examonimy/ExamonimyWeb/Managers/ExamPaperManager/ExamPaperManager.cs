@@ -2,10 +2,9 @@
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.QuestionManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using LinqKit;
-using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -394,6 +393,19 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             };
             await _examPaperReviewHistoryRepository.InsertAsync(examPaperReviewHistory);
             await _examPaperReviewHistoryRepository.SaveAsync();
+        }
+
+        public async Task<IDictionary<int, int>> CountGroupByCourseIdAsync()
+        {
+            return await _examPaperRepository.CountGroupByPropIdAsync(ep => ep.CourseId);
+        }
+
+        public async Task<IEnumerable<ExamPaper>> GetRangeAsync(int? courseId = null)
+        {
+            if (courseId is not null)
+                return await _examPaperRepository.GetRangeAsync(ep => ep.CourseId == courseId, new List<string> { "Author" });
+            return await _examPaperRepository.GetRangeAsync(null, new List<string> { "Author" });
+
         }
     }
 }

@@ -3,7 +3,7 @@ using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories.GenericRepository;
+using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
@@ -11,12 +11,12 @@ using System.Linq.Expressions;
 namespace ExamonimyWeb.Controllers
 {
     [Route("")]
-    public class UserController : GenericController<User>
+    public class UserController : BaseController
     {
         private readonly IMapper _mapper;
         private readonly IGenericRepository<User> _userRepository;
 
-        public UserController(IMapper mapper, IGenericRepository<User> userRepository, IUserManager userManager) : base(mapper, userRepository, userManager)
+        public UserController(IMapper mapper, IGenericRepository<User> userRepository, IUserManager userManager) : base(userManager)
         {
             _mapper = mapper;
             _userRepository = userRepository;

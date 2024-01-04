@@ -116,10 +116,10 @@ export class ExamPaperTableComponent {
         <div class="flex -space-x-4 rtl:space-x-reverse">  
             <div class="reviewer-container flex -space-x-4 rtl:space-x-reverse">
                 ${examPaper.reviewers.reduce((acc, v) => {
-                    return acc + `<img title="${v.fullName}" data-user-id="${v.id}" class="reviewer-img w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 shadow-sm" src="${v.profilePicture}" alt="profile picture of user ${v.userName}">`;
+                    return acc + `<img title="${v.fullName}" data-user-id="${v.id}" class="reviewer-img w-10 h-10 border-2 border-white rounded-full shadow-sm" src="${v.profilePicture}" alt="profile picture of user ${v.userName}">`;
                 }, "")}
             </div>           
-            <button type="button" class="add-reviewer-btn flex items-center justify-center w-10 h-10 text-xs font-medium text-gray-800 bg-gray-200 border-2 border-white rounded-full hover:text-gray-900 hover:bg-gray-300 dark:border-gray-800" title="Thêm kiểm duyệt viên">
+            <button type="button" class="add-reviewer-btn flex items-center justify-center w-10 h-10 text-xs font-medium text-gray-800 bg-gray-200 border-2 border-white rounded-full hover:text-gray-900 hover:bg-gray-300" title="Thêm kiểm duyệt viên">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-slot="icon" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                 </svg>
@@ -153,23 +153,31 @@ export class ExamPaperTableComponent {
 
     #render() {
         return `
-<table class="min-w-full">
-    <thead class="bg-white">
-        <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
-            <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
-        </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100 bg-white">
-        ${this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState()}
-    </tbody>
-</table>
+<div class="">
+  <div class="mt-8 flow-root">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full align-middle bg-white px-6 py-2 rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="">
+                <tr>
+                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mã đề thi</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Số câu hỏi</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Tác giả</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Kiểm duyệt viên</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>
+                    <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                ${this.#examPapers.length > 0 ? this.#renderExamPapers() : this.#renderEmptyState()}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
         `;
     }
 }

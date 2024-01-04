@@ -7,6 +7,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 {
     public interface IExamPaperManager
     {
+        Task<IEnumerable<ExamPaper>> GetRangeAsync(int? courseId = null);
         Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId);
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
         Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate, string commitMessage);
@@ -27,5 +28,6 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<User> GetAuthorAsync(int examPaperId);
         Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId);
         Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId);
+        Task<IDictionary<int, int>> CountGroupByCourseIdAsync();
     }
 }

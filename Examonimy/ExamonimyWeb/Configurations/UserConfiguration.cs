@@ -72,125 +72,137 @@ namespace ExamonimyWeb.Configurations
                 //    NormalizedUsername = "hungnguyen1998".ToUpperInvariant(),
                 //    NormalizedEmail = "n2h1706@gmail.com".ToUpperInvariant()
                 //}
+                //new User
+                //{
+                //    Id = 6,
+                //    FullName = "Đặng Kim Thi",
+                //    Username = "thidk",
+                //    Email = "thidk@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out string salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "thidk".ToUpperInvariant(),
+                //    NormalizedEmail = "thidk@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 7,
+                //    FullName = "Nguyễn Duy Hoàng",
+                //    Username = "hoangnd",
+                //    Email = "hoangnd@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "hoangnd".ToUpperInvariant(),
+                //    NormalizedEmail = "hoangnd@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 8,
+                //    FullName = "Nguyễn Xuân Cường",
+                //    Username = "cuongnx",
+                //    Email = "cuongnx@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "cuongnx".ToUpperInvariant(),
+                //    NormalizedEmail = "cuongnx@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 9,
+                //    FullName = "Vũ Hữu Phương",
+                //    Username = "phuongvh",
+                //    Email = "phuongvh@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "phuongvh".ToUpperInvariant(),
+                //    NormalizedEmail = "phuongvh@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 10,
+                //    FullName = "Trịnh Ngọc Văn",
+                //    Username = "vantn",
+                //    Email = "vantn@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "vantn".ToUpperInvariant(),
+                //    NormalizedEmail = "vantn@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 11,
+                //    FullName = "Nguyễn Tuân",
+                //    Username = "tuann",
+                //    Email = "tuann@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "tuann".ToUpperInvariant(),
+                //    NormalizedEmail = "tuann@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 12,
+                //    FullName = "Trần Mạnh Trường",
+                //    Username = "truongtm",
+                //    Email = "truongtm@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "truongtm".ToUpperInvariant(),
+                //    NormalizedEmail = "truongtm@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 13,
+                //    FullName = "Mai Thành Vinh",
+                //    Username = "vinhmt",
+                //    Email = "vinhmt@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "vinhmt".ToUpperInvariant(),
+                //    NormalizedEmail = "vinhmt@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 14,
+                //    FullName = "Trần Hoàng Anh",
+                //    Username = "anhth",
+                //    Email = "anhth@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "anhth".ToUpperInvariant(),
+                //    NormalizedEmail = "anhth@fpt.edu.vn".ToUpperInvariant()
+                //},
+                //new User
+                //{
+                //    Id = 15,
+                //    FullName = "Man Ngọc Lam",
+                //    Username = "lammn",
+                //    Email = "lammn@fpt.edu.vn",
+                //    RoleId = 2,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "lammn".ToUpperInvariant(),
+                //    NormalizedEmail = "lammn@fpt.edu.vn"
+                //}
                 new User
                 {
-                    Id = 6,
-                    FullName = "Đặng Kim Thi",
-                    Username = "thidk",
-                    Email = "thidk@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out string salt),
+                    Id = 16,
+                    FullName = "Lã Trọng Nghĩa",
+                    Username = "nghiala",
+                    Email = "leonghiacnn@gmail.com",
+                    RoleId = 3,
+                    PasswordHash = PasswordHelper.HashPassword("aptech", out var salt),
                     PasswordSalt = salt,
-                    NormalizedUsername = "thidk".ToUpperInvariant(),
-                    NormalizedEmail = "thidk@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 7,
-                    FullName = "Nguyễn Duy Hoàng",
-                    Username = "hoangnd",
-                    Email = "hoangnd@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "hoangnd".ToUpperInvariant(),
-                    NormalizedEmail = "hoangnd@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 8,
-                    FullName = "Nguyễn Xuân Cường",
-                    Username = "cuongnx",
-                    Email = "cuongnx@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "cuongnx".ToUpperInvariant(),
-                    NormalizedEmail = "cuongnx@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 9,
-                    FullName = "Vũ Hữu Phương",
-                    Username = "phuongvh",
-                    Email = "phuongvh@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "phuongvh".ToUpperInvariant(),
-                    NormalizedEmail = "phuongvh@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 10,
-                    FullName = "Trịnh Ngọc Văn",
-                    Username = "vantn",
-                    Email = "vantn@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "vantn".ToUpperInvariant(),
-                    NormalizedEmail = "vantn@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 11,
-                    FullName = "Nguyễn Tuân",
-                    Username = "tuann",
-                    Email = "tuann@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "tuann".ToUpperInvariant(),
-                    NormalizedEmail = "tuann@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 12,
-                    FullName = "Trần Mạnh Trường",
-                    Username = "truongtm",
-                    Email = "truongtm@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "truongtm".ToUpperInvariant(),
-                    NormalizedEmail = "truongtm@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 13,
-                    FullName = "Mai Thành Vinh",
-                    Username = "vinhmt",
-                    Email = "vinhmt@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "vinhmt".ToUpperInvariant(),
-                    NormalizedEmail = "vinhmt@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 14,
-                    FullName = "Trần Hoàng Anh",
-                    Username = "anhth",
-                    Email = "anhth@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "anhth".ToUpperInvariant(),
-                    NormalizedEmail = "anhth@fpt.edu.vn".ToUpperInvariant()
-                },
-                new User
-                {
-                    Id = 15,
-                    FullName = "Man Ngọc Lam",
-                    Username = "lammn",
-                    Email = "lammn@fpt.edu.vn",
-                    RoleId = 2,
-                    PasswordHash = PasswordHelper.HashPassword("aptech", out salt),
-                    PasswordSalt = salt,
-                    NormalizedUsername = "lammn".ToUpperInvariant(),
-                    NormalizedEmail = "lammn@fpt.edu.vn"
+                    NormalizedUsername = "nghiala".ToUpperInvariant(),
+                    NormalizedEmail = "leonghiacnn@gmail.com".ToUpperInvariant()
                 }
                 );
         }

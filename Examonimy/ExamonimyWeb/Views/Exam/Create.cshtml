@@ -1,0 +1,147 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Tạo kỳ thi";
+    Layout = "_TeacherLayout";
+}
+@model ExamCreateViewModel
+@await Html.PartialAsync("_PageHeadingPartial", "Tạo kỳ thi")
+<div class="flex gap-x-10">
+    <div class="basis-1/2">      
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">01</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn môn học</h2>
+                <p class="mt-1 text-sm text-gray-500">Vui lòng chọn môn học cho kỳ thi này.</p>
+            </div>
+        </div>
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-96 overflow-y-auto">
+            <div id="course-list-container" class="divide-y divide-gray-200">
+                @foreach(var c in Model.Courses)
+                {
+                    <div class="relative flex items-center pb-4 pt-3.5">
+                        <div class="min-w-0 flex-1 text-sm leading-6">
+                            <label for="course-@c.Id" class="font-medium text-gray-900">@c.Name</label>
+                            <p class="text-gray-500">@c.NumbersOfExamPapers đề thi</p>
+                        </div>
+                        <div class="ml-3 flex h-6 items-center">
+                            <input id="course-@c.Id" name="course" value="@c.Id" type="radio" class="h-4 w-4 border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
+                        </div>
+                    </div>
+                }             
+            </div>
+        </fieldset>
+    </div>
+    <div class="basis-1/2">
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">02</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn đề thi</h2>
+                <p class="mt-1 text-sm text-gray-500">Vui lòng chọn đề thi. Các đề thi thuộc môn học đã chọn sẽ xuất hiện ở đây.</p>
+            </div>           
+        </div>
+        <fieldset class="mt-4 bg-white p-6 rounded-lg h-96 overflow-y-auto flex flex-col">
+            <p class="mb-4 text-sm font-semibold text-gray-500">Đề thi môn: <span id="selected-course">Chưa chọn</span></p>
+            <div id="exam-paper-list-container" class="divide-y divide-gray-200 hidden">
+                
+            </div>
+            <div id="empty-exam-paper" class="py-12 grow flex items-center justify-center">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-12 w-12 text-gray-400 mx-auto">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-semibold text-gray-900">Không có đề thi nào</h3>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="flex gap-x-10">
+    <div class="basis-1/2">
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">03</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Chọn lớp học</h2>
+                <p class="mt-1 text-sm text-gray-500">Danh sách các lớp học bạn hiện đang giảng dạy. Bạn có thể chọn nhiều lớp học cùng lúc.</p>
+            </div>           
+        </div>
+        <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-96 overflow-y-auto">
+            <div id="class-list-container" class="divide-y divide-gray-200">
+                @foreach (var c in Model.MainClasses)
+                {
+                    <div class="relative flex items-center pb-4 pt-3.5">
+                        <div class="min-w-0 flex-1 text-sm leading-6">
+                            <label for="class-@c.Id" class="font-medium text-gray-900">@c.Name</label>                          
+                        </div>
+                        <div class="ml-3 flex h-6 items-center">
+                            <input id="class-@c.Id" name="class" value="@c.Id" type="checkbox" class="h-4 w-4 rounded border-none text-violet-600 bg-gray-300 focus:ring-0 focus:ring-offset-0">
+                        </div>
+                    </div>
+                }
+            </div>
+        </fieldset>
+    </div>
+    <div class="basis-1/2 space-y-7 h-fit">
+        <div class="flex items-center">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-violet-700 mr-4">
+                <span class="text-violet-700 font-bold">04</span>
+            </span>
+            <div>
+                <h2 class="text-base font-semibold text-violet-700">Đặt lịch thi</h2>
+                <p class="mt-1 text-sm text-gray-500">Thời gian hợp lệ để sinh viên có thể truy cập vào link bài thi. Ngoài khoảng thời gian này, đường link sẽ bị đóng.</p>
+            </div>          
+        </div>
+        <fieldset class="pl-4 flex items-center gap-x-8">
+            <p class="basis-7 font-semibold text-gray-700 text-sm">Từ</p>
+            <div class="flex items-center gap-x-3">
+                <div class="max-w-14">
+                    <input id="from-hour" type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                </div>
+                <p class="font-semibold text-gray-700 text-sm">:</p>
+                <div class="max-w-14">
+                    <input id="from-minute" type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                </div>
+            </div>          
+            <div class="relative max-w-72">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                    </svg>
+                </div>
+                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" id="from-date" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày bắt đầu">
+            </div>
+        </fieldset>
+        <fieldset class="pl-4 flex items-center gap-x-8">
+            <p class="basis-7 font-semibold text-gray-700 text-sm">Đến</p>
+            <div class="flex items-center gap-x-3">
+                <div class="max-w-14">
+                    <input id="to-hour" type="number" min="0" max="23" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                </div>
+                <p class="font-semibold text-gray-700 text-sm">:</p>
+                <div class="max-w-14">
+                    <input id="to-minute" type="number" min="0" max="59" placeholder="0" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" />
+                </div>
+            </div>
+            <div class="relative max-w-72">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                    </svg>
+                </div>
+                <input datepicker datepicker-orientation="bottom left" datepicker-format="dd/mm/yyyy" type="text" id="to-date" class="bg-white border-0 text-gray-700 font-medium text-sm rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:border-violet-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-violet-500 dark:focus:border-violet-500" placeholder="Chọn ngày kết thúc">
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="flex justify-end">
+    <button type="button" id="post-btn" class="bg-violet-300 w-28 h-14 rounded-lg font-semibold flex items-center justify-center text-violet-800 hover:text-violet-900 hover:bg-violet-400">Tạo kỳ thi</button>
+</div>
+<script src="~/js/datepicker.js" defer></script>
+<script src="~/js/pages/exam-create.page.js" type="module" defer></script>
