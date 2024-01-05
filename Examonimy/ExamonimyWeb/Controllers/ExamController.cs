@@ -118,7 +118,7 @@ public class ExamController : BaseController
         await _examManager.CreateExamAsync(examToCreate, examCreateDto.MainClassIds.ToList());
 
         var teacherId = (await base.GetContextUser()).Id;
-        await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList(), examPaper.Course!.Name);
+        await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList());
         var mainClasses = (await _mainClassRepository.GetRangeAsync(c => examCreateDto.MainClassIds.Contains(c.Id))).Select(c => c.Name).ToList();       
         var examToReturn = new ExamGetDto
         {

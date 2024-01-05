@@ -24,6 +24,7 @@ const notiHubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
     .build();
+let isNotificationShown = false;
 
 // Function expressions
 const startNotiHubConnection = async () => {
@@ -55,9 +56,9 @@ openUserMenuButton.addEventListener("click", () => {
     userMenu.classList.toggle("hidden");
 });
 
-viewNotificationButton.addEventListener("click", async () => {
-    notifcationDropdownContainer.classList.toggle("hidden");
-    notificationDropdownComponent.populate();
+viewNotificationButton.addEventListener("click", async () => {   
+    notificationDropdownComponent.toggleDisplay();
+    notificationDropdownComponent.populate();    
     notiDot.classList.add("hidden");
 });
 
@@ -78,7 +79,7 @@ notiHubConnection.on("ReceiveNotification", (notification = Notification()) => {
 });
 
 // On load
-currentPageLink.classList.remove(..."text-gray-300 hover:bg-gray-700 hover:text-white".split(" "));
-currentPageLink.classList.add(..."bg-gray-900 text-white".split(" "));
+currentPageLink?.classList.remove(..."text-gray-300 hover:bg-gray-700 hover:text-white".split(" "));
+currentPageLink?.classList.add(..."bg-gray-900 text-white".split(" "));
 startNotiHubConnection();
 init();

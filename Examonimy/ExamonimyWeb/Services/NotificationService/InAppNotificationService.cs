@@ -4,6 +4,7 @@ using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
 using ExamonimyWeb.Hubs.ExamPaperTimelineHub;
 using ExamonimyWeb.Hubs.NotificationHub;
+using ExamonimyWeb.Managers.ExamManager;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories;
@@ -23,8 +24,9 @@ public class InAppNotificationService : INotificationService
     private readonly IUserManager _userManager;
     private readonly IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> _examPaperTimelineHubContext;
     private readonly IGenericRepository<Student> _studentRepository;
+    private readonly Managers.ExamManager.IExamManager _examManager;
 
-    public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext, IUserManager userManager, IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> examPaperTimelineHubContext, IGenericRepository<Student> studentRepository)
+    public InAppNotificationService(IExamPaperManager examPaperManager, IGenericRepository<Notification> notificationRepository, IGenericRepository<NotificationReceiver> notificationReceiverRepository, IHubContext<NotificationHub, INotificationClient> notificationHubContext, IUserManager userManager, IHubContext<ExamPaperTimelineHub, IExamPaperTimelineClient> examPaperTimelineHubContext, IGenericRepository<Student> studentRepository, IExamManager examManager)
     {
         _examPaperManager = examPaperManager;
         _notificationRepository = notificationRepository;
@@ -33,6 +35,7 @@ public class InAppNotificationService : INotificationService
         _userManager = userManager;
         _examPaperTimelineHubContext = examPaperTimelineHubContext;
         _studentRepository = studentRepository;
+        _examManager = examManager;
     }
 
     public async Task DeleteThenSaveAsync(int entityId, List<Operation> operations)
@@ -63,25 +66,7 @@ public class InAppNotificationService : INotificationService
         }
     }
 
-    private string GetIconMarkup(Operation operation)
-    {
-        return operation switch
-        {
-            Operation.AskForReviewForExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 24 24"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"" /><path d=""M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"" /></svg></div>",
-
-            Operation.CommentExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z"" clip-rule=""evenodd"" /></svg></div>",
-
-            Operation.EditExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path d=""m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"" /><path d=""M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"" /></svg></div>",
-
-            Operation.ApproveExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-purple-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-2 h-2 text-white""><path fill-rule=""evenodd"" d=""M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"" clip-rule=""evenodd"" /></svg></div>",
-
-            Operation.RejectExamPaper => @"<div class=""absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-red-500 border border-white rounded-full""><svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 20 20"" fill=""currentColor"" class=""w-3 h-3 text-white""><path d=""M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"" /></svg></div>",          
-
-            _ => throw new SwitchExpressionException(operation)
-        };
-    }
-
-    private async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead, string? relatedProp = null)
+    private async Task<string> GetMessageMarkupAsync(Notification notification, bool isRead)
     {
         var actor = await _userManager.GetByIdAsync(notification.ActorId) ?? throw new ArgumentException(null, nameof(notification.ActorId));
         var actorFullName = actor.FullName;
@@ -104,8 +89,8 @@ public class InAppNotificationService : INotificationService
                 examPaper = await _examPaperManager.GetByIdAsync(notification.EntityId) ?? throw new ArgumentException(null, nameof(notification.EntityId));
                 return new RejectExamPaperNotiMessage(actorFullName, examPaper.ExamPaperCode, isRead).ToVietnamese();
             case Operation.UpcomingExam:
-                if (relatedProp is null) throw new ArgumentNullException("courseName");
-                return new UpcomingExamNotiMessage(actorFullName, isRead, relatedProp).ToVietnamese();
+                var courseName = await _examManager.GetCourseName(notification.EntityId);
+                return new UpcomingExamNotiMessage(actorFullName, isRead, courseName).ToVietnamese();
             default:
                 throw new SwitchExpressionException(notification.Operation);  
         }
@@ -124,8 +109,7 @@ public class InAppNotificationService : INotificationService
                     Id = notificationReceiver.NotificationId,
                     MessageMarkup = await GetMessageMarkupAsync(notificationReceiver.Notification!, notificationReceiver.IsRead),
                     ActorProfilePicture = notificationReceiver.Notification!.Actor!.ProfilePicture,
-                    Href = GetHref(notificationReceiver.Notification!),
-                    IconMarkup = GetIconMarkup(notificationReceiver.Notification!.Operation),
+                    Href = GetHref(notificationReceiver.Notification!),                  
                     NotifiedAt = notificationReceiver.Notification.CreatedAt,
                     IsRead = notificationReceiver.IsRead,
                     Operation = (int)notificationReceiver.Notification.Operation
@@ -170,8 +154,7 @@ public class InAppNotificationService : INotificationService
                 Id = notificationToCreate.Id,
                 MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
                 ActorProfilePicture = actor.ProfilePicture,
-                Href = GetHref(notificationToCreate),
-                IconMarkup = GetIconMarkup(notificationToCreate.Operation),
+                Href = GetHref(notificationToCreate),              
                 NotifiedAt = notificationToCreate.CreatedAt,
                 IsRead = false,
                 Operation = (int)notificationToCreate.Operation
@@ -230,8 +213,7 @@ public class InAppNotificationService : INotificationService
                 Id = notificationToCreate.Id,
                 MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
                 ActorProfilePicture = actor.ProfilePicture,
-                Href = GetHref(notificationToCreate),
-                IconMarkup = GetIconMarkup(notificationToCreate.Operation),
+                Href = GetHref(notificationToCreate),               
                 NotifiedAt = notificationToCreate.CreatedAt,
                 IsRead = false,
                 Operation = (int)notificationToCreate.Operation
@@ -284,8 +266,7 @@ public class InAppNotificationService : INotificationService
         var reviewerUsernames = reviewers.Select(r => r.Username).ToList();
         await _notificationHubContext.Clients.Users(reviewerUsernames).ReceiveNotification(new NotificationGetDto
         {
-            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
-            IconMarkup = GetIconMarkup(notificationToCreate.Operation),
+            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),           
             ActorProfilePicture = actor.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
@@ -331,8 +312,7 @@ public class InAppNotificationService : INotificationService
         var reviewer = await _userManager.GetByIdAsync(reviewerId) ?? throw new ArgumentException(null, nameof(reviewerId));
         await _notificationHubContext.Clients.User(author.Username).ReceiveNotification(new NotificationGetDto
         {
-            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
-            IconMarkup = GetIconMarkup(Operation.ApproveExamPaper),
+            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),          
             ActorProfilePicture = reviewer.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
@@ -376,8 +356,7 @@ public class InAppNotificationService : INotificationService
         var reviewer = await _userManager.GetByIdAsync(reviewerId) ?? throw new ArgumentException(null, nameof(reviewerId));
         await _notificationHubContext.Clients.User(author.Username).ReceiveNotification(new NotificationGetDto
         {
-            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),
-            IconMarkup = GetIconMarkup(notificationToCreate.Operation),
+            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),          
             ActorProfilePicture = reviewer.ProfilePicture,
             Href = GetHref(notificationToCreate),
             NotifiedAt = notificationToCreate.CreatedAt,
@@ -396,7 +375,7 @@ public class InAppNotificationService : INotificationService
         });
     }
 
-    public async Task NotifyAboutUpcomingExamAsync(int teacherId, int examId, List<int> mainClassIds, string courseName)
+    public async Task NotifyAboutUpcomingExamAsync(int teacherId, int examId, List<int> mainClassIds)
     {      
        // create the notification
        var notificationToCreate = new Notification
@@ -431,8 +410,7 @@ public class InAppNotificationService : INotificationService
         // send signalR noti to students
         await _notificationHubContext.Clients.Users(studentUsernames).ReceiveNotification(new NotificationGetDto
         {
-            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false, courseName),
-            IconMarkup = null,
+            MessageMarkup = await GetMessageMarkupAsync(notificationToCreate, false),           
             ActorProfilePicture = null,
             Href = GetHref(notificationToCreate),
             NotifiedAt =  notificationToCreate.CreatedAt,

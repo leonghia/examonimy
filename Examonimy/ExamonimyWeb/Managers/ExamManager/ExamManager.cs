@@ -30,7 +30,13 @@ namespace ExamonimyWeb.Managers.ExamManager
             }).ToList();
             await _examMainClassRepository.InsertRangeAsync(examMainClassesToCreate);
             await _examMainClassRepository.SaveAsync();
-        }      
+        }
+
+        public async Task<string> GetCourseName(int examId)
+        {
+            var exam = await _examRepository.GetAsync(e => e.Id == examId, new List<string> { "ExamPaper.Course" }) ?? throw new ArgumentException(null, nameof(examId));
+            return exam.ExamPaper!.Course!.Name;
+        }
 
         public async Task<PagedList<Exam>> GetExamsByTeacherAsync(int teacherId, RequestParams? requestParams = null)
         {

@@ -17,7 +17,7 @@ const examPaperTimelineContainer = document.querySelector("#exam-paper-timeline-
 
 // States
 const examPaperId = Number(document.querySelector("#exam-paper-container").dataset.examPaperId);
-const profilePfp = document.querySelector(".profile-pfp").src;
+const profilePfp = document.querySelector(".pfp").src;
 let examPaperTimelineComponent;
 const examPaperTimelineHubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/examPaperTimelineHub")

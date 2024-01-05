@@ -140,7 +140,7 @@ createExamPaperButton.addEventListener("click", () => {
 });
 
 // On load
-changeHtmlBackgroundColorToWhite();
+/*changeHtmlBackgroundColorToWhite();*/
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("click", onClickStepperHandler);
 paginationComponentForCourses.subscribe("next", navigateCoursesHandler);

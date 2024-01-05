@@ -10,5 +10,6 @@ namespace ExamonimyWeb.Managers.ExamManager
         Task<PagedList<Exam>> GetExamsByTeacherAsync(int teacherId, RequestParams? requestParams = null);
         Task<IEnumerable<Exam>> GetRangeAsync(Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null);
         Task CreateExamAsync(Exam examToCreate, List<int> mainClassIds);
+        Task<string> GetCourseName(int examId);
     }
 }

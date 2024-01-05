@@ -16,7 +16,6 @@
     var editButtonDisplay = Model.IsAuthor ? "" : "hidden";
     var approveAndRejectInputDisplay = Model.IsReviewer ? "" : "hidden";
 }
-@await Html.PartialAsync("_PageHeadingPartial", "Chi tiết đề thi")
 <p class="text-gray-500 text-xs">Mã đề: @Model.ExamPaper.ExamPaperCode - Môn học: @Model.ExamPaper.Course.Name - Tác giả: @Model.ExamPaper.Author.FullName</p>
 <div id="exam-paper-container" data-exam-paper-id="@Model.ExamPaper.Id" class="flex gap-x-16">
 
