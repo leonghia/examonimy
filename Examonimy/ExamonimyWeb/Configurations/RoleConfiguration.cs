@@ -9,7 +9,7 @@ namespace ExamonimyWeb.Configurations
         public void Configure(EntityTypeBuilder<Role> builder)
         {
             builder.HasData(
-                new Role { Id = 1, Name = "Administrator" },
+                new Role { Id = 1, Name = "Admin" },
                 new Role { Id = 2, Name = "Teacher" },
                 new Role { Id = 3, Name = "Student" }
                 );

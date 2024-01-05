@@ -39,7 +39,7 @@ public class ExamController : BaseController
         _notificationService = notificationService;
     }
 
-    [CustomAuthorize(Roles = "Teacher,Student")]
+    [CustomAuthorize(Roles = "Admin,Student")]
     [HttpGet("exam")]
     public async Task<IActionResult> RenderIndexView()
     {
@@ -48,12 +48,12 @@ public class ExamController : BaseController
         return View(role, new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin")]
     [HttpGet("api/exam")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
         var contextUser = await base.GetContextUser();
-        var exams = await _examManager.GetExamsByTeacherAsync(contextUser.Id, requestParams);
+        var exams = await _examManager.GetPagedListAsync(requestParams);
         var examsToReturn = exams.Select(e => new ExamGetDto
         {
             From = e.From,
@@ -67,7 +67,7 @@ public class ExamController : BaseController
         return Ok(examsToReturn);
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin")]
     [HttpGet("exam/create")]
     public async Task<IActionResult> RenderCreateView()
     {
@@ -81,7 +81,7 @@ public class ExamController : BaseController
             Name = c.Name,
             CourseCode = c.CourseCode
         }).ToList();
-        var classes = await _mainClassRepository.GetRangeAsync(c => c.TeacherId == contextUser.Id);
+        var classes = await _mainClassRepository.GetRangeAsync();
         var classesToReturn = classes.Select(c => new MainClassGetDto
         {
             Id = c.Id,
@@ -96,7 +96,7 @@ public class ExamController : BaseController
         return View("Create", viewModel);
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin")]
     [HttpPost("api/exam")]
     [Consumes("application/json")]
     public async Task<IActionResult> Create([FromBody] ExamCreateDto examCreateDto)
@@ -125,7 +125,7 @@ public class ExamController : BaseController
             Id = examToCreate.Id,
             MainClasses = mainClasses,
             ExamPaperCode = examPaper.ExamPaperCode,
-            CourseName = examPaper.Course.Name,
+            CourseName = examPaper.Course!.Name,
             From = examToCreate.From,
             To = examToCreate.To,
             TimeAllowedInMinutes = _timeAllowedInMinutes

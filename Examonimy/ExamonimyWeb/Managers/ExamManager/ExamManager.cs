@@ -10,6 +10,7 @@ namespace ExamonimyWeb.Managers.ExamManager
         private readonly IGenericRepository<Exam> _examRepository;
         private readonly IGenericRepository<ExamMainClass> _examMainClassRepository;
         private readonly IGenericRepository<MainClass> _mainClassRepository;
+        private readonly List<string> _includedProps = new() { "MainClasses", "ExamPaper", "ExamPaper.Course" };
 
         public ExamManager(IGenericRepository<Exam> examRepository, IGenericRepository<ExamMainClass> examMainClassRepository, IGenericRepository<MainClass> mainClassRepository)
         {
@@ -43,12 +44,17 @@ namespace ExamonimyWeb.Managers.ExamManager
             var mainClassIds = (await _mainClassRepository.GetRangeAsync(mc => mc.TeacherId == teacherId)).Select(mc => mc.Id);
             var examMainClasses = await _examMainClassRepository.GetRangeAsync(emc => mainClassIds.Contains(emc.MainClassId));
             var examIds = examMainClasses.GroupBy(emc => emc.ExamId).Select(ig => ig.Key);
-            return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" });
+            return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), _includedProps);
         }
 
         public async Task<IEnumerable<Exam>> GetRangeAsync(Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null)
         {
-            return await _examRepository.GetRangeAsync(predicate, new List<string> { "MainClass", "ExamPaper", "ExamPaper.Course" }, orderBy);
+            return await _examRepository.GetRangeAsync(predicate, _includedProps, orderBy);
+        }
+
+        public async Task<PagedList<Exam>> GetPagedListAsync(RequestParams? requestParams = null, Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null)
+        {
+            return await _examRepository.GetPagedListAsync(requestParams, predicate, _includedProps, orderBy);
         }
     }
 }

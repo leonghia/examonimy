@@ -2,11 +2,11 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewData["Title"] = "Tạo kỳ thi";
-    Layout = "_TeacherLayout";
+    ViewData["Title"] = "Tạo kì thi";
+    Layout = "_AdminLayout";
 }
 @model ExamCreateViewModel
-@await Html.PartialAsync("_PageHeadingPartial", "Tạo kỳ thi")
+@await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
 <div class="flex gap-x-10">
     <div class="basis-1/2">      
         <div class="flex items-center">
@@ -69,7 +69,7 @@
             </span>
             <div>
                 <h2 class="text-base font-semibold text-violet-700">Chọn lớp học</h2>
-                <p class="mt-1 text-sm text-gray-500">Danh sách các lớp học bạn hiện đang giảng dạy. Bạn có thể chọn nhiều lớp học cùng lúc.</p>
+                <p class="mt-1 text-sm text-gray-500">Bạn có thể chọn nhiều lớp học cho kì thi này.</p>
             </div>           
         </div>
         <fieldset class="mt-4 bg-white py-2 px-6 rounded-lg h-96 overflow-y-auto">
@@ -141,7 +141,7 @@
     </div>
 </div>
 <div class="flex justify-end">
-    <button type="button" id="post-btn" class="bg-violet-300 w-28 h-14 rounded-lg font-semibold flex items-center justify-center text-violet-800 hover:text-violet-900 hover:bg-violet-400">Tạo kỳ thi</button>
+    <button type="button" id="post-btn" class="bg-violet-300 w-28 h-12 rounded-lg font-semibold flex items-center justify-center text-violet-800 hover:text-violet-900 hover:bg-violet-400">Tạo kì thi</button>
 </div>
 <script src="~/js/datepicker.js" defer></script>
 <script src="~/js/pages/exam-create.page.js" type="module" defer></script>

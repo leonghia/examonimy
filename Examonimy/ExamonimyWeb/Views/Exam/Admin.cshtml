@@ -3,9 +3,10 @@
 *@
 @{
     ViewData["Title"] = "Quản lý kì thi";
-    Layout = "_TeacherLayout";
+    Layout = "_AdminLayout";
     ViewData["Page"] = 1;
 }
+@await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
 <div id="exam-table-container"></div>
 <div class="flex items-center gap-2">
     
@@ -18,5 +19,5 @@
         Tạo kỳ thi       
     </a>
 </div>
-<script src="~/js/pages/exam-teacher.page.js" type="module" defer></script>
+<script src="~/js/pages/exam-admin.page.js" type="module" defer></script>
 
