@@ -7,6 +7,7 @@ using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace ExamonimyWeb.Controllers
 {
@@ -15,11 +16,13 @@ namespace ExamonimyWeb.Controllers
     {
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
+        private readonly IConfiguration _configuration;
 
-        public CourseController(IGenericRepository<Course> courseRepository, IUserManager userManager, IExamPaperManager examPaperManager) : base(userManager)
+        public CourseController(IGenericRepository<Course> courseRepository, IUserManager userManager, IExamPaperManager examPaperManager, IConfiguration configuration) : base(userManager)
         {
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;
+            _configuration = configuration;
         }
 
         [CustomAuthorize]
@@ -36,6 +39,17 @@ namespace ExamonimyWeb.Controllers
                 Name = c.Name,
                 CourseCode = c.CourseCode
             });
+
+            var paginationMetadata = new PaginationMetadata
+            {
+                TotalCount = courses.TotalCount,
+                PageSize = courses.PageSize,
+                CurrentPage = courses.PageNumber,
+                TotalPages = courses.TotalPages
+            };
+            var header = _configuration.GetSection("Header").GetSection("PaginationMetadata").Value ?? throw new NullReferenceException();
+            Response.Headers.Add(header, JsonSerializer.Serialize(paginationMetadata));
+
             return Ok(coursesToReturn);
         }
     }

@@ -214,7 +214,7 @@ export class ExamPaperQuestionListComponent extends BaseComponent {
            <div class="bg-white rounded-lg p-6 exam-paper-question-container" data-question-number="1">
                 <div class="flex items-center justify-between mb-4">
                     <p class="question-number text-base font-bold text-gray-900">Câu 1</p>
-                    <button type="button" title="Gỡ câu hỏi" class="delete-btn rounded bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 p-2">
+                    <button type="button" title="Gỡ câu hỏi" class="delete-btn rounded bg-red-300 hover:bg-red-400 text-red-800 hover:text-red-900 p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>

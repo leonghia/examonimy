@@ -11,13 +11,9 @@ const userMenu = document.querySelector("#user-menu");
 const viewNotificationButton = document.querySelector("#view-notification-btn");
 const notifcationDropdownContainer = document.querySelector("#notification-dropdown-container");
 const notiDot = document.querySelector("#noti-dot");
-const pageContainer = document.querySelector("#page-container");
-const currentPage = pageContainer.dataset.page;
-
 
 
 // States
-const currentPageLink = document.querySelector(`.page-link[data-page="${currentPage}"]`);
 let notificationDropdownComponent;
 let toastSignalRComponent;
 const notiHubConnection = new signalR.HubConnectionBuilder()
@@ -79,7 +75,5 @@ notiHubConnection.on("ReceiveNotification", (notification = Notification()) => {
 });
 
 // On load
-currentPageLink?.classList.remove(..."text-gray-300 hover:bg-gray-700 hover:text-white".split(" "));
-currentPageLink?.classList.add(..."bg-gray-900 text-white".split(" "));
 startNotiHubConnection();
 init();

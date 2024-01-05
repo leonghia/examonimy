@@ -6,8 +6,6 @@
     Layout = "_TeacherLayout";
 }
 <div>
-    @await Html.PartialAsync("_PageHeadingPartial", "Tạo câu hỏi mới")
-
     <div class="">
         <!-- Stepper -->
         <nav aria-label="Progress" class="mb-20">
@@ -34,7 +32,7 @@
                     <div class="basis-72">
                         <label id="question-type-label" class="block text-sm leading-6 text-gray-700 font-medium">Dạng câu hỏi</label>
                         <div class="relative mt-2 dropdown-container">
-                            <button type="button" id="question-type-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                            <button type="button" id="question-type-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
                                 <span class="selected-item block truncate">Chọn dạng câu hỏi</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2">
                                     <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -42,14 +40,14 @@
                                     </svg>
                                 </span>
                             </button>                          
-                            <ul id="question-type-dropdown" class="dropdown cursor-pointer opacity-0 pointer-events-none absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+                            <ul id="question-type-dropdown" class="hidden dropdown cursor-pointer absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
                             </ul>
                         </div>
                     </div>
                     <div class="basis-64">
                         <label id="question-level-label" class="block text-sm leading-6 text-gray-700 font-medium">Mức độ</label>
                         <div class="relative mt-2 dropdown-container">
-                            <button type="button" id="question-level-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-gray-100 py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                            <button type="button" id="question-level-dropdown-btn" class="dropdown-btn cursor-pointer relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-800 font-normal border-0 border-[#eee] focus:outline-none focus:ring-0 focus:ring-violet-600 sm:text-sm sm:leading-6" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
                                 <span class="selected-item block truncate">Chọn mức độ câu hỏi</span>
                                 <span class="absolute inset-y-0 right-0 flex items-center pr-2">
                                     <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -57,7 +55,7 @@
                                     </svg>
                                 </span>
                             </button>                           
-                            <ul id="question-level-dropdown" class="dropdown cursor-pointer pointer-events-none opacity-0 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md shadow-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+                            <ul id="question-level-dropdown" class="hidden dropdown cursor-pointer absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md shadow-md bg-white py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
                             </ul>
                         </div>
                     </div>
@@ -77,14 +75,14 @@
                 <div class="mt-6" id="answer-editor-container">
                     <div data-question-type-id="1" class="answer-editor hidden">
                         <fieldset class="mt-2">
-                            <legend class="sr-only">Choose a memory option</legend>
+                            <legend class="sr-only">Select an answer</legend>
                             <div class="flex gap-4">
                                 <!--
                                   In Stock: "cursor-pointer", Out of Stock: "opacity-25 cursor-not-allowed"
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="0" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="0" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>A</span>
                                 </label>
                                 <!--
@@ -92,7 +90,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="1" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="1" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>B</span>
                                 </label>
                                 <!--
@@ -100,7 +98,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="2" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="2" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>C</span>
                                 </label>
                                 <!--
@@ -108,7 +106,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="3" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="3" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-full py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>D</span>
                                 </label>
                             </div>
@@ -123,7 +121,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="0" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="0" data-selected="false" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>A</span>
                                 </label>
                                 <!--
@@ -131,7 +129,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="1" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="1" data-selected="false" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>B</span>
                                 </label>
                                 <!--
@@ -139,7 +137,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="2" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="2" data-selected="false" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>C</span>
                                 </label>
                                 <!--
@@ -147,7 +145,7 @@
                                   Active: "ring-2 ring-indigo-600 ring-offset-2"
                                   Checked: "bg-indigo-600 text-white hover:bg-indigo-500", Not Checked: "ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50"
                                 -->
-                                <label data-answer="3" data-selected="false" class="w-10 h-10 bg-gray-100 text-gray-900 hover:bg-gray-200 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
+                                <label data-answer="3" data-selected="false" class="w-10 h-10 bg-gray-200 text-gray-800 hover:bg-gray-300 flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase cursor-pointer focus:outline-none">
                                     <span>D</span>
                                 </label>
                             </div>

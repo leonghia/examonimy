@@ -68,7 +68,7 @@ export class AdvancedPaginationComponent extends BaseComponent {
 
     #highlightCurrentPage() {
         this.#container.querySelector(`#page-${this.#currentPage}-btn`)?.classList.remove("text-gray-600");
-        this.#container.querySelector(`#page-${this.#currentPage}-btn`)?.classList.add(..."text-gray-700 bg-gray-100".split(" "));  
+        this.#container.querySelector(`#page-${this.#currentPage}-btn`)?.classList.add(..."text-gray-700 bg-gray-200".split(" "));  
     }
 
     set totalCount(value) {

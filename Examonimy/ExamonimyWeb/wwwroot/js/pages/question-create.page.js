@@ -3,8 +3,8 @@ import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
 import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
-import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question-create.model.js";
-import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButton, changeHtmlBackgroundColorToWhite, changeHtmlBackgroundColorToGray } from "../helpers/markup.helper.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question.model.js";
+import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButtonWithCheckmark } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 import { CourseGridComponent } from "../components/course-grid.component.js";
@@ -578,9 +578,9 @@ answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers.addEventListener
     clicked.classList.toggle("bg-green-600");
     clicked.classList.toggle("text-white");
     clicked.classList.toggle("hover:bg-green-700");
-    clicked.classList.toggle("bg-gray-100");
+    clicked.classList.toggle("bg-gray-200");
     clicked.classList.toggle("text-gray-900");
-    clicked.classList.toggle("hover:bg-gray-200");
+    clicked.classList.toggle("hover:bg-gray-300");
     clicked.dataset.selected = clicked.dataset.selected === "false" ? "true" : "false";
 
     // construct the correct answers for questionCreateDto
@@ -620,11 +620,10 @@ createQuestionButton.addEventListener("click", async () => {
 });
 
 // On load
-changeHtmlBackgroundColorToWhite();
 courseGridComponent.subscribe("click", onClickCourseHandler);
 stepperComponent.connectedCallback();
-stepperComponent.subscribe("onClickStep3", onClickStep3Handler);
-stepperComponent.subscribe("onClickStep4", onClickStep4Hanlder);
+stepperComponent.subscribe("clickStep3", onClickStep3Handler);
+stepperComponent.subscribe("clickStep4", onClickStep4Hanlder);
 paginationComponentForCourses.subscribe("next", navigateCoursePageHandler);
 paginationComponentForCourses.subscribe("prev", navigateCoursePageHandler);
 
