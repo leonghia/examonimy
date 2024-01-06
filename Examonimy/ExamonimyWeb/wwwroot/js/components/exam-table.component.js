@@ -57,6 +57,12 @@ export class ExamTableComponent {
             <div class="hidden text-gray-500 sm:block">${this.#getTextContentForExamStatus(new Date(cur.from), new Date(cur.to))}</div>
         </div>
     </td>
+    <td class="whitespace-nowrap px-3 py-4">
+        <a href="/exam/edit/${cur.id}" class="text-sm font-semibold text-green-600 hover:text-green-700">Sửa</a>
+    </td>
+    <td class="whitespace-nowrap px-3 py-4">
+        <button type="button" class="text-sm font-semibold text-red-600 hover:text-red-700">Xóa</button>
+    </td>
 </tr>
             `;
         }, "")
@@ -92,7 +98,8 @@ export class ExamTableComponent {
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Lớp</th>             
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời lượng</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời gian mở truy cập</th>
-              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>             
+              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>   
+              <th colspan="2" scope="col" class="py-3 pr-4 pl-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0">Tùy chọn</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">           
