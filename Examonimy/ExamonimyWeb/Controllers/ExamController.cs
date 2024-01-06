@@ -5,6 +5,7 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.ExamManager;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
@@ -48,23 +49,36 @@ public class ExamController : BaseController
         return View(role, new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
     }
 
-    [CustomAuthorize(Roles = "Admin")]
+    [CustomAuthorize(Roles = "Admin,Student")]
     [HttpGet("api/exam")]
+    [Produces("application/json")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
         var contextUser = await base.GetContextUser();
-        var exams = await _examManager.GetPagedListAsync(requestParams);
-        var examsToReturn = exams.Select(e => new ExamGetDto
+        var exams = await _examManager.GetExamsByUserAsync(requestParams, contextUser);
+        if (contextUser.RoleId == (int)Enums.Role.Admin)
         {
-            From = e.From,
-            To = e.To,
-            TimeAllowedInMinutes = _timeAllowedInMinutes,
-            MainClasses = e.MainClasses!.Select(mc => mc.Name).ToList(),
+            var examsToReturnForAdmin = exams.Select(e => new ExamGetDto
+            {
+                From = e.From,
+                To = e.To,
+                TimeAllowedInMinutes = _timeAllowedInMinutes,
+                MainClasses = e.MainClasses!.Select(mc => mc.Name).ToList(),
+                Id = e.Id,
+                ExamPaperCode = e.ExamPaper!.ExamPaperCode,
+                CourseName = e.ExamPaper!.Course!.Name
+            });
+            return Ok(examsToReturnForAdmin);
+        }
+        var examsToReturnForStudents = exams.Select(e => new ExamForStudentGetDto
+        {
             Id = e.Id,
-            ExamPaperCode = e.ExamPaper!.ExamPaperCode,
-            CourseName = e.ExamPaper!.Course!.Name
+            CourseName = e.ExamPaper!.Course!.Name,
+            To = e.To,
+            From = e.From,
+            TimeAllowedInMinutes = _timeAllowedInMinutes
         });
-        return Ok(examsToReturn);
+        return Ok(examsToReturnForStudents);
     }
 
     [CustomAuthorize(Roles = "Admin")]
