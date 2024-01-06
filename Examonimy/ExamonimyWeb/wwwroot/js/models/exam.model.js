@@ -22,3 +22,9 @@ export class ExamCreate {
     from = new Date();
     to = new Date();
 }
+
+export class ExamUpdate {
+    examPaperId = 0;
+    from = new Date();
+    to = new Date();
+}

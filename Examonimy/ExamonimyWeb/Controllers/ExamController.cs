@@ -3,6 +3,7 @@ using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.ClassDTO;
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
+using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Enums;
@@ -14,6 +15,7 @@ using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.NotificationService;
 using ExamonimyWeb.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ExamonimyWeb.Controllers;
 
@@ -82,6 +84,21 @@ public class ExamController : BaseController
     }
 
     [CustomAuthorize(Roles = "Admin")]
+    [HttpGet("api/exam/{id:int}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> Get([FromRoute] int id)
+    {
+        var exam = await _examManager.GetByIdAsync(id);
+        if (exam is null) return NotFound();
+        var examToReturn = new ExamGetForUpdateDto
+        {
+            From = exam.From,
+            To = exam.To
+        };
+        return Ok(examToReturn);
+    }
+
+    [CustomAuthorize(Roles = "Admin")]
     [HttpGet("exam/create")]
     public async Task<IActionResult> RenderCreateView()
     {
@@ -145,5 +162,59 @@ public class ExamController : BaseController
             TimeAllowedInMinutes = _timeAllowedInMinutes
         };
         return Created("", examToReturn);
+    }
+
+    [CustomAuthorize(Roles = "Admin")]
+    [HttpDelete("api/exam/{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        var exam = await _examManager.GetByIdAsync(id);
+        if (exam is null) return NotFound();
+        await _examManager.DeleteAsync(id);
+        await _notificationService.DeleteNotificationsAsync(id, new List<Operation> { Operation.UpcomingExam, Operation.ChangeExamSchedule });
+        return NoContent();
+    }
+
+    [CustomAuthorize(Roles = "Admin")]
+    [HttpPut("api/exam/{id:int}")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ExamUpdateDto examUpdateDto)
+    {
+        var exam = await _examManager.GetByIdAsync(id);       
+        if (exam is null) return NotFound();
+        var from = exam.From;
+        var to = exam.To;
+        await _examManager.UpdateAsync(id, examUpdateDto);
+        var admin = await base.GetContextUser();
+        if (DateTime.Compare(from, examUpdateDto.From) != 0 || DateTime.Compare(to, examUpdateDto.To) != 0)
+        {
+            await _notificationService.NotifyAboutChangedExamSchedule(exam.Id, admin.Id);
+        }
+        return NoContent();
+    }
+
+    [CustomAuthorize(Roles = "Admin")]
+    [HttpGet("exam/edit/{id:int}")]
+    public async Task<IActionResult> RenderUpdateView([FromRoute] int id)
+    {
+        var exam = await _examManager.GetAsync(id, new List<string> { "ExamPaper.Course" });
+        if (exam is null) return NotFound();
+        var contextUser = await base.GetContextUser();
+        var examPapers = await _examPaperManager.GetRangeAsync(e => e.Course!.Id == exam.ExamPaper!.Course!.Id, new List<string> { "Author" });
+        var examPapersToReturn = examPapers.Select(ep => new ExamPaperGetDto
+        {
+            Id = ep.Id,
+            ExamPaperCode = ep.ExamPaperCode,
+            AuthorName = ep.Author!.FullName
+        }).ToList();
+        var viewModel = new ExamEditViewModel
+        {
+            ExamId = exam.Id,
+            User = _mapper.Map<UserGetDto>(contextUser),
+            ExamPapers = examPapersToReturn,          
+            ExamPaperId = exam.ExamPaperId,
+            CourseName = exam.ExamPaper!.Course!.Name
+        };
+        return View("Edit", viewModel);
     }
 }

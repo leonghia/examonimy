@@ -7,7 +7,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
 {
     public interface IExamPaperManager
     {
-        Task<IEnumerable<ExamPaper>> GetRangeAsync(int? courseId = null);
+        Task<IEnumerable<ExamPaper>> GetRangeAsync(Expression<Func<ExamPaper, bool>>? predicate = null, List<string>? includedProps = null);
         Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId);
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
         Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate, string commitMessage);

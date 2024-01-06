@@ -5,5 +5,6 @@
     RejectExamPaper: 3,
     CreateExamPaper: 4,
     EditExamPaper: 5,
-    UpcomingExam: 6
+    UpcomingExam: 6,
+    ChangedExamSchedule: 7
 }

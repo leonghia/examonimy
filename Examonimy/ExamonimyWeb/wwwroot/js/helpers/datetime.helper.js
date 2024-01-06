@@ -27,3 +27,9 @@ export const DateTimeLocaleStringStyle = {
     timeStyle: "short",
     dateStyle: "short"
 };
+
+export const constructExamSchedule = (hourValue, minuteValue, dateValue) => {
+    const fromDateArr = dateValue.split("/");
+    const fromDateTime = new Date(+fromDateArr[2], +fromDateArr[1] - 1, +fromDateArr[0], +hourValue, +minuteValue);
+    return fromDateTime.toISOString();
+}
