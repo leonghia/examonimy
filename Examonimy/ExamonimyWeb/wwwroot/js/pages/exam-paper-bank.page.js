@@ -5,6 +5,7 @@ import { ExamPaperRequestParams, UserRequestParams } from "../models/request-par
 import { fetchData } from "../helpers/ajax.helper.js";
 import { selectDropdownItem, toggleDropdown } from "../helpers/markup.helper.js";
 import { RoleId } from "../helpers/user.helper.js";
+import { MediaType } from "../helpers/media-type.helper.js";
 
 // DOM selectors
 const tableContainer = document.querySelector("#table-container");
@@ -25,7 +26,7 @@ const teacherRequestParams = new UserRequestParams(RoleId.Teacher);
 
 // Function expressions
 const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teacherRequestParams = new UserRequestParams()) => {
-    const getExamPapersResponse = await fetchData("exam-paper", examPaperRequestParams);
+    const getExamPapersResponse = await fetchData("exam-paper", examPaperRequestParams, MediaType.ExamPaper.Full);
     const examPapers = getExamPapersResponse.data;  
     const getTeachersResponse = await fetchData("user", teacherRequestParams);
     const teachers = getTeachersResponse.data;
@@ -36,7 +37,7 @@ const init = async (examPaperRequestParams = new ExamPaperRequestParams(), teach
 }
 
 const examPapersHandler = async (requestParams = new ExamPaperRequestParams()) => {
-    const res = await fetchData("exam-paper", requestParams);   
+    const res = await fetchData("exam-paper", requestParams, MediaType.ExamPaper.Full);   
     examPaperTableComponent.examPapers = res.data;
     examPaperTableComponent.populateTableBody();
     paginationComponent.totalCount = res.paginationMetadata.totalCount;

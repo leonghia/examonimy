@@ -88,7 +88,7 @@ namespace ExamonimyWeb.Controllers
 
 
         [RequestHeaderMatchesMediaType("Accept", "application/vnd.examonimy.exampaper.full+json")]
-        [CustomAuthorize(Roles = "Teacher")]
+        [CustomAuthorize(Roles = "Admin,Teacher")]
         [HttpGet("api/exam-paper")]
         [Produces("application/vnd.examonimy.exampaper.full+json")]
         public async Task<IActionResult> GetFullRange([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)
@@ -116,7 +116,7 @@ namespace ExamonimyWeb.Controllers
         }
 
         [RequestHeaderMatchesMediaType("Accept", "application/json")]
-        [CustomAuthorize(Roles = "Teacher")]
+        [CustomAuthorize(Roles = "Admin,Teacher")]
         [HttpGet("api/exam-paper")]
         [Produces("application/json")]
         public async Task<IActionResult> GetRange([FromQuery] RequestParamsForExamPaper requestParamsForExamPaper)

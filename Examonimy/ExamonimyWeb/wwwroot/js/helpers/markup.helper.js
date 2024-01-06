@@ -1,4 +1,5 @@
 ﻿import { MAX_LENGTH_FOR_QUESTION_CONTENT } from "../config.js";
+import { Notification } from "../models/notification.model.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 import { Operation } from "./operation.helper.js";
@@ -103,8 +104,6 @@ export const selectDropdownItem = (event) => {
 export const changeHtmlBackgroundColorToWhite = () => {
     document.documentElement.classList.remove("bg-gray-100");
     document.documentElement.classList.add("bg-white");
-    document.querySelector("#navbar").classList.remove("bg-gray-100");
-    document.querySelector("#navbar").classList.add("bg-white");
 }
 
 export const changeHtmlBackgroundColorToGray = () => {
@@ -135,8 +134,43 @@ export const trimMarkup = (markup = "") => {
     return markup.substring(0, markup.indexOf(temp) + temp.length);
 }
 
-export const renderNotiIconMarkup = (notification) => {
+export const renderNotiIconMarkup = (notification = new Notification()) => {
     switch (notification.operation) {
+        case Operation.ApproveExamPaper:
+            return `
+<div class="flex-shrink-0">
+    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
+    <div class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-purple-500 border border-white rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2 h-2 text-white"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg></div>
+</div>
+            `;
+        case Operation.AskForReviewForExamPaper:
+            return `
+<div class="flex-shrink-0">
+    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
+    <div class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-yellow-600 border border-white rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2 h-2 text-white"><path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" /><path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" /></svg></div>
+</div>
+            `;
+        case Operation.CommentExamPaper:
+            return `
+<div class="flex-shrink-0">
+    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
+    <div class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-green-500 border border-white rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2 h-2 text-white"><path fill-rule="evenodd" d="M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z" clip-rule="evenodd" /></svg></div>
+</div>            
+            `;
+        case Operation.EditExamPaper:
+            return `
+<div class="flex-shrink-0">
+    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
+    <div class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-500 border border-white rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2 h-2 text-white"><path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" /></svg></div>
+</div>  
+            `;
+        case Operation.RejectExamPaper:
+            return `
+<div class="flex-shrink-0">
+    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
+    <div class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-red-500 border border-white rounded-full"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-white"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></div>
+</div> 
+            `;
         case Operation.UpcomingExam:
             return `
 <div class="inline-flex items-center justify-center flex-shrink-0 w-10 h-10 text-amber-500 bg-amber-100 rounded-lg">
@@ -147,11 +181,6 @@ export const renderNotiIconMarkup = (notification) => {
 </div>
                 `;
         default:
-            return `
-                <div class="flex-shrink-0">
-                    <img class="rounded-full w-11 h-11" src="${notification.actorProfilePicture}" alt="user profile picture">
-                    ${notification.iconMarkup}
-                </div>
-                `;
+            throw new Error("invalid notification operation");
     }
 }

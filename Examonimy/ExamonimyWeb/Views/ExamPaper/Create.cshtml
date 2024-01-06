@@ -5,8 +5,7 @@
     Layout = "_TeacherLayout";
     ViewData["Title"] = "Tạo đề thi mới";
 }
-<div>
-    @await Html.PartialAsync("_PageHeadingPartial", "Tạo đề thi mới")
+<div>  
 
     <div>
         <!-- Stepper -->
@@ -65,7 +64,7 @@
         <!-- Segment 3 (Add questions) -->
         <div id="segment-3" data-order="3" class="segment flex gap-x-12 hidden">
             <div class="basis-1/2">
-                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Thêm câu hỏi", "Vui lòng thêm danh sách câu hỏi bằng cách kéo thả từ ngân hàng câu hỏi bên phải vào trong đề thi."))
+                @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Thêm câu hỏi", "Thêm câu hỏi bằng cách kéo thả từ ngân hàng câu hỏi bên phải vào trong đề thi."))
                 <div id="exam-paper-question-list-container" class="mb-8">      
                     
                 </div>

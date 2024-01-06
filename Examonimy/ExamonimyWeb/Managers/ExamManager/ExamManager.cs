@@ -1,6 +1,8 @@
 ﻿using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
+using System;
 using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Managers.ExamManager
@@ -10,12 +12,14 @@ namespace ExamonimyWeb.Managers.ExamManager
         private readonly IGenericRepository<Exam> _examRepository;
         private readonly IGenericRepository<ExamMainClass> _examMainClassRepository;
         private readonly IGenericRepository<MainClass> _mainClassRepository;
+        private readonly IGenericRepository<Student> _studentRepository;       
 
-        public ExamManager(IGenericRepository<Exam> examRepository, IGenericRepository<ExamMainClass> examMainClassRepository, IGenericRepository<MainClass> mainClassRepository)
+        public ExamManager(IGenericRepository<Exam> examRepository, IGenericRepository<ExamMainClass> examMainClassRepository, IGenericRepository<MainClass> mainClassRepository, IGenericRepository<Student> studentRepository)
         {
             _examRepository = examRepository;
             _examMainClassRepository = examMainClassRepository;
             _mainClassRepository = mainClassRepository;
+            _studentRepository = studentRepository;
         }
 
         public async Task CreateExamAsync(Exam examToCreate, List<int> mainClassIds)
@@ -30,19 +34,45 @@ namespace ExamonimyWeb.Managers.ExamManager
             }).ToList();
             await _examMainClassRepository.InsertRangeAsync(examMainClassesToCreate);
             await _examMainClassRepository.SaveAsync();
-        }      
+        }
+
+        public async Task<string> GetCourseName(int examId)
+        {
+            var exam = await _examRepository.GetAsync(e => e.Id == examId, new List<string> { "ExamPaper.Course" }) ?? throw new ArgumentException(null, nameof(examId));
+            return exam.ExamPaper!.Course!.Name;
+        }
 
         public async Task<PagedList<Exam>> GetExamsByTeacherAsync(int teacherId, RequestParams? requestParams = null)
         {
             var mainClassIds = (await _mainClassRepository.GetRangeAsync(mc => mc.TeacherId == teacherId)).Select(mc => mc.Id);
             var examMainClasses = await _examMainClassRepository.GetRangeAsync(emc => mainClassIds.Contains(emc.MainClassId));
             var examIds = examMainClasses.GroupBy(emc => emc.ExamId).Select(ig => ig.Key);
-            return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" });
+            return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string>{ "MainClasses", "ExamPaper", "ExamPaper.Course" });
         }
 
         public async Task<IEnumerable<Exam>> GetRangeAsync(Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null)
         {
-            return await _examRepository.GetRangeAsync(predicate, new List<string> { "MainClass", "ExamPaper", "ExamPaper.Course" }, orderBy);
+            return await _examRepository.GetRangeAsync(predicate, new List<string>{ "MainClasses", "ExamPaper", "ExamPaper.Course" }, orderBy);
+        }
+
+        public async Task<PagedList<Exam>> GetPagedListAsync(RequestParams? requestParams = null, Expression<Func<Exam, bool>>? predicate = null, Func<IQueryable<Exam>, IOrderedQueryable<Exam>>? orderBy = null)
+        {
+            return await _examRepository.GetPagedListAsync(requestParams, predicate, new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" }, orderBy);
+        }
+
+        public async Task<PagedList<Exam>> GetExamsByUserAsync(RequestParams? requestParams, User user)
+        {
+            if (user.RoleId == (int)Enums.Role.Admin)
+            {
+                return await _examRepository.GetPagedListAsync(requestParams, null, new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" });
+            }
+            if (user.RoleId == (int)Enums.Role.Student)
+            {
+                var student = await _studentRepository.GetByIdAsync(user.Id) ?? throw new ArgumentException(null, nameof(user.Id));
+                var examIds = (await _examMainClassRepository.GetRangeAsync(emc => emc.MainClassId == student.MainClassId && DateTime.Compare(emc.Exam!.To, DateTime.UtcNow) > 0)).Select(emc => emc.ExamId);
+                return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string> { "ExamPaper", "ExamPaper.Course" });
+            }
+            throw new ArgumentException(null, nameof(user.RoleId));
         }
     }
 }

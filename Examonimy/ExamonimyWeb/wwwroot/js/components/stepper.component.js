@@ -1,4 +1,4 @@
-﻿import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite, toggleSegment } from "../helpers/markup.helper.js";
+﻿import { toggleSegment } from "../helpers/markup.helper.js";
 import { BaseComponent } from "./base.component.js";
 
 export class StepperComponent extends BaseComponent {
@@ -35,9 +35,9 @@ export class StepperComponent extends BaseComponent {
 
             if (Number(clickedStep.dataset.order) === this.#steps.length) {
                 this.#markStepAsCompleted(clickedStep);
-                changeHtmlBackgroundColorToGray();
+                
             } else {               
-                changeHtmlBackgroundColorToWhite();
+                
                 if (!clickedStep.dataset.completed)
                     this.#markStepAsCurrent(clickedStep);
             }

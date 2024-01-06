@@ -44,15 +44,18 @@ const navigateHandler = async (pageNumber) => {
 }
 
 const init = async (requestParams = new QuestionRequestParams()) => {
-    const getResponse = new GetResponse();
+    const res = new GetResponse();
     try {
-        Object.assign(getResponse, await fetchData("question", requestParams));       
-        questionTableComponent.questions = getResponse.data;        
+        Object.assign(res, await fetchData("question", requestParams));       
+        questionTableComponent.questions = res.data;        
         questionTableComponent.fromItemNumber = calculateFromItemNumber(requestParams.pageSize, requestParams.pageNumber);
         questionTableComponent.connectedCallback();
 
         if (questionTableComponent.questions.length > 0) {
-            paginationComponent.setPaginationFields(getResponse.paginationMetadata.totalCount, getResponse.paginationMetadata.pageSize, getResponse.paginationMetadata.currentPage, getResponse.paginationMetadata.totalPages);
+            paginationComponent.totalCount = res.paginationMetadata.totalCount;
+            paginationComponent.pageSize = res.paginationMetadata.pageSize;
+            paginationComponent.currentPage = res.paginationMetadata.currentPage;
+            paginationComponent.totalPages = res.paginationMetadata.totalPages;
             paginationComponent.connectedCallback();
         } else {
             paginationComponent.disconnectedCallback();

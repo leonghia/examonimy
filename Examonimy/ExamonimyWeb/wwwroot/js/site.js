@@ -5,10 +5,14 @@
 
 // DOM selectors
 
+
+
 // States and rules
+
 
 // Function expressions
 
 // Event listeners
 
 // On load
+

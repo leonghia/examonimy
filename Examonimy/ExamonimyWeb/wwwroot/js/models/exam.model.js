@@ -8,6 +8,14 @@
     timeAllowedInMinutes = 0;
 }
 
+export class ExamForStudent {
+    id = 0;
+    courseName = "";
+    from = "";
+    to = "";
+    timeAllowedInMinutes = 0;
+}
+
 export class ExamCreate {
     mainClassIds = [0];
     examPaperId = 0;

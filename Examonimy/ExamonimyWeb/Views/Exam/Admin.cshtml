@@ -1,0 +1,23 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Quản lý kì thi";
+    Layout = "_AdminLayout";
+    ViewData["Page"] = 1;
+}
+@await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
+<div id="exam-table-container"></div>
+<div class="flex items-center gap-2">
+    
+    <a href="/exam/create" class="text-sm font-semibold text-violet-600 hover:text-violet-700 flex items-center">
+        <div class="rounded-full bg-violet-300 p-2 text-violet-800 shadow-sm hover:bg-violet-400 hover:text-violet-900 mr-2">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+        </div>
+        Tạo kỳ thi       
+    </a>
+</div>
+<script src="~/js/pages/exam-admin.page.js" type="module" defer></script>
+

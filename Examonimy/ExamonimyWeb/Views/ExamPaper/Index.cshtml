@@ -4,10 +4,10 @@
 @{
     Layout = "_TeacherLayout";
     ViewData["Title"] = "Ngân hàng đề thi";
+    ViewData["Page"] = 2;
 }
 @model ExamPaperBankViewModel
 <div>
-    @await Html.PartialAsync("_PageHeadingPartial", "Ngân hàng đề thi")
     <div class="flex items-center justify-between">
         <form id="search-form" class="basis-1/2">
             <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -86,10 +86,10 @@
             </div>
         </div>
     </div>
-    <div class="mb-10">
-        <div class="mt-8 flow-root">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+    <div class="mt-8">
+        <div class="flow-root">
+            <div class="overflow-x-auto">
+                <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden sm:rounded-lg">
                         <div id="table-container">
 
@@ -104,12 +104,14 @@
     </div>
 </div>
 <div class="flex items-center gap-2">
-    <button title="Tạo đề thi mới" type="button" class="rounded-full bg-violet-300 p-2 text-violet-800 shadow-sm hover:bg-violet-400 hover:text-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
-        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-        </svg>
-    </button>
-    <a href="/exam-paper/create" class="text-sm font-semibold text-violet-600 hover:text-violet-700">Tạo đề thi mới</a>
+    <a href="/exam-paper/create" class="text-sm font-semibold text-violet-600 hover:text-violet-700 flex items-center">
+        <div class="rounded-full bg-violet-300 p-2 text-violet-800 shadow-sm hover:bg-violet-400 hover:text-violet-900 mr-2">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+        </div>
+        Tạo đề thi mới        
+    </a>
 </div>
 <script src="~/js/pages/exam-paper-bank.page.js" type="module"></script>
 

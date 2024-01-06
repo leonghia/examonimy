@@ -1,6 +1,6 @@
 ﻿// Imports
 import { CourseGridComponent } from "../components/course-grid.component.js";
-import { changeHtmlBackgroundColorToGray, changeHtmlBackgroundColorToWhite, hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { Course } from "../models/course.model.js";
@@ -49,9 +49,10 @@ const clickCourseHandler = (course = new Course()) => {
 }
 
 const navigateCoursesHandler = async (pageNumberForCourses = 0) => {
-    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumberForCourses));
-    courseGridComponent.populateCourses(coursePaginationMetadata.data);
-    paginationComponentForCourses.populatePaginationInfo(coursePaginationMetadata.paginationMetadata.totalPages);
+    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumberForCourses));
+    courseGridComponent.populateCourses(res.data);
+    paginationComponentForCourses.totalPages = res.paginationMetadata.totalPages;
+    paginationComponentForCourses.populatePaginationInfo();
 }
 
 const populateCourseCodeForExamPaperCodeInput = (courseCode = "") => {
@@ -75,10 +76,6 @@ const dropQuestionHandler = (data = { questionId, questionNumber }) => {
 }
 
 const onClickStepperHandler = async (stepOrder = 0) => {
-    if (stepOrder === 1)
-        changeHtmlBackgroundColorToWhite();
-    else
-        changeHtmlBackgroundColorToGray();
 
     if (stepOrder === 2) {
         populateCourseCodeForExamPaperCodeInput(courseCode);        
@@ -140,7 +137,7 @@ createExamPaperButton.addEventListener("click", () => {
 });
 
 // On load
-changeHtmlBackgroundColorToWhite();
+/*changeHtmlBackgroundColorToWhite();*/
 stepperComponent.connectedCallback();
 stepperComponent.subscribe("click", onClickStepperHandler);
 paginationComponentForCourses.subscribe("next", navigateCoursesHandler);
@@ -148,10 +145,10 @@ paginationComponentForCourses.subscribe("prev", navigateCoursesHandler);
 courseGridComponent.subscribe("click", clickCourseHandler);
 
 (async () => {
-    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, 1));
-    courseGridComponent.courses = coursePaginationMetadata.data;
+    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, 1));
+    courseGridComponent.courses = res.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.currentPage = 1;
-    paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
+    paginationComponentForCourses.totalPages = res.paginationMetadata.totalPages;
     paginationComponentForCourses.connectedCallback();
 })();

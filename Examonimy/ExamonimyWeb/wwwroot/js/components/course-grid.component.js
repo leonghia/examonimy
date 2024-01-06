@@ -58,12 +58,12 @@ export class CourseGridComponent extends BaseComponent {
         return this.#courses.reduce((accumulator, course) => {
             return accumulator + `
         <!-- Active: "border-violet-600 ring-2 ring-violet-600", Not Active: "border-gray-300" -->
-        <label id="course-label-${course.id}" data-id="${course.id}" data-course-code="${course.courseCode}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-50 p-4 focus:outline-none">         
+        <label id="course-label-${course.id}" data-id="${course.id}" data-course-code="${course.courseCode}" class="course-label relative flex cursor-pointer rounded-lg bg-violet-200 p-4 focus:outline-none">         
             <span class="flex flex-1">
                 <span class="flex flex-col">                  
                     <span class="course-name block text-sm font-medium text-violet-800">${course.name}</span>
-                    <span class="mt-1 flex items-center text-sm text-gray-500">Chưa có đề thi nào được tạo</span>
-                    <span class="mt-6 text-sm font-medium text-gray-900">0 đề thi</span>
+                    <span class="mt-1 flex items-center text-sm text-gray-500">${course.courseCode}</span>
+                    <span class="mt-6 text-sm font-medium text-gray-900">${course.numbersOfExamPapers} đề thi</span>
                 </span>
             </span>
             <!-- Not Checked: "invisible" -->

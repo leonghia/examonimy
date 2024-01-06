@@ -5,6 +5,7 @@ using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.ExamManager;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.UserManager;
@@ -39,7 +40,7 @@ public class ExamController : BaseController
         _notificationService = notificationService;
     }
 
-    [CustomAuthorize(Roles = "Teacher,Student")]
+    [CustomAuthorize(Roles = "Admin,Student")]
     [HttpGet("exam")]
     public async Task<IActionResult> RenderIndexView()
     {
@@ -48,26 +49,39 @@ public class ExamController : BaseController
         return View(role, new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin,Student")]
     [HttpGet("api/exam")]
+    [Produces("application/json")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
         var contextUser = await base.GetContextUser();
-        var exams = await _examManager.GetExamsByTeacherAsync(contextUser.Id, requestParams);
-        var examsToReturn = exams.Select(e => new ExamGetDto
+        var exams = await _examManager.GetExamsByUserAsync(requestParams, contextUser);
+        if (contextUser.RoleId == (int)Enums.Role.Admin)
         {
-            From = e.From,
-            To = e.To,
-            TimeAllowedInMinutes = _timeAllowedInMinutes,
-            MainClasses = e.MainClasses!.Select(mc => mc.Name).ToList(),
+            var examsToReturnForAdmin = exams.Select(e => new ExamGetDto
+            {
+                From = e.From,
+                To = e.To,
+                TimeAllowedInMinutes = _timeAllowedInMinutes,
+                MainClasses = e.MainClasses!.Select(mc => mc.Name).ToList(),
+                Id = e.Id,
+                ExamPaperCode = e.ExamPaper!.ExamPaperCode,
+                CourseName = e.ExamPaper!.Course!.Name
+            });
+            return Ok(examsToReturnForAdmin);
+        }
+        var examsToReturnForStudents = exams.Select(e => new ExamForStudentGetDto
+        {
             Id = e.Id,
-            ExamPaperCode = e.ExamPaper!.ExamPaperCode,
-            CourseName = e.ExamPaper!.Course!.Name
+            CourseName = e.ExamPaper!.Course!.Name,
+            To = e.To,
+            From = e.From,
+            TimeAllowedInMinutes = _timeAllowedInMinutes
         });
-        return Ok(examsToReturn);
+        return Ok(examsToReturnForStudents);
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin")]
     [HttpGet("exam/create")]
     public async Task<IActionResult> RenderCreateView()
     {
@@ -81,7 +95,7 @@ public class ExamController : BaseController
             Name = c.Name,
             CourseCode = c.CourseCode
         }).ToList();
-        var classes = await _mainClassRepository.GetRangeAsync(c => c.TeacherId == contextUser.Id);
+        var classes = await _mainClassRepository.GetRangeAsync();
         var classesToReturn = classes.Select(c => new MainClassGetDto
         {
             Id = c.Id,
@@ -96,7 +110,7 @@ public class ExamController : BaseController
         return View("Create", viewModel);
     }
 
-    [CustomAuthorize(Roles = "Teacher")]
+    [CustomAuthorize(Roles = "Admin")]
     [HttpPost("api/exam")]
     [Consumes("application/json")]
     public async Task<IActionResult> Create([FromBody] ExamCreateDto examCreateDto)
@@ -118,14 +132,14 @@ public class ExamController : BaseController
         await _examManager.CreateExamAsync(examToCreate, examCreateDto.MainClassIds.ToList());
 
         var teacherId = (await base.GetContextUser()).Id;
-        await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList(), examPaper.Course!.Name);
+        await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList());
         var mainClasses = (await _mainClassRepository.GetRangeAsync(c => examCreateDto.MainClassIds.Contains(c.Id))).Select(c => c.Name).ToList();       
         var examToReturn = new ExamGetDto
         {
             Id = examToCreate.Id,
             MainClasses = mainClasses,
             ExamPaperCode = examPaper.ExamPaperCode,
-            CourseName = examPaper.Course.Name,
+            CourseName = examPaper.Course!.Name,
             From = examToCreate.From,
             To = examToCreate.To,
             TimeAllowedInMinutes = _timeAllowedInMinutes

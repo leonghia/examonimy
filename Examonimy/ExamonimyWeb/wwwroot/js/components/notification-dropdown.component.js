@@ -6,6 +6,7 @@ import { renderNotiIconMarkup } from "../helpers/markup.helper.js";
 export class NotificationDropdownComponent {
     #container;
     #notifications;
+    #isDisplayed = false;
 
     constructor(container = new HTMLElement(), notification = [new Notification()]) {
         this.#container = container;
@@ -48,10 +49,12 @@ export class NotificationDropdownComponent {
     }
 
     populate() {
-        this.#container.innerHTML = this.render();
+        this.#container.innerHTML = this.#render();
     }
 
-    
+    toggleDisplay() {
+        this.#isDisplayed = !this.#isDisplayed;
+    }
 
     renderNotifications(notifications = [new Notification()]) {
         return notifications.reduce((pV, cV) => {
@@ -67,15 +70,11 @@ export class NotificationDropdownComponent {
         </a>
             `;
         }, "")
-    }
+    }   
 
-    populateNotfications(notifications = [new Notification()]) {
-
-    }
-
-    render() {
+    #render() {
         return `
-<div id="notification-dropdown" class="absolute right-0 z-20 mt-2 w-96 top-16 origin-top-right bg-white shadow-md divide-y divide-gray-100 rounded-lg" aria-labelledby="dropdownNotificationButton">
+<div id="notification-dropdown" class="${this.#isDisplayed ? "" : "hidden" } absolute right-0 z-20 mt-2 w-96 top-16 origin-top-right bg-white shadow-md divide-y divide-gray-100 rounded-lg" aria-labelledby="dropdownNotificationButton">
     <div class="block px-4 py-2 font-semibold text-center text-sm text-gray-700 rounded-t-lg">
         Thông báo
     </div>

@@ -192,17 +192,29 @@ namespace ExamonimyWeb.Configurations
                 //    NormalizedUsername = "lammn".ToUpperInvariant(),
                 //    NormalizedEmail = "lammn@fpt.edu.vn"
                 //}
+                //new User
+                //{
+                //    Id = 16,
+                //    FullName = "Lã Trọng Nghĩa",
+                //    Username = "nghiala",
+                //    Email = "leonghiacnn@gmail.com",
+                //    RoleId = 3,
+                //    PasswordHash = PasswordHelper.HashPassword("aptech", out var salt),
+                //    PasswordSalt = salt,
+                //    NormalizedUsername = "nghiala".ToUpperInvariant(),
+                //    NormalizedEmail = "leonghiacnn@gmail.com".ToUpperInvariant()
+                //}
                 new User
                 {
-                    Id = 16,
-                    FullName = "Lã Trọng Nghĩa",
-                    Username = "nghiala",
-                    Email = "leonghiacnn@gmail.com",
-                    RoleId = 3,
+                    Id = 17,
+                    FullName = "Admin",
+                    Username = "admin",
+                    Email = "admin@fpt.edu.vn",
+                    RoleId = 1,
                     PasswordHash = PasswordHelper.HashPassword("aptech", out var salt),
                     PasswordSalt = salt,
-                    NormalizedUsername = "nghiala".ToUpperInvariant(),
-                    NormalizedEmail = "leonghiacnn@gmail.com".ToUpperInvariant()
+                    NormalizedUsername = "admin".ToUpperInvariant(),
+                    NormalizedEmail = "admin@fpt.edu.vn".ToUpperInvariant()
                 }
                 );
         }

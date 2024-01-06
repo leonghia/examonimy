@@ -14,6 +14,6 @@ namespace ExamonimyWeb.Services.NotificationService
         Task EditExamPaperAsync(int examPaperId, string commitMessage);
         Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId);
         Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId);
-        Task NotifyAboutUpcomingExamAsync(int teacherId, int examId, List<int> mainClassIds, string courseName);
+        Task NotifyAboutUpcomingExamAsync(int teacherId, int examId, List<int> mainClassIds);
     }
 }

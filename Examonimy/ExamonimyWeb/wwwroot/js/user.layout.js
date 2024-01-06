@@ -12,6 +12,7 @@ const viewNotificationButton = document.querySelector("#view-notification-btn");
 const notifcationDropdownContainer = document.querySelector("#notification-dropdown-container");
 const notiDot = document.querySelector("#noti-dot");
 
+
 // States
 let notificationDropdownComponent;
 let toastSignalRComponent;
@@ -19,6 +20,7 @@ const notiHubConnection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub")
     .configureLogging(signalR.LogLevel.Information)
     .build();
+let isNotificationShown = false;
 
 // Function expressions
 const startNotiHubConnection = async () => {
@@ -50,9 +52,9 @@ openUserMenuButton.addEventListener("click", () => {
     userMenu.classList.toggle("hidden");
 });
 
-viewNotificationButton.addEventListener("click", async () => {
-    notifcationDropdownContainer.classList.toggle("hidden");
-    notificationDropdownComponent.populate();
+viewNotificationButton.addEventListener("click", async () => {   
+    notificationDropdownComponent.toggleDisplay();
+    notificationDropdownComponent.populate();    
     notiDot.classList.add("hidden");
 });
 

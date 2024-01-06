@@ -154,7 +154,7 @@ export class ExamPaperTableComponent {
     #render() {
         return `
 <div class="">
-  <div class="mt-8 flow-root">
+  <div class="flow-root">
     <div class="overflow-x-auto">
       <div class="inline-block min-w-full align-middle bg-white px-6 py-2 rounded-lg">
         <table class="min-w-full divide-y divide-gray-300">
