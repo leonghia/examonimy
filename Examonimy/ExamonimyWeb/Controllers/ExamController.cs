@@ -146,4 +146,31 @@ public class ExamController : BaseController
         };
         return Created("", examToReturn);
     }
+
+    [CustomAuthorize(Roles = "Admin")]
+    [HttpDelete("api/exam/{id:int}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        var exam = await _examManager.GetByIdAsync(id);
+        if (exam is null) return NotFound();
+        await _examManager.DeleteAsync(id);
+        await _notificationService.DeleteNotificationsAsync(id, new List<Operation> { Operation.UpcomingExam });
+        return NoContent();
+    }
+
+    [CustomAuthorize(Roles = "Admin")]
+    [HttpPut("api/exam/{id:int}")]
+    [Consumes("application/json")]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ExamUpdateDto examUpdateDto)
+    {
+        var exam = await _examManager.GetByIdAsync(id);
+        if (exam is null) return NotFound();
+        await _examManager.UpdateAsync(id, examUpdateDto);
+        var admin = await base.GetContextUser();
+        if (DateTime.Compare(exam.From, examUpdateDto.From) != 0 || DateTime.Compare(exam.To, examUpdateDto.To) != 0)
+        {
+            await _notificationService.NotifyAboutChangedExamSchedule(exam.Id, admin.Id);
+        }
+        return NoContent();
+    }
 }

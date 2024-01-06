@@ -1,8 +1,7 @@
-﻿using ExamonimyWeb.Entities;
-using ExamonimyWeb.Enums;
+﻿using ExamonimyWeb.DTOs.ExamDTO;
+using ExamonimyWeb.Entities;
 using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
-using System;
 using System.Linq.Expressions;
 
 namespace ExamonimyWeb.Managers.ExamManager
@@ -73,6 +72,32 @@ namespace ExamonimyWeb.Managers.ExamManager
                 return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string> { "ExamPaper", "ExamPaper.Course" });
             }
             throw new ArgumentException(null, nameof(user.RoleId));
+        }
+
+        public async Task<Exam?> GetByIdAsync(int id)
+        {
+            return await _examRepository.GetByIdAsync(id);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _examRepository.DeleteAsync(id);
+            await _examRepository.SaveAsync();
+        }
+
+        public async Task UpdateAsync(int examId, ExamUpdateDto examUpdateDto)
+        {
+            var exam = await _examRepository.GetByIdAsync(examId) ?? throw new ArgumentException(null, nameof(examId));
+            exam.From = examUpdateDto.From;
+            exam.To = examUpdateDto.To;
+            exam.ExamPaperId = examUpdateDto.ExamPaperId;
+            _examRepository.Update(exam);
+            await _examRepository.SaveAsync();
+        }
+
+        public async Task<IEnumerable<MainClass>> GetMainClassesByExam(int examId)
+        {
+            return (await _examMainClassRepository.GetRangeAsync(emc => emc.ExamId == examId, new List<string> { "MainClass" })).Select(emc => emc.MainClass!);
         }
     }
 }

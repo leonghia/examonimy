@@ -8,6 +8,7 @@
         RejectExamPaper,
         CreateExamPaper,
         EditExamPaper,
-        UpcomingExam
+        UpcomingExam,
+        ChangeExamSchedule
     }
 }

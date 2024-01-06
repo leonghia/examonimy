@@ -2,10 +2,8 @@
 
 namespace ExamonimyWeb.DTOs.ExamDTO;
 
-public class ExamCreateDto
-{
-    [Required]
-    public required ICollection<int> MainClassIds { get; set; }
+public class ExamUpdateDto
+{  
 
     [Required]
     public required int ExamPaperId { get; set; }

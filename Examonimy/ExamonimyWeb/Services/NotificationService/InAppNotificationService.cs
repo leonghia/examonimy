@@ -38,7 +38,7 @@ public class InAppNotificationService : INotificationService
         _examManager = examManager;
     }
 
-    public async Task DeleteThenSaveAsync(int entityId, List<Operation> operations)
+    public async Task DeleteNotificationsAsync(int entityId, List<Operation> operations)
     {
         var notificationsToDelete = (await _notificationRepository.GetRangeAsync(n => n.EntityId == entityId && operations.Contains(n.Operation))).ToList();
         var notificationsIdsToDelete = notificationsToDelete.Select(n => n.Id);
@@ -60,6 +60,7 @@ public class InAppNotificationService : INotificationService
                 var examPaperId = notification.EntityId;
                 return $"/exam-paper/{examPaperId}/review";
             case Operation.UpcomingExam:
+            case Operation.ChangeExamSchedule:
                 return $"/exam";
             default:
                 throw new SwitchExpressionException(notification.Operation);
@@ -91,6 +92,9 @@ public class InAppNotificationService : INotificationService
             case Operation.UpcomingExam:
                 var courseName = await _examManager.GetCourseName(notification.EntityId);
                 return new UpcomingExamNotiMessage(actorFullName, isRead, courseName).ToVietnamese();
+            case Operation.ChangeExamSchedule:
+                courseName = await _examManager.GetCourseName(notification.EntityId);
+                return new ChangedExamScheduleNotiMessage(actorFullName, isRead, courseName).ToVietnamese();
             default:
                 throw new SwitchExpressionException(notification.Operation);  
         }
@@ -119,7 +123,7 @@ public class InAppNotificationService : INotificationService
         return notificationsToReturn;
     }
 
-    public async Task RequestReviewerForExamPaperAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
+    public async Task NotifyUponAddingReviewersAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers, int actorId)
     {
       
         var notification = await _notificationRepository.GetAsync(n => n.Operation == Operation.AskForReviewForExamPaper && n.EntityId == examPaperId, null);
@@ -179,7 +183,7 @@ public class InAppNotificationService : INotificationService
         await _notificationReceiverRepository.SaveAsync();          
     }
 
-    public async Task CommentOnExamPaperReviewAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment)
+    public async Task NotifyAboutExamPaperCommentAsync(int examPaperId, int commenterId, int examPaperAuthorId, string comment)
     {
         var author = await _userManager.GetByIdAsync(examPaperAuthorId) ?? throw new ArgumentException(null, nameof(examPaperAuthorId));
         var authorUsername = author.Username;
@@ -238,7 +242,7 @@ public class InAppNotificationService : INotificationService
 
     }
 
-    public async Task EditExamPaperAsync(int examPaperId, string commitMessage)
+    public async Task NotifyAboutEditedExamPaperAsync(int examPaperId, string commitMessage)
     {
         // Insert into database
         var examPaper = await _examPaperManager.GetByIdAsync(examPaperId) ?? throw new ArgumentException(null, nameof(examPaperId));
@@ -287,7 +291,7 @@ public class InAppNotificationService : INotificationService
         });
     }
 
-    public async Task ApproveExamPaperReviewAsync(int examPaperId, int reviewerId)
+    public async Task NotifyAboutApprovedExamPaperAsync(int examPaperId, int reviewerId)
     {
         // insert notification and notificationReceiver into db
         var notificationToCreate = new Notification
@@ -331,7 +335,7 @@ public class InAppNotificationService : INotificationService
         });
     }
 
-    public async Task RejectExamPaperReviewAsync(int examPaperId, int reviewerId)
+    public async Task NotifyAboutRejectedExamPaperAsync(int examPaperId, int reviewerId)
     {
         // insert notification and notificationReceiver into db
         var notificationToCreate = new Notification
@@ -388,22 +392,10 @@ public class InAppNotificationService : INotificationService
         await _notificationRepository.SaveAsync();
 
 
-        // create the notificationReceiver
-        var notificationReceiversToCreate = new List<NotificationReceiver>();
-        var studentUsernames = new List<string>();
-        foreach (var mainClassId in mainClassIds)
-        {
-            var students = await _studentRepository.GetRangeAsync(s => s.MainClassId == mainClassId, new List<string> { "User" });
-            var receivers = students.Select(s => new NotificationReceiver
-            {
-                ReceiverId = s.UserId,
-                NotificationId = notificationToCreate.Id
-            });
-            notificationReceiversToCreate.AddRange(receivers);
-            var usernames = students.Select(s => s.User!.Username);
-            studentUsernames.AddRange(usernames);
-        }
-        await _notificationReceiverRepository.InsertRangeAsync(notificationReceiversToCreate);
+        var (notificationReceivers, studentUsernames) = await ConstructReceiversAndStudentUsernames(notificationToCreate.Id, mainClassIds);
+
+        // create the notificationReceiver      
+        await _notificationReceiverRepository.InsertRangeAsync(notificationReceivers);
         await _notificationReceiverRepository.SaveAsync();
 
 
@@ -418,5 +410,56 @@ public class InAppNotificationService : INotificationService
             Operation = (int)notificationToCreate.Operation
         });
 
+    }
+
+    private async Task<(List<NotificationReceiver> notificationReceivers, List<string> studentUsernames)> ConstructReceiversAndStudentUsernames(int notificationId, List<int> mainClassIds)
+    {
+        var notificationReceivers = new List<NotificationReceiver>();
+        var studentUsernames = new List<string>();
+        foreach (var mainClassId in mainClassIds)
+        {
+            var students = await _studentRepository.GetRangeAsync(s => s.MainClassId == mainClassId, new List<string> { "User" });
+            var receivers = students.Select(s => new NotificationReceiver
+            {
+                ReceiverId = s.UserId,
+                NotificationId = notificationId
+            });
+            notificationReceivers.AddRange(receivers);
+            var usernames = students.Select(s => s.User!.Username);
+            studentUsernames.AddRange(usernames);
+        }
+        return (notificationReceivers, studentUsernames);
+    }
+
+    public async Task NotifyAboutChangedExamSchedule(int examId, int actorId)
+    {
+        // create the notification
+        var notification = new Notification
+        {
+            EntityId = examId,
+            ActorId = actorId,
+            Operation = Operation.ChangeExamSchedule
+        };
+        await _notificationRepository.InsertAsync(notification);
+        await _notificationRepository.SaveAsync();
+
+        var mainClassIds = (await _examManager.GetMainClassesByExam(examId)).Select(mc => mc.Id).ToList();
+
+        var (notificationReceivers, studentUsernames) = await ConstructReceiversAndStudentUsernames(notification.Id, mainClassIds);
+
+        // create the notificationReceivers
+        await _notificationReceiverRepository.InsertRangeAsync(notificationReceivers);
+        await _notificationReceiverRepository.SaveAsync();
+
+
+        // send signalR noti to students
+        await _notificationHubContext.Clients.Users(studentUsernames).ReceiveNotification(new NotificationGetDto
+        {
+            MessageMarkup = await GetMessageMarkupAsync(notification, false),
+            Href = GetHref(notification),
+            NotifiedAt = notification.CreatedAt,
+            IsRead = false,
+            Operation = (int)notification.Operation
+        });
     }
 }
