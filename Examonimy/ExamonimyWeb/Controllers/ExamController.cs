@@ -171,7 +171,7 @@ public class ExamController : BaseController
         var exam = await _examManager.GetByIdAsync(id);
         if (exam is null) return NotFound();
         await _examManager.DeleteAsync(id);
-        await _notificationService.DeleteNotificationsAsync(id, new List<Operation> { Operation.UpcomingExam });
+        await _notificationService.DeleteNotificationsAsync(id, new List<Operation> { Operation.UpcomingExam, Operation.ChangeExamSchedule });
         return NoContent();
     }
 

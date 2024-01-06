@@ -1,10 +1,16 @@
 ﻿import { LOCALES } from "../config.js";
 import { DateTimeLocaleStringStyle } from "../helpers/datetime.helper.js";
 import { Exam, ExamForStudent } from "../models/exam.model.js";
+import { ConfirmModalComponent } from "./confirm-modal.component.js";
+import { deleteData } from "../helpers/ajax.helper.js";
+import { hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark, showSpinnerForButton } from "../helpers/markup.helper.js";
+import { SpinnerOption } from "../models/spinner-option.model.js";
 
 export class ExamTableComponent {
     #container;
     #exams;
+    #confirmModalComponent;
+    #spinnerOption = new SpinnerOption("fill-red-800");
 
     constructor(container = new HTMLElement(), exams = [new Exam()]) {
         this.#container = container;
@@ -13,6 +19,33 @@ export class ExamTableComponent {
 
     connectedCallback() {
         this.populate();
+
+        this.#container.addEventListener("click", event => {
+            const clickedDeleteButton = event.target.closest(".delete-btn");
+            if (clickedDeleteButton) {
+                this.#confirmModalComponent = new ConfirmModalComponent(clickedDeleteButton.nextElementSibling, {
+                    title: "Xóa kì thi",
+                    description: "Bạn có chắc chắn muốn xóa kì thi này? Kì thi sau khi bị xóa sẽ không thể khôi phục lại.",
+                    ctaText: "Xác nhận"
+                });
+                this.#confirmModalComponent.connectedCallback();
+                this.#confirmModalComponent.subscribe("confirm", async (confirmButton) => {
+                    showSpinnerForButton(confirmButton, this.#spinnerOption);
+                    try {
+                        await deleteData("exam", Number(clickedDeleteButton.dataset.examId));
+                        hideSpinnerForButtonWithCheckmark(confirmButton, this.#spinnerOption);
+                        setTimeout(() => document.location.reload(), 1000);
+                    } catch (err) {
+                        console.error(err);
+                        hideSpinnerForButtonWithoutCheckmark(confirmButton, this.#spinnerOption);
+                    }
+                });
+                this.#confirmModalComponent.subscribe("cancel", () => {
+                    this.#confirmModalComponent.disconnectedCallback();
+                    this.#confirmModalComponent = undefined;
+                })
+            }
+        });
     }
 
     populate() {
@@ -61,7 +94,8 @@ export class ExamTableComponent {
         <a href="/exam/edit/${cur.id}" class="text-sm font-semibold text-green-600 hover:text-green-700">Sửa</a>
     </td>
     <td class="whitespace-nowrap px-3 py-4">
-        <button type="button" class="text-sm font-semibold text-red-600 hover:text-red-700">Xóa</button>
+        <button type="button" data-exam-id="${cur.id}" class="delete-btn text-sm font-semibold text-red-600 hover:text-red-700">Xóa</button>
+        <div class="confirm-modal-container"></div>
     </td>
 </tr>
             `;
@@ -167,6 +201,7 @@ export class ExamTableForStudentComponent {
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">${i + 1}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 font-semibold">${cur.courseName}</td>   
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${cur.timeAllowedInMinutes} phút</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Lý thuyết</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${from.toLocaleString(LOCALES, DateTimeLocaleStringStyle)} - ${to.toLocaleString(LOCALES, DateTimeLocaleStringStyle)}</td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <div class="flex items-center justify-end gap-x-2 sm:justify-start">
@@ -211,6 +246,7 @@ export class ExamTableForStudentComponent {
               <th scope="col" class="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0">STT</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>                      
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời lượng</th>
+              <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Dạng đề</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Thời gian mở truy cập</th>
               <th scope="col" class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Trạng thái</th>    
               <th scope="col" class="py-3 pr-4 pl-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 opacity-0">Hành động</th>  

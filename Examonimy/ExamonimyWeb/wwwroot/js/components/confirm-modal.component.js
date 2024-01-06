@@ -31,20 +31,10 @@ export class ConfirmModalComponent extends BaseComponent {
         this.#confirmButton = this.#container.querySelector("#confirm-btn");
 
         this.#confirmButton.addEventListener("click", async () => {
-            const spinnerOption = new SpinnerOption();
-            spinnerOption.fill = "fill-red-800";
-            showSpinnerForButton(this.#confirmButton, spinnerOption);
-            try {
-                await this._trigger("confirm");
-                hideSpinnerForButtonWithCheckmark(this.#confirmButton, spinnerOption);
-            } catch (err) {
-                console.error(err);
-                hideSpinnerForButtonWithoutCheckmark(this.#confirmButton, this.#option.ctaText, spinnerOption);
-            }
+            this._trigger("confirm", this.#confirmButton);
         });
 
-        this.#cancelButton.addEventListener("click", () => {
-            this.#container.innerHTML = "";
+        this.#cancelButton.addEventListener("click", () => {          
             this._trigger("cancel");
         });
     }  
@@ -80,8 +70,8 @@ export class ConfirmModalComponent extends BaseComponent {
           From: "opacity-100 translate-y-0 sm:scale-100"
           To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
       -->
-      <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+      <div class="relative whitespace-normal bg-white rounded-lg text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <div class="bg-white rounded-t-lg px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
             <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
               <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -96,9 +86,9 @@ export class ConfirmModalComponent extends BaseComponent {
             </div>
           </div>
         </div>
-        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" id="confirm-btn" class="inline-flex w-24 justify-center rounded-md bg-red-300 px-3 py-2 text-sm font-semibold text-red-800 shadow-sm hover:bg-red-400 hover:text-red-900 sm:ml-3 sm:w-auto"><span id="button-text">${this.#option.ctaText}</span></button>
-          <button type="button" id="cancel-btn" class="mt-3 inline-flex w-full justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 hover:text-gray-900 sm:mt-0 sm:w-auto">Hủy</button>
+        <div class="bg-gray-50 rounded-b-lg px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" id="confirm-btn" class="inline-flex w-20 h-9 justify-center items-center rounded-md bg-red-300 text-sm font-semibold text-red-800 shadow-sm hover:bg-red-400 hover:text-red-900 sm:ml-3">${this.#option.ctaText}</button>
+          <button type="button" id="cancel-btn" class="mt-3 text-sm font-semibold text-gray-800 hover:text-gray-900 sm:mt-0 sm:w-auto">Hủy</button>
         </div>
       </div>
     </div>

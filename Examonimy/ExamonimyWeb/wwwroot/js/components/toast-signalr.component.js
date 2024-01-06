@@ -22,9 +22,9 @@ export class ToastSignalRComponent {
     #render() {
         return `
 <a data-is-read="false" href="${this.#notification.href}" data-notification-id="${this.#notification.id}" class="noti-signalr flex sticky ml-auto right-8 bottom-8 noti bg-white w-80 p-4 dark:hover:bg-gray-700 rounded-md">
-    <div class="space-y-2">
+    <div>
         <span class="text-sm font-semibold text-gray-700">Thông báo</span>
-        <div class="flex">
+        <div class="mt-3 flex">
             ${renderNotiIconMarkup(this.#notification)}
             <div class="w-full ps-3">
                 ${this.#notification.messageMarkup}
