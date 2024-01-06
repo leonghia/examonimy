@@ -53,7 +53,7 @@ namespace ExamonimyWeb.Controllers
             return View("Index", viewModel);
         }
 
-        [CustomAuthorize(Roles = "Teacher")]
+        [CustomAuthorize(Roles = "Admin,Teacher")]
         [HttpGet("exam-paper/{id}")]
         [HttpGet("exam-paper/{id}/review")]
         public async Task<IActionResult> RenderSingleView([FromRoute] int id)
@@ -74,7 +74,7 @@ namespace ExamonimyWeb.Controllers
             return View("Single", examPaperSingleViewModel);
         }
 
-        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [CustomAuthorize(Roles = "Admin,Teacher")]
         [HttpGet("api/exam-paper/{examPaperId:int}/question-with-answer")]
         [Produces("application/json")]
         public async Task<IActionResult> GetExamPaperQuestionsWithAnswers([FromRoute] int examPaperId)
@@ -254,7 +254,7 @@ namespace ExamonimyWeb.Controllers
             return Accepted();
         }
 
-        [CustomAuthorize(Roles = "Administrator,Teacher")]
+        [CustomAuthorize(Roles = "Admin,Teacher")]
         [HttpGet("api/exam-paper/{id:int}/review-history")]
         [Produces("application/json")]
         public async Task<IActionResult> GetReviewHistories([FromRoute] int id)

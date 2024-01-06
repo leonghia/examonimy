@@ -21,7 +21,7 @@ export class NotificationDropdownComponent {
             const clickedNoti = event.target.closest(".noti");
             if (clickedNoti && clickedNoti.dataset.isRead === "false") {
                 try {
-                    await putData("notification", Number(clickedNoti.dataset.notificationId));                   
+                    await putData(`notification/${Number(clickedNoti.dataset.notificationId) }`);                   
                 } catch (err) {
                     console.error(err);
                 }               

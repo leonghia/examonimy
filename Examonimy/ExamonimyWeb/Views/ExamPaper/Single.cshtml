@@ -2,20 +2,24 @@
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model ExamPaperSingleViewModel
 @{
     ViewData["Title"] = "Chi tiết đề thi";
-    Layout = "_TeacherLayout";
+    if (Model.User.Role.Id == (int)Role.Admin) Layout = "_AdminLayout";
+    else if (Model.User.Role.Id == (int)Role.Teacher) Layout = "_TeacherLayout";
     var commentExamPaper = (int)Operation.CommentExamPaper;
     var approveExamPaper = (int)Operation.ApproveExamPaper;
     var rejectExamPaper = (int)Operation.RejectExamPaper;
 }
-@model ExamPaperSingleViewModel
 @{
     var editHref = $"/exam-paper/edit/{Model.ExamPaper.Id}";
     var reviewContainerDisplay = Model.IsAuthor || Model.IsReviewer ? "" : "hidden";
     var editButtonDisplay = Model.IsAuthor ? "" : "hidden";
     var approveAndRejectInputDisplay = Model.IsReviewer ? "" : "hidden";
 }
+<div class="@(Model.User.Role.Id == (int)Role.Teacher ? "hidden" : "")">
+    @await Html.PartialAsync("_PageHeadingPartial", ViewData["Title"])
+</div>
 <p class="text-gray-500 text-xs">Mã đề: @Model.ExamPaper.ExamPaperCode - Môn học: @Model.ExamPaper.Course.Name - Tác giả: @Model.ExamPaper.Author.FullName</p>
 <div id="exam-paper-container" data-exam-paper-id="@Model.ExamPaper.Id" class="flex gap-x-16">
 

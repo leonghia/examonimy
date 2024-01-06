@@ -17,5 +17,6 @@ namespace ExamonimyWeb.Managers.ExamManager
         Task DeleteAsync(int id);
         Task UpdateAsync(int examId, ExamUpdateDto examUpdateDto);
         Task<IEnumerable<MainClass>> GetMainClassesByExam(int examId);
+        Task<Exam?> GetAsync(int examId, List<string>? includedProps = null);
     }
 }
