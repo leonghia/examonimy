@@ -2,12 +2,19 @@
     id = 0;
     name = "";
     courseCode = "";
+}
+
+export class CourseWithNumbersOfExamPapers extends Course {
     numbersOfExamPapers = 0;
 
-    constructor(id = 0, name = "", courseCode = "", numbersOfExamPapers = 0) {
-        this.id = id;
-        this.name = name;
-        this.courseCode = courseCode;
-        this.numbersOfExamPapers = numbersOfExamPapers;
+    constructor() {
+        super();      
+    }
+}
+
+export class CourseWithNumbersOfQuestions extends Course {  
+    numbersOfQuestions = 0;
+    constructor() {  
+        super();        
     }
 }

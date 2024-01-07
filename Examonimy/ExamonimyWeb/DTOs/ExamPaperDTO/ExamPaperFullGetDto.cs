@@ -11,7 +11,7 @@ namespace ExamonimyWeb.DTOs.ExamPaperDTO
         
         public required string ExamPaperCode { get; set; }
         
-        public required CourseGetDto Course { get; set; }     
+        public required CourseWithNumbersOfExamPapersGetDto Course { get; set; }     
         
         public required UserGetDto Author { get; set; }
 

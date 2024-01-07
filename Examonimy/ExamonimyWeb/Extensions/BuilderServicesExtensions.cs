@@ -4,7 +4,6 @@ using ExamonimyWeb.Managers.ExamManager;
 using ExamonimyWeb.Managers.ExamPaperManager;
 using ExamonimyWeb.Managers.QuestionManager;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Profiles;
 using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.NotificationService;
@@ -60,12 +59,14 @@ public static class BuilderServicesExtensions
             .AddDbContext<ExamonimyContext>(optionsAction =>
             {
                 optionsAction.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-            })
-            .AddAutoMapper(typeof(AutoMapperProfile));
+            });
             
 
         services              
-            .AddControllersWithViews()
+            .AddControllersWithViews(configure =>
+            {
+                configure.ReturnHttpNotAcceptable = true;
+            })
             .AddJsonOptions(configure =>
             {
                 configure.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -103,7 +104,7 @@ public static class BuilderServicesExtensions
         services.AddTransient<IGenericRepository<Course>, GenericRepository<Course>>();
         services.AddTransient<IGenericRepository<Question>, GenericRepository<Question>>();
         services.AddTransient<IGenericRepository<QuestionType>, GenericRepository<QuestionType>>();
-        services.AddTransient<IGenericRepository<QuestionLevel>, GenericRepository<QuestionLevel>>();
+        
         services.AddTransient<IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>, GenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer>>();
         services.AddTransient<IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>, GenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers>>();
         services.AddTransient<IGenericRepository<TrueFalseQuestion>, GenericRepository<TrueFalseQuestion>>();

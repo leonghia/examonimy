@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿
 using ExamonimyWeb.Attributes;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
@@ -15,7 +15,7 @@ namespace ExamonimyWeb.Controllers
         private readonly INotificationService _notificationService;
         private readonly IGenericRepository<NotificationReceiver> _notificationReceiverRepository;        
 
-        public NotificationController(IMapper mapper, IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(userManager)
+        public NotificationController(IUserManager userManager, INotificationService notificationService, IGenericRepository<NotificationReceiver> notificationReceiverRepository) : base(userManager)
         {                    
             _notificationService = notificationService;
             _notificationReceiverRepository = notificationReceiverRepository;

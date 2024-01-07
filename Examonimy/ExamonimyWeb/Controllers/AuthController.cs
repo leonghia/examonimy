@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using ExamonimyWeb.DTOs.UserDTO;
+﻿using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
-using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Services.AuthService;
 using ExamonimyWeb.Services.TokenService;
 using ExamonimyWeb.Utilities;
@@ -15,8 +13,7 @@ namespace ExamonimyWeb.Controllers
     [Route("")]
     public class AuthController : BaseController
     {
-        private readonly IAuthService _authService;
-        private readonly IMapper _mapper;
+        private readonly IAuthService _authService;       
         private readonly IUserManager _userManager;
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _jwtConfigurations;
@@ -41,10 +38,9 @@ namespace ExamonimyWeb.Controllers
         };
 
 
-        public AuthController(IAuthService authService, IMapper mapper, IUserManager userManager, IConfiguration configuration, ITokenService tokenService) : base(userManager)
+        public AuthController(IAuthService authService, IUserManager userManager, IConfiguration configuration, ITokenService tokenService) : base(userManager)
         {
-            _authService = authService;
-            _mapper = mapper;
+            _authService = authService;           
             _userManager = userManager;
             _tokenService = tokenService;
             _jwtConfigurations = configuration.GetSection("JwtConfigurations");
@@ -87,7 +83,13 @@ namespace ExamonimyWeb.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            var user = _mapper.Map<User>(userRegisterDto);
+            var user = new User
+            {
+                FullName = userRegisterDto.FullName,
+                Username = userRegisterDto.Username,
+                Email = userRegisterDto.Email,
+            };
+
             var operationResult = await _userManager.CreateAsync(user, userRegisterDto.Password);
 
             if (!operationResult.Succeeded)

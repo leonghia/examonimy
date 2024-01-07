@@ -21,6 +21,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
         Task<Tuple<int, T>> CreateQuestionAsync<T>(QuestionCreateDto questionCreateDto, IGenericRepository<T> specificQuestionRepository, int authorId) where T : class;
         Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto);
         Task DeleteThenSaveAsync(int id);
-        Task<Question?> GetSingleByIdAsync(object id);       
+        Task<Question?> GetSingleByIdAsync(object id);
+        Task<IDictionary<int, int>> CountGroupByCourseIdAsync();
     }
 }

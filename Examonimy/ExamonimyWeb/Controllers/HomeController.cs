@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ExamonimyWeb.Attributes;
+﻿using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Managers.UserManager;
 using ExamonimyWeb.Models;
@@ -13,13 +12,13 @@ namespace ExamonimyWeb.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUserManager _userManager;       
-        private readonly IMapper _mapper;
+        
 
-        public HomeController(ILogger<HomeController> logger, IUserManager userManager, IAuthService authService, IMapper mapper) : base(userManager)
+        public HomeController(ILogger<HomeController> logger, IUserManager userManager) : base(userManager)
         {
             _logger = logger;
             _userManager = userManager;           
-            _mapper = mapper;
+            
         }
 
         [CustomAuthorize]

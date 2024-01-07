@@ -3,7 +3,7 @@ import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
 import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
 import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
-import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question.model.js";
+import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question.model.js";
 import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButtonWithCheckmark } from "../helpers/markup.helper.js";
 import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
@@ -12,6 +12,7 @@ import { SimplePaginationComponent } from "../components/simple-pagination.compo
 import { fetchData } from "../helpers/ajax.helper.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { RequestParams } from "../models/request-params.model.js";
+import { MediaType } from "../helpers/media-type.helper.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
@@ -325,7 +326,7 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
 }
 
 const populateCourses = async () => {
-    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, paginationComponentForCourses.currentPage));
+    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, paginationComponentForCourses.currentPage), MediaType.Course.WithNumbersOfQuestions);
     courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
@@ -535,7 +536,7 @@ const onClickCourseHandler = (course = new Course()) => {
 }
 
 const navigateCoursePageHandler = async (pageNumber = 0) => {
-    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumber));
+    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumber), MediaType.Course.WithNumbersOfQuestions);
     const courses = res.data;
     courseGridComponent.populateCourses(courses);
 }

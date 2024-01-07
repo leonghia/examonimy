@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.QuestionDTO;
 using ExamonimyWeb.DTOs.UserDTO;
@@ -15,7 +15,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
 {
     public class QuestionManager : IQuestionManager
     {
-        private readonly IMapper _mapper;
+        
         private readonly IGenericRepository<Question> _questionRepository;
         private readonly IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> _multipleChoiceQuestionWithOneCorrectAnswerRepository;
         private readonly IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> _multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
@@ -33,9 +33,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
 
         public IGenericRepository<FillInBlankQuestion> FillInBlankQuestionRepository => _fillInBlankQuestionRepository;
 
-        public QuestionManager(IMapper mapper, IGenericRepository<Question> questionRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository)
+        public QuestionManager(IGenericRepository<Question> questionRepository, IGenericRepository<MultipleChoiceQuestionWithOneCorrectAnswer> multipleChoiceQuestionWithOneCorrectAnswerRepository, IGenericRepository<MultipleChoiceQuestionWithMultipleCorrectAnswers> multipleChoiceQuestionWithMultipleCorrectAnswersRepository, IGenericRepository<TrueFalseQuestion> trueFalseQuestionRepository, IGenericRepository<ShortAnswerQuestion> shortAnswerQuestionRepository, IGenericRepository<FillInBlankQuestion> fillInBlankQuestionRepository)
         {
-            _mapper = mapper;
+            
             _questionRepository = questionRepository;
             _multipleChoiceQuestionWithOneCorrectAnswerRepository = multipleChoiceQuestionWithOneCorrectAnswerRepository;
             _multipleChoiceQuestionWithMultipleCorrectAnswersRepository = multipleChoiceQuestionWithMultipleCorrectAnswersRepository;
@@ -44,7 +44,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             _fillInBlankQuestionRepository = fillInBlankQuestionRepository;
         }
 
-        public async Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User contextUser)
+        public async Task<QuestionViewModel> GetQuestionViewModelAsync(int questionId, User user)
         {
             var includedProperties = new List<string> { "Question.Course", "Question.QuestionType", "Question.QuestionLevel" };
             var question = await _questionRepository.GetByIdAsync(questionId) ?? throw new ArgumentException(null, nameof(questionId));
@@ -54,15 +54,18 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     var multipleChoiceQuestionWithOneCorrectAnswer = await _multipleChoiceQuestionWithOneCorrectAnswerRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new MultipleChoiceQuestionWithOneCorrectAnswerViewModel
                     {                      
-                        User = _mapper.Map<UserGetDto>(contextUser),                      
-                        Question = _mapper.Map<MultipleChoiceQuestionWithOneCorrectAnswerGetDto>(multipleChoiceQuestionWithOneCorrectAnswer),
+                        User = new UserGetDto { Id = user.Id, FullName = user.FullName, ProfilePicture = user.ProfilePicture },                      
+                        Question = new MultipleChoiceQuestionWithOneCorrectAnswerGetDto
+                        {
+                            Id = 
+                        },
                         ViewName = QuestionTypeNames.MultipleChoiceWithOneCorrectAnswer
                     };
                 case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
                     var multipleChoiceQuestionWithMultipleCorrectAnswers = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new MultipleChoiceQuestionWithMultipleCorrectAnswersViewModel
                     {
-                        User = _mapper.Map<UserGetDto>(contextUser),                      
+                        User = _mapper.Map<UserGetDto>(user),                      
                         Question = _mapper.Map<MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto>(multipleChoiceQuestionWithMultipleCorrectAnswers),
                         ViewName = QuestionTypeNames.MultipleChoiceWithMultipleCorrectAnswers
                     };
@@ -70,7 +73,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     var trueFalseQuestion = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new TrueFalseQuestionViewModel
                     {
-                        User = _mapper.Map<UserGetDto>(contextUser),                      
+                        User = _mapper.Map<UserGetDto>(user),                      
                         Question = _mapper.Map<TrueFalseQuestionGetDto>(trueFalseQuestion),
                         ViewName = QuestionTypeNames.TrueFalse
                     };
@@ -78,7 +81,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     var shortAnswerQuestion = await _shortAnswerQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new ShortAnswerQuestionViewModel
                     {
-                        User = _mapper.Map<UserGetDto>(contextUser),                      
+                        User = _mapper.Map<UserGetDto>(user),                      
                         Question = _mapper.Map<ShortAnswerQuestionGetDto>(shortAnswerQuestion),
                         ViewName = QuestionTypeNames.ShortAnswer
                     };
@@ -86,7 +89,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
                     var fillInBlankQuestion = await _fillInBlankQuestionRepository.GetAsync(q => q.QuestionId == question.Id, includedProperties);
                     return new FillInBlankQuestionViewModel
                     {
-                        User = _mapper.Map<UserGetDto>(contextUser),                        
+                        User = _mapper.Map<UserGetDto>(user),                        
                         Question = _mapper.Map<FillInBlankQuestionGetDto>(fillInBlankQuestion),
                         ViewName = QuestionTypeNames.FillInBlank
                     };
@@ -110,9 +113,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         var questionToReturn1 = new MultipleChoiceQuestionWithOneCorrectAnswerGetDto
                         {
                             Id = question.Id,
-                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            Course = _mapper.Map<CourseWithNumbersOfExamPapersGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
-                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
                             ChoiceA = specificQuestion1!.ChoiceA,
@@ -129,9 +132,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         var questionToReturn2 = new MultipleChoiceQuestionWithMultipleCorrectAnswersGetDto
                         {
                             Id = question.Id,
-                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            Course = _mapper.Map<CourseWithNumbersOfExamPapersGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
-                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
                             ChoiceA = specificQuestion2!.ChoiceA,
@@ -148,9 +151,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         var questionToReturn3 = new TrueFalseQuestionGetDto
                         {
                             Id = question.Id,
-                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            Course = _mapper.Map<CourseWithNumbersOfExamPapersGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
-                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswer = QuestionAnswerValueHelper.GetAnswerValueFromBool(specificQuestion3!.CorrectAnswer)
@@ -163,9 +166,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         var questionToReturn4 = new ShortAnswerQuestionGetDto
                         {
                             Id = question.Id,
-                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            Course = _mapper.Map<CourseWithNumbersOfExamPapersGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
-                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswer = specificQuestion4!.CorrectAnswer
@@ -178,9 +181,9 @@ namespace ExamonimyWeb.Managers.QuestionManager
                         var questionToReturn5 = new FillInBlankQuestionGetDto
                         {
                             Id = question.Id,
-                            Course = _mapper.Map<CourseGetDto>(question.Course),
+                            Course = _mapper.Map<CourseWithNumbersOfExamPapersGetDto>(question.Course),
                             QuestionType = _mapper.Map<QuestionTypeGetDto>(question.QuestionType),
-                            QuestionLevel = _mapper.Map<QuestionLevelGetDto>(question.QuestionLevel),
+                            
                             QuestionContent = question.QuestionContent,
                             Author = _mapper.Map<UserGetDto>(question.Author),
                             CorrectAnswers = QuestionAnswerValueHelper.GetAnswerValuesFromStringForBlanks(specificQuestion5!.CorrectAnswers)
@@ -202,7 +205,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
             {
                 CourseId = questionCreateDto.CourseId,
                 QuestionTypeId = questionCreateDto.QuestionTypeId,
-                QuestionLevelId = questionCreateDto.QuestionLevelId,
+                
                 QuestionContent = questionCreateDto.QuestionContent,
                 AuthorId = authorId
             };
@@ -294,8 +297,7 @@ namespace ExamonimyWeb.Managers.QuestionManager
 
         public async Task UpdateThenSaveAsync(int id, QuestionUpdateDto questionUpdateDto)
         {
-            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));
-            question.QuestionLevelId = questionUpdateDto.QuestionLevelId;
+            var question = await _questionRepository.GetByIdAsync(id) ?? throw new ArgumentException(null, nameof(id));          
             question.QuestionContent = questionUpdateDto.QuestionContent;
             _questionRepository.Update(question);
             await _questionRepository.SaveAsync();
@@ -359,6 +361,11 @@ namespace ExamonimyWeb.Managers.QuestionManager
         public async Task<Question?> GetSingleByIdAsync(object id)
         {
             return await _questionRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IDictionary<int, int>> CountGroupByCourseIdAsync()
+        {
+            return await _questionRepository.CountGroupByPropIdAsync(q => q.CourseId);
         }
     }
 }

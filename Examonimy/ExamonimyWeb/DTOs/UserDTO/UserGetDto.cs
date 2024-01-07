@@ -5,17 +5,10 @@ namespace ExamonimyWeb.DTOs.UserDTO
 {
     public class UserGetDto
     {
-        public int Id { get; set; }
+        public required int Id { get; set; }
 
-        public required string FullName { get; set; }
-
-        public required string Username { get; set; }
-
-        public required string Email { get; set; }
-
-        public DateTime? DateOfBirth { get; set; }
-
-        public required RoleGetDto Role { get; set; }
-        public string? ProfilePicture { get; set; }
+        public required string FullName { get; set; }      
+      
+        public required string ProfilePicture { get; set; }
     }
 }

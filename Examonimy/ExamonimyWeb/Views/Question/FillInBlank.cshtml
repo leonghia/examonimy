@@ -38,11 +38,7 @@
             <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionType.Name</p>
         </div>
 
-        <!-- Question level preview -->
-        <div class="mb-6">
-            @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Mức độ câu hỏi", ""))
-            <p id="question-level-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionLevel.Name</p>
-        </div>
+        
 
         <!-- Question content preview -->
         <div class="mb-6">

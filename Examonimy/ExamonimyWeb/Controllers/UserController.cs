@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ExamonimyWeb.Attributes;
+﻿using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.UserDTO;
 using ExamonimyWeb.Entities;
 using ExamonimyWeb.Managers.UserManager;
@@ -13,12 +12,12 @@ namespace ExamonimyWeb.Controllers
     [Route("")]
     public class UserController : BaseController
     {
-        private readonly IMapper _mapper;
+        
         private readonly IGenericRepository<User> _userRepository;
 
-        public UserController(IMapper mapper, IGenericRepository<User> userRepository, IUserManager userManager) : base(userManager)
+        public UserController(IGenericRepository<User> userRepository, IUserManager userManager) : base(userManager)
         {
-            _mapper = mapper;
+            
             _userRepository = userRepository;
         }
 
@@ -34,7 +33,7 @@ namespace ExamonimyWeb.Controllers
             var contextUser = await base.GetContextUser();
             var index = users.FindIndex(u => u.Id == contextUser.Id);
             users.RemoveAt(index);
-            var usersToReturn = users.Select(u => _mapper.Map<UserGetDto>(u));
+            var usersToReturn = users.Select(u => new UserGetDto { FullName = u.FullName, Id = u.Id, ProfilePicture = u.ProfilePicture });
             return Ok(usersToReturn);
         }
     }

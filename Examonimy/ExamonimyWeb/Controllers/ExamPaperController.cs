@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ExamonimyWeb.Attributes;
+﻿using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamPaperDTO;
 using ExamonimyWeb.DTOs.UserDTO;
@@ -20,15 +19,15 @@ namespace ExamonimyWeb.Controllers
     [Route("")]
     public class ExamPaperController : BaseController
     {
-        private readonly IMapper _mapper;        
+               
         private readonly IUserManager _userManager;     
         private readonly IGenericRepository<Course> _courseRepository;
         private readonly IExamPaperManager _examPaperManager;
         private readonly INotificationService _notificationService;
 
-        public ExamPaperController(IMapper mapper, IUserManager userManager, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(userManager)
+        public ExamPaperController(IUserManager userManager, IGenericRepository<Course> courseRepository, IExamPaperManager examPaperManager, INotificationService notificationService) : base(userManager)
         {
-            _mapper = mapper;          
+                
             _userManager = userManager;          
             _courseRepository = courseRepository;
             _examPaperManager = examPaperManager;
@@ -41,9 +40,14 @@ namespace ExamonimyWeb.Controllers
         {
 
             var contextUser = await base.GetContextUser();
-            var userToReturn = _mapper.Map<UserGetDto>(contextUser);
+            var userToReturn = new UserGetDto
+            {
+                Id = contextUser.Id,
+                FullName = contextUser.FullName,
+                ProfilePicture = contextUser.ProfilePicture
+            };
             var coursesCount = await _courseRepository.CountAsync(null);
-            var coursesToReturn = (await _courseRepository.GetPagedListAsync(new RequestParams { PageSize = coursesCount }, null, null, null)).Select(c => _mapper.Map<CourseGetDto>(c));
+            var coursesToReturn = (await _courseRepository.GetPagedListAsync(new RequestParams { PageSize = coursesCount }, null, null, null)).Select(c => new CourseGetDto{ CourseCode = c.CourseCode, Id = c.Id, Name = c.Name });
             var statusesToReturn = new List<ExamPaperStatusModel>();
             foreach (ExamPaperStatus e in Enum.GetValues(typeof(ExamPaperStatus)))
             {

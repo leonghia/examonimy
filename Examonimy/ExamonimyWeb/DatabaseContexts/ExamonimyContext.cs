@@ -20,9 +20,10 @@ namespace ExamonimyWeb.DatabaseContexts
             //modelBuilder.ApplyConfiguration<User>(new UserConfiguration());
             modelBuilder.ApplyConfiguration<Course>(new CourseConfiguration());
             modelBuilder.ApplyConfiguration<QuestionType>(new QuestionTypeConfiguration());
-            modelBuilder.ApplyConfiguration<QuestionLevel>(new QuestionLevelConfiguration());
+            
             modelBuilder.ApplyConfiguration<MainClass>(new MainClassConfiguration());
             modelBuilder.ApplyConfiguration<Student>(new StudentConfiguration());
+            modelBuilder.ApplyConfiguration<CourseModule>(new CourseModuleConfiguration());
 
             modelBuilder.Entity<ExamPaper>()
                 .HasMany(eP => eP.Questions)
@@ -139,7 +140,6 @@ namespace ExamonimyWeb.DatabaseContexts
         public required DbSet<Role> Roles { get; init; }
         public required DbSet<Course> Courses { get; init; }
         public required DbSet<QuestionType> QuestionTypes { get; init; }
-        public required DbSet<QuestionLevel> QuestionLevels { get; init; }
         public required DbSet<Question> Questions { get; init; }
         public required DbSet<MultipleChoiceQuestionWithOneCorrectAnswer> MultipleChoiceQuestionsWithOneCorrectAnswer { get; init; }
         public required DbSet<MultipleChoiceQuestionWithMultipleCorrectAnswers> MultipleChoiceQuestionsWithMultipleCorrectAnswers { get; init; }

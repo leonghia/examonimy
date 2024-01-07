@@ -19,10 +19,7 @@ namespace ExamonimyWeb.Entities
         public required int QuestionTypeId { get; set; }
         public QuestionType? QuestionType { get; set; }
 
-        [ForeignKey("QuestionLevel")]
-        [Required]
-        public required int QuestionLevelId { get; set; }
-        public QuestionLevel? QuestionLevel { get; set; }
+        
 
         [Required]
         public required string QuestionContent { get; set; }

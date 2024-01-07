@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ExamonimyWeb.Attributes;
+﻿using ExamonimyWeb.Attributes;
 using ExamonimyWeb.DTOs.ClassDTO;
 using ExamonimyWeb.DTOs.CourseDTO;
 using ExamonimyWeb.DTOs.ExamDTO;
@@ -22,7 +21,7 @@ namespace ExamonimyWeb.Controllers;
 [Route("")]
 public class ExamController : BaseController
 {
-    private readonly IMapper _mapper;
+    
     private readonly IUserManager _userManager;
     private readonly IExamManager _examManager;
     private readonly IExamPaperManager _examPaperManager;
@@ -31,9 +30,9 @@ public class ExamController : BaseController
     private readonly INotificationService _notificationService;
     private const int _timeAllowedInMinutes = 40;
 
-    public ExamController(IMapper mapper, IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository, INotificationService notificationService) : base(userManager)
+    public ExamController(IUserManager userManager, IExamManager examManager, IExamPaperManager examPaperManager, IGenericRepository<Course> courseRepository, IGenericRepository<MainClass> mainClassRepository, INotificationService notificationService) : base(userManager)
     {
-        _mapper = mapper;
+        
         _userManager = userManager;
         _examManager = examManager;
         _examPaperManager = examPaperManager;
@@ -48,7 +47,15 @@ public class ExamController : BaseController
     {
         var contextUser = await base.GetContextUser();
         var role = _userManager.GetRole(contextUser);
-        return View(role, new AuthorizedViewModel { User = _mapper.Map<UserGetDto>(contextUser) });
+        return View(role, new AuthorizedViewModel
+        {
+            User = new UserGetDto
+            {
+                Id = contextUser.Id,
+                FullName = contextUser.FullName,
+                ProfilePicture = contextUser.ProfilePicture
+            }
+        });
     }
 
     [CustomAuthorize(Roles = "Admin,Student")]
@@ -105,7 +112,7 @@ public class ExamController : BaseController
         var contextUser = await base.GetContextUser();
         var dict = await _examPaperManager.CountGroupByCourseIdAsync();
         var courses = await _courseRepository.GetRangeAsync(null, null, q => q.OrderBy(c => c.Name));
-        var coursesToReturn = courses.Select(c => new CourseGetDto
+        var coursesToReturn = courses.Select(c => new CourseWithNumbersOfExamPapersGetDto
         {
             Id = c.Id,
             NumbersOfExamPapers = dict.TryGetValue(c.Id, out var numbers) ? numbers : 0,
