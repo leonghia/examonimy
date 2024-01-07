@@ -158,6 +158,8 @@ namespace ExamonimyWeb.DatabaseContexts
 
         public required DbSet<Student> Students { get; init; }
 
-        public required DbSet<Exam> Exams { get; init; }     
+        public required DbSet<Exam> Exams { get; init; }    
+        
+        public required DbSet<CourseModule> CourseModules { get; init; }
     }
 }
