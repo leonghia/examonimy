@@ -212,7 +212,7 @@ export class ExamTableForStudentComponent {
         </div>
     </td>
     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-        <a href="/exam/${cur.id}" class="${this.#getExamTakingStatus(from, to) ? "" : "opacity-20 pointer-events-none"} px-4 py-2 bg-violet-300 rounded-md text-sm font-semibold text-violet-800 hover:text-violet-900 hover:bg-violet-400">Vào thi</a>
+        <a href="/exam/take/${cur.id}" class="${this.#getExamTakingStatus(from, to) ? "" : "opacity-20 pointer-events-none"} px-4 py-2 bg-violet-300 rounded-md text-sm font-semibold text-violet-800 hover:text-violet-900 hover:bg-violet-400">Vào thi</a>
     </td>
 </tr>
             `;

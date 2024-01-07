@@ -217,4 +217,13 @@ public class ExamController : BaseController
         };
         return View("Edit", viewModel);
     }
+
+    [CustomAuthorize(Roles = "Student")]
+    [HttpGet("exam/take/{id:int}")]
+    public async Task<IActionResult> RenderTakeView([FromRoute] int id)
+    {
+        var exam = await _examManager.GetByIdAsync(id);
+        if (exam is null) return NotFound();
+        return View("Take");
+    }
 }
