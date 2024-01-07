@@ -220,7 +220,7 @@ public class ExamController : BaseController
 
     [CustomAuthorize(Roles = "Student")]
     [HttpGet("exam/take/{id:int}")]
-    public async Task<IActionResult> RenderTakeView([FromRoute] int id)
+    public async Task<IActionResult> RenderPrepareView([FromRoute] int id)
     {
         var exam = await _examManager.GetByIdAsync(id);
         if (exam is null) return NotFound();

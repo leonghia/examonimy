@@ -38,6 +38,9 @@ const runTechnicalCheck = () => {
     }, 1500);
 }
 
+const startExam = () => {
+
+}
 
 // Event listener
 confirmRuleInput.addEventListener("change", () => {
@@ -47,4 +50,8 @@ confirmRuleInput.addEventListener("change", () => {
         runTechnicalCheck();
     }, 1500);   
 })
+
+startButton.addEventListener("click", () => {
+    startExam();
+});
 // On load
