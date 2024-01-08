@@ -1,5 +1,6 @@
 ﻿using ExamonimyWeb.DTOs.ExamDTO;
 using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Repositories;
 using ExamonimyWeb.Utilities;
 using System.Linq.Expressions;
@@ -59,19 +60,19 @@ public class ExamManager : IExamManager
         return await _examRepository.GetPagedListAsync(requestParams, predicate, new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" }, orderBy);
     }
 
-    public async Task<PagedList<Exam>> GetExamsByUserAsync(RequestParams? requestParams, User user)
+    public async Task<PagedList<Exam>> GetExamsByUserAsync(RequestParams? requestParams, int userId, int roleId)
     {
-        if (user.RoleId == (int)Enums.Role.Admin)
+        if (roleId == RoleIds.Admin)
         {
             return await _examRepository.GetPagedListAsync(requestParams, null, new List<string> { "MainClasses", "ExamPaper", "ExamPaper.Course" });
         }
-        if (user.RoleId == (int)Enums.Role.Student)
+        if (roleId == RoleIds.Student)
         {
-            var student = await _studentRepository.GetByIdAsync(user.Id) ?? throw new ArgumentException(null, nameof(user.Id));
+            var student = await _studentRepository.GetByIdAsync(userId) ?? throw new ArgumentException(null, nameof(userId));
             var examIds = (await _examMainClassRepository.GetRangeAsync(emc => emc.MainClassId == student.MainClassId && DateTime.Compare(emc.Exam!.To, DateTime.UtcNow) > 0)).Select(emc => emc.ExamId);
             return await _examRepository.GetPagedListAsync(requestParams, e => examIds.Contains(e.Id), new List<string> { "ExamPaper", "ExamPaper.Course" });
         }
-        throw new ArgumentException(null, nameof(user.RoleId));
+        throw new ArgumentException(null, nameof(roleId));
     }
 
     public async Task<Exam?> GetByIdAsync(int id)

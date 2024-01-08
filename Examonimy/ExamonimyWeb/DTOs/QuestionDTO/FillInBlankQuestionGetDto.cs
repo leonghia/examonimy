@@ -2,6 +2,6 @@
 {
     public class FillInBlankQuestionGetDto : QuestionGetDto
     {                 
-        public required IEnumerable<string> CorrectAnswers { get; set; }
+        public required IList<string> CorrectAnswers { get; set; }
     }
 }

@@ -61,7 +61,7 @@ public class CourseController : BaseController
     public async Task<IActionResult> GetCoursesWithNumbersOfQuestions([FromQuery] RequestParams? requestParams)
     {
         var courses = await _courseRepository.GetPagedListAsync(requestParams, null, null, q => q.OrderBy(c => c.Name));
-        var dict = await _questionManager.CountGroupByCourseIdAsync();
+        var dict = await _questionManager.CountByCourseAsync();
         var coursesToReturn = courses.Select(c => new CourseWithNumbersOfQuestionsGetDto
         {
             Id = c.Id,

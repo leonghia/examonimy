@@ -26,7 +26,7 @@ namespace ExamonimyWeb.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Get([FromQuery] RequestParams requestParams)
         {
-            var contextUser = await base.GetContextUser();
+            var contextUser = (await base.GetContextUser()).Item1;
             var notificationsToReturn = await _notificationService.GetNotificationsAsync(contextUser.Id, requestParams);
             
             return Ok(notificationsToReturn);
@@ -36,7 +36,7 @@ namespace ExamonimyWeb.Controllers
         [HttpPut("api/notification/{id:int}")]
         public async Task<IActionResult> MarkAsRead([FromRoute] int id)
         {
-            var contextUser = await base.GetContextUser();
+            var contextUser = (await base.GetContextUser()).Item1;
             var notificationReceiver = await _notificationReceiverRepository.GetAsync(nR => nR.NotificationId == id && nR.ReceiverId == contextUser.Id, null);
             if (notificationReceiver is null)
                 return NotFound();

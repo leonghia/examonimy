@@ -8,7 +8,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
     public interface IExamPaperManager
     {
         Task<IEnumerable<ExamPaper>> GetRangeAsync(Expression<Func<ExamPaper, bool>>? predicate = null, List<string>? includedProps = null);
-        Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId);
+        Task<IEnumerable<ExamPaperQuestionGetDto>> GetWithFullQuestions(int examPaperId);
         Task<bool> IsAuthorAsync(int examPaperId, int userId);
         Task UpdateAsync(int examPaperId, List<ExamPaperQuestion> examPaperQuestionsToUpdate, string commitMessage);
         Task AddReviewersAsync(int examPaperId, List<ExamPaperReviewer> examPaperReviewers);
@@ -16,8 +16,8 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
         Task<Course> GetCourseAsync(int examPaperId);
         Task DeleteAsync(int examPaperId);      
         Task<ExamPaper?> GetByIdAsync(int examPaperId);
-        Task<PagedList<ExamPaper>> GetPagedListAsync(RequestParamsForExamPaper requestParamsForExamPaper);
-        Task<int> CountNumbersOfQuestions(int examPaperId);
+        Task<PagedList<ExamPaper>> GetPagedListAsync(RequestParamsForExamPaper? requestParamsForExamPaper = null, List<string>? includedProps = null);
+        Task<int> CountNumbersOfQuestionsInExamPaperAsync(int examPaperId);
         Task CreateAsync(ExamPaper examPaper);
         Task<bool> IsReviewerAsync(int examPaperId, int userId);
         Task<ExamPaperQuestion?> GetExamPaperQuestionAsync(int examPaperQuestionId);

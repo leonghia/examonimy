@@ -68,47 +68,9 @@ namespace ExamonimyWeb.Controllers
             return View("Login");
         }
 
-        [HttpGet("register")]
-        public IActionResult RenderRegisterView()
-        {
-            return View("Register");
-        }
+        
 
-        [HttpPost("api/auth/register")]
-        [Consumes("application/json")]
-        [Produces("application/problem+json")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterDto userRegisterDto)
-        {
-
-            if (!ModelState.IsValid)
-                return ValidationProblem(ModelState);
-
-            var user = new User
-            {
-                FullName = userRegisterDto.FullName,
-                Username = userRegisterDto.Username,
-                Email = userRegisterDto.Email,
-            };
-
-            var operationResult = await _userManager.CreateAsync(user, userRegisterDto.Password);
-
-            if (!operationResult.Succeeded)
-            {
-                var errors = new ExpandoObject();
-                foreach (var error in operationResult.Errors!)
-                {
-                    errors.TryAdd(error.Code, new string[] { error.Description });
-                }
-
-                var problemDetails = new CustomProblemDetails(HttpContext.Request.Path, "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.8", StatusCodes.Status409Conflict, "registration");
-
-                problemDetails.Extensions.TryAdd("errors", errors);
-
-                return Conflict(problemDetails);
-            }
-
-            return Accepted();
-        }
+        
 
         [HttpPost("api/auth/login")]
         [Consumes("application/json")]

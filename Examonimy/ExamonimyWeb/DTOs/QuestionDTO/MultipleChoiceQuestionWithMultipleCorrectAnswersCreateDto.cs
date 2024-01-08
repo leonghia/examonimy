@@ -21,6 +21,6 @@ namespace ExamonimyWeb.DTOs.QuestionDTO
 
         [Required]
         [StringLength(7)]
-        public required string CorrectAnswers { get; set; }
+        public required IEnumerable<char> CorrectAnswers { get; set; }
     }
 }

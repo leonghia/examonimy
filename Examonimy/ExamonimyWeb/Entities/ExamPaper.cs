@@ -27,7 +27,7 @@ namespace ExamonimyWeb.Entities
         public ICollection<Question>? Questions { get; set; }
         public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
 
-        public ExamPaperStatus? Status { get; set; } = ExamPaperStatus.Pending;
+        public ExamPaperStatus Status { get; set; } = ExamPaperStatus.Pending;
 
         public ICollection<User>? Reviewers { get; set; }
         public ICollection<ExamPaperReviewer>? ExamPaperReviewers { get; set; }

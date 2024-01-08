@@ -29,13 +29,13 @@
         <!-- Course info preview -->
         <div class="mb-6">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Môn học", ""))
-            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.Course.Name</p>
+            <p id="course-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.Course</p>
         </div>
 
         <!-- Question type preview -->
         <div class="mb-6">
             @await Html.PartialAsync("_SectionHeadingPartial", new SectionHeadingViewModel("Dạng câu hỏi", ""))
-            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionType.Name</p>
+            <p id="question-type-preview" class="mt-4 text-sm font-normal text-violet-600">@Model.Question.QuestionType</p>
         </div>
 
         

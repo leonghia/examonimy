@@ -45,17 +45,8 @@ public class ExamController : BaseController
     [HttpGet("exam")]
     public async Task<IActionResult> RenderIndexView()
     {
-        var contextUser = await base.GetContextUser();
-        var role = _userManager.GetRole(contextUser);
-        return View(role, new AuthorizedViewModel
-        {
-            User = new UserGetDto
-            {
-                Id = contextUser.Id,
-                FullName = contextUser.FullName,
-                ProfilePicture = contextUser.ProfilePicture
-            }
-        });
+        var (user, userToReturn) = await base.GetContextUser();
+        return View(userToReturn.Role, userToReturn);
     }
 
     [CustomAuthorize(Roles = "Admin,Student")]
@@ -63,9 +54,10 @@ public class ExamController : BaseController
     [Produces("application/json")]
     public async Task<IActionResult> Get([FromQuery] RequestParams? requestParams)
     {
-        var contextUser = await base.GetContextUser();
-        var exams = await _examManager.GetExamsByUserAsync(requestParams, contextUser);
-        if (contextUser.RoleId == (int)Enums.Role.Admin)
+        var (user, userToReturn) = await base.GetContextUser();
+        var role = user.Role!.Name;
+        var exams = await _examManager.GetExamsByUserAsync(requestParams, user.Id, user.RoleId );
+        if (user.RoleId == (int)Enums.Role.Admin)
         {
             var examsToReturnForAdmin = exams.Select(e => new ExamGetDto
             {
@@ -109,7 +101,8 @@ public class ExamController : BaseController
     [HttpGet("exam/create")]
     public async Task<IActionResult> RenderCreateView()
     {
-        var contextUser = await base.GetContextUser();
+       
+       
         var dict = await _examPaperManager.CountGroupByCourseIdAsync();
         var courses = await _courseRepository.GetRangeAsync(null, null, q => q.OrderBy(c => c.Name));
         var coursesToReturn = courses.Select(c => new CourseWithNumbersOfExamPapersGetDto
@@ -127,7 +120,7 @@ public class ExamController : BaseController
         }).ToList();
         var viewModel = new ExamCreateViewModel
         {
-            User = _mapper.Map<UserGetDto>(contextUser),
+            User = (await base.GetContextUser()).Item2,
             Courses = coursesToReturn,
             MainClasses = classesToReturn
         };
@@ -155,7 +148,7 @@ public class ExamController : BaseController
         };
         await _examManager.CreateExamAsync(examToCreate, examCreateDto.MainClassIds.ToList());
 
-        var teacherId = (await base.GetContextUser()).Id;
+        var teacherId = (await base.GetContextUser()).Item1.Id;
         await _notificationService.NotifyAboutUpcomingExamAsync(teacherId, examToCreate.Id, examCreateDto.MainClassIds.ToList());
         var mainClasses = (await _mainClassRepository.GetRangeAsync(c => examCreateDto.MainClassIds.Contains(c.Id))).Select(c => c.Name).ToList();       
         var examToReturn = new ExamGetDto
@@ -192,7 +185,7 @@ public class ExamController : BaseController
         var from = exam.From;
         var to = exam.To;
         await _examManager.UpdateAsync(id, examUpdateDto);
-        var admin = await base.GetContextUser();
+        var admin = (await base.GetContextUser()).Item1;
         if (DateTime.Compare(from, examUpdateDto.From) != 0 || DateTime.Compare(to, examUpdateDto.To) != 0)
         {
             await _notificationService.NotifyAboutChangedExamSchedule(exam.Id, admin.Id);
@@ -212,12 +205,12 @@ public class ExamController : BaseController
         {
             Id = ep.Id,
             ExamPaperCode = ep.ExamPaperCode,
-            AuthorName = ep.Author!.FullName
+            Author = ep.Author!.FullName
         }).ToList();
         var viewModel = new ExamEditViewModel
         {
             ExamId = exam.Id,
-            User = _mapper.Map<UserGetDto>(contextUser),
+            User = (await base.GetContextUser()).Item2,
             ExamPapers = examPapersToReturn,          
             ExamPaperId = exam.ExamPaperId,
             CourseName = exam.ExamPaper!.Course!.Name

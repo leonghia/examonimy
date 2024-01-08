@@ -4,6 +4,6 @@
     {
         public required int Id { get; set; }
         public required string ExamPaperCode { get; set; }
-        public required string AuthorName { get; set; }
+        public required string Author { get; set; }
     }
 }

@@ -71,7 +71,7 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             await _examPaperReviewHistoryRepository.SaveAsync();
         }
 
-        public async Task<int> CountNumbersOfQuestions(int examPaperId)
+        public async Task<int> CountNumbersOfQuestionsInExamPaperAsync(int examPaperId)
         {
             return await _examPaperQuestionRepository.CountAsync(examPaperQuestion => examPaperQuestion.ExamPaperId == examPaperId);
         }
@@ -118,14 +118,14 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return await _examPaperQuestionRepository.GetByIdAsync(examPaperQuestionId);
         }
 
-        public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetExamPaperQuestionsWithAnswersAsync(int examPaperId)
+        public async Task<IEnumerable<ExamPaperQuestionGetDto>> GetWithFullQuestions(int examPaperId)
         {
             var examPaperQuestionsToReturn = new List<ExamPaperQuestionGetDto>();
             var examPaperQuestions = await _examPaperQuestionRepository.GetRangeAsync(ePQ => ePQ.ExamPaperId == examPaperId, new List<string> { "ExamPaperQuestionComments", "ExamPaperQuestionComments.Commenter" });
             foreach (var examPaperQuestion in examPaperQuestions)
             {
-                var question = await _questionManager.GetSingleByIdAsync(examPaperQuestion.QuestionId) ?? throw new ArgumentException(null, nameof(examPaperId));
-                var questionToReturn = await _questionManager.GetSpecificQuestionWithAnswerDtoAsync(question.Id);
+                var question = await _questionManager.GetByIdAsync(examPaperQuestion.QuestionId) ?? throw new ArgumentException(null, nameof(examPaperId));
+                var questionToReturn = await _questionManager.GetFullQuestionDto(question.QuestionTypeId, question.Id);
                 examPaperQuestionsToReturn.Add(new ExamPaperQuestionGetDto
                 {
                     Id = examPaperQuestion.Id,
@@ -137,23 +137,23 @@ namespace ExamonimyWeb.Managers.ExamPaperManager
             return examPaperQuestionsToReturn;
         }
 
-        public async Task<PagedList<ExamPaper>> GetPagedListAsync(RequestParamsForExamPaper requestParamsForExamPaper)
+        public async Task<PagedList<ExamPaper>> GetPagedListAsync(RequestParamsForExamPaper? requestParamsForExamPaper, List<string>? includedProps = null)
         {
             var predicate = PredicateBuilder.New<ExamPaper>(true);
-            if (requestParamsForExamPaper.SearchQuery is not null)
+            if (requestParamsForExamPaper?.SearchQuery is not null)
             {
                 predicate = predicate.And(eP => eP.ExamPaperCode.ToUpper().Contains(requestParamsForExamPaper.SearchQuery.ToUpper()));
             }
             
-            if (requestParamsForExamPaper.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
+            if (requestParamsForExamPaper?.CourseId is not null && requestParamsForExamPaper.CourseId > 0)
             {
                 predicate = predicate.And(eP => eP.CourseId == requestParamsForExamPaper.CourseId);
             }
-            if (requestParamsForExamPaper.Status is not null)
+            if (requestParamsForExamPaper?.Status is not null)
             {
                 predicate = predicate.And(eP => eP.Status == requestParamsForExamPaper.Status);
             }
-            return await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, predicate, new List<string> { "Author", "Course", "Reviewers" });           
+            return await _examPaperRepository.GetPagedListAsync(requestParamsForExamPaper, predicate);           
         }
 
         public async Task<int> GetReviewerIdAsync(int examPaperReviewerId)

@@ -1,4 +1,6 @@
-﻿using ExamonimyWeb.Entities;
+﻿using ExamonimyWeb.DTOs.UserDTO;
+using ExamonimyWeb.Entities;
+using ExamonimyWeb.Enums;
 using ExamonimyWeb.Managers.UserManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -25,10 +27,16 @@ public class BaseController : Controller
         return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
     }
 
-    protected async Task<User> GetContextUser()
+    protected async Task<(User, UserGetDto)> GetContextUser()
     {
-        var username = HttpContext.User.Identity!.Name;
-        var user = await _userManager.FindByUsernameAsync(username!);
-        return user!;
+        var roleIdMappings = new Dictionary<int, string>
+        {
+            { 1, Enums.Role.Admin.ToString() },
+            { 2, Enums.Role.Teacher.ToString() },
+            { 3, Enums.Role.Student.ToString() }
+        };
+        var username = HttpContext.User?.Identity?.Name ?? throw new Exception();
+        var user = await _userManager.FindByUsernameAsync(username) ?? throw new Exception();
+        return (user, new UserGetDto { FullName = user.FullName, Id = user.Id, ProfilePicture = user.ProfilePicture, Role = roleIdMappings[user.RoleId] });
     }
 }

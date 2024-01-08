@@ -14,14 +14,12 @@ namespace ExamonimyWeb.DTOs.QuestionDTO
         
         public required int Id { get; set; }
           
-        public required CourseWithNumbersOfExamPapersGetDto Course { get; set; }
+        public required string Course { get; set; }
            
-        public required QuestionTypeGetDto QuestionType { get; set; }
-          
-        
+        public required string QuestionType { get; set; } 
       
         public required string QuestionContent { get; set; }
              
-        public UserGetDto? Author { get; set; }
+        public required string Author { get; set; }
     }
 }

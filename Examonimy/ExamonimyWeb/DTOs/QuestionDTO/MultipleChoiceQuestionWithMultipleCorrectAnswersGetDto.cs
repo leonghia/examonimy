@@ -16,6 +16,6 @@
         public required string ChoiceD { get; set; }
 
         
-        public required IEnumerable<char> CorrectAnswers { get; set; }
+        public required IList<char> CorrectAnswers { get; set; }
     }
 }
