@@ -1,23 +1,16 @@
 ﻿import { BASE_API_URL, PAGINATION_METADATA_HEADER } from "../config.js"
 import { GetResponse } from "../models/get-response.model.js";
 import { ProblemDetails } from "../models/problem-details.model.js";
-import { RequestParams } from "../models/request-params.model.js";
 import { MediaType } from "./media-type.helper.js";
 
-export const fetchData = async (route = "", requestParams = new RequestParams(), mediaType = MediaType.Default) => {
+export const fetchData = async (route = "", mediaType = MediaType.Default) => {
     const getResponse = new GetResponse();
-    const url = new URL(`${BASE_API_URL}/${route}`);
-    for (const [k, v] of Object.entries(requestParams)) {
-        if (v) {
-            url.searchParams.set(k, v);
-        }
-    }
+    const url = new URL(`${BASE_API_URL}/${route}`);    
     try {
         const res = await fetch(url, {
             method: "GET",
             headers: {
-                "Accept": mediaType,
-                "TimezoneOffset": new Date().getTimezoneOffset()
+                "Accept": mediaType           
             }
         });
 

@@ -66,6 +66,10 @@ export class AdvancedPaginationComponent extends BaseComponent {
         });
     }   
 
+    disconnectedCallback() {
+        this.#container.innerHTML = "";
+    }
+
     #highlightCurrentPage() {
         this.#container.querySelector(`#page-${this.#currentPage}-btn`)?.classList.remove("text-gray-600");
         this.#container.querySelector(`#page-${this.#currentPage}-btn`)?.classList.add(..."text-gray-700 bg-gray-200".split(" "));  

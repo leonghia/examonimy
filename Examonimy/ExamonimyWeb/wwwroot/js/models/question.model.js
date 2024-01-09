@@ -2,13 +2,11 @@
 
 export class Question {
     id = 0;
-    course = new Course();
-    questionType = new QuestionType();
-    questionLevel = new QuestionLevel();
+    course = "";
+    questionType = "";
     questionContent = "";
-    author;
-
-    constructor() { }
+    author = "";
+    courseModule = "";
 }
 
 export class MultipleChoiceQuestionWithOneCorrectAnswer extends Question {
@@ -60,16 +58,6 @@ export class FillInBlankQuestion extends Question {
     }
 }
 
-export class QuestionLevel {
-    id = 0;
-    name = "";
-
-    constructor(id = 0, name = "") {
-        this.id = id;
-        this.name = name;
-    }
-}
-
 export class QuestionType {
     id = 0;
     name = "";
@@ -82,9 +70,9 @@ export class QuestionType {
 
 export class QuestionCreateDto {
     courseId = 0;
-    questionTypeId = 0;
-    questionLevelId = 0;
+    questionTypeId = 0;   
     questionContent = "";
+    courseModuleId = 0;
 }
 
 export class MultipleChoiceQuestionCreateDto extends QuestionCreateDto {
@@ -95,11 +83,11 @@ export class MultipleChoiceQuestionCreateDto extends QuestionCreateDto {
 }
 
 export class MultipleChoiceQuestionWithOneCorrectAnswerCreateDto extends MultipleChoiceQuestionCreateDto {
-    correctAnswer = 0;
+    correctAnswer = "";
 }
 
 export class MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto extends MultipleChoiceQuestionCreateDto {
-    correctAnswers = "";
+    correctAnswers = [""];
 }
 
 export class TrueFalseQuestionCreateDto extends QuestionCreateDto {
@@ -111,7 +99,7 @@ export class ShortAnswerQuestionCreateDto {
 }
 
 export class FillInBlankQuestionCreateDto extends QuestionCreateDto {
-    correctAnswers = "";
+    correctAnswers = [""];
 }
 
 export class QuestionUpdate {

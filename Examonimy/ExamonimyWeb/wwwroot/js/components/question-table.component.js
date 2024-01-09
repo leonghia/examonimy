@@ -87,11 +87,11 @@ export class QuestionTableComponent {
     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">${this.#fromItemNumber + i}</td>
     <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
         <a href="/question/${q.id}" class="font-medium text-violet-700 hover:text-violet-800 text-sm">${trimQuestionContentMarkup(q.questionContent)}</a>
-        <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author.fullName}</a></div>
-    </td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionType.name}</td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionLevel.name}</td>
-    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.course.name}</td>
+        <div class="mt-1 text-gray-500">Đã tạo bởi <a href="#" class="font-medium text-gray-600">${q.author}</a></div>
+    </td>   
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.course}</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.courseModule}</td>
+    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${q.questionType}</td>
     <td class="relative whitespace-nowrap py-4 px-3">
         <a href="/question/edit/${q.id}" class="flex items-center gap-2 text-green-600 hover:text-green-800">          
             <span class="text-right text-sm font-medium">Sửa</span>
@@ -115,9 +115,9 @@ export class QuestionTableComponent {
         <tr>
             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6">STT</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Câu hỏi</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Dạng</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Mức độ</th>
             <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Môn học</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Module</th>
+            <th scope="col" class="px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Dạng</th>                    
             <th scope="col" colspan="2" class="relative py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">Tùy chọn</th>
         </tr>
     </thead>

@@ -2,24 +2,23 @@
 import { getTinyMCEOption } from "../helpers/tinymce.helper.js";
 import { BASE_API_URL } from "../config.js";
 import { Course } from "../models/course.model.js";
-import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationEndpointMappings } from "../helpers/question.helper.js";
+import { ChoiceValueMappings, QuestionTypeIDs, QuestionTypeIdQuestionCreateDtoConstructorMappings, QuestionTypeIdQuestionCreationRouteMappings } from "../helpers/question.helper.js";
 import { FillInBlankQuestionCreateDto, MultipleChoiceQuestionWithMultipleCorrectAnswersCreateDto, MultipleChoiceQuestionWithOneCorrectAnswerCreateDto, QuestionCreateDto, ShortAnswerQuestionCreateDto, TrueFalseQuestionCreateDto } from "../models/question.model.js";
-import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButtonWithCheckmark } from "../helpers/markup.helper.js";
-import { Question, QuestionType, QuestionLevel } from "../models/question.model.js";
+import { toggleDropdown, selectDropdownItem, showSpinnerForButton, hideSpinnerForButtonWithCheckmark, hideSpinnerForButtonWithoutCheckmark } from "../helpers/markup.helper.js";
+import { Question, QuestionType } from "../models/question.model.js";
 import { SpinnerOption } from "../models/spinner-option.model.js";
 import { CourseGridComponent } from "../components/course-grid.component.js";
 import { SimplePaginationComponent } from "../components/simple-pagination.component.js";
-import { fetchData } from "../helpers/ajax.helper.js";
+import { fetchData, postData } from "../helpers/ajax.helper.js";
 import { StepperComponent } from "../components/stepper.component.js";
 import { RequestParams } from "../models/request-params.model.js";
 import { MediaType } from "../helpers/media-type.helper.js";
+import { CourseModule } from "../models/course-module.model.js";
 
 // DOM selectors
 const courseContainer = document.querySelector("#course-container");
 const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const questionTypeDropdownButton = document.querySelector("#question-type-dropdown-btn");
-const questionLevelDropdown = document.querySelector("#question-level-dropdown");
-const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
 const paginationContainerForCourses = document.querySelector("#pagination-container");
 const stepperContainer = document.querySelector("#step-container");
 const segments = Array.from(document.querySelectorAll(".segment"));
@@ -31,11 +30,12 @@ const answerEditorForTrueFalseQuestion = document.querySelector('.answer-editor[
 const blankAnswerEditor = document.querySelector("#blank-answer-editor");
 const coursePreview = document.querySelector("#course-preview");
 const questionTypePreview = document.querySelector("#question-type-preview");
-const questionLevelPreview = document.querySelector("#question-level-preview");
 const questionContentPreview = document.querySelector("#question-content-preview");
 const answerPreview = document.querySelector("#answer-preview");
 const buttonContainer = document.querySelector("#button-container");
 const createQuestionButton = document.querySelector("#create-question-btn");
+const courseModuleDropdownButton = document.querySelector("#course-module-dropdown-btn");
+const courseModuleDropdown = document.querySelector("#course-module-dropdown");
 
 // States and rule
 const pageSizeForCourses = 12;
@@ -49,7 +49,7 @@ const stepperComponent = new StepperComponent(stepperContainer, ["Chọn môn h�
 const populatePreviewInfo = (question = new Question()) => {
     coursePreview.textContent = question.course.name;
     questionTypePreview.textContent = question.questionType.name;
-    questionLevelPreview.textContent = question.questionLevel.name;
+   
     if (question.questionType.id === QuestionTypeIDs.FillInBlank)
         return;
     questionContentPreview.innerHTML = tinymce.get("question-content-editor").getContent();  
@@ -109,7 +109,7 @@ const renderPreviewForMultipleChoiceQuestionWithOneCorrectAnswer = (questionCrea
     // Render answer preview
     answerPreview.innerHTML = `
 <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-600">
-    <span class="text-white">${ChoiceValueMappings[questionCreateDto.correctAnswer]}</span>
+    <span class="text-white">${questionCreateDto.correctAnswer}</span>
 </span>
     `;
 }
@@ -167,10 +167,10 @@ const renderPreviewForMultipleChoiceQuestionWithMultipleCorrectAnswers = (questi
     // Render answer preview
     answerPreview.innerHTML = "";
     const correctAnswers = questionCreateDto.correctAnswers.split("|").map(str => Number(str)).sort((a, b) => a - b);
-    correctAnswers.forEach(num => {
+    correctAnswers.forEach(a => {
         answerPreview.insertAdjacentHTML("beforeend", `
 <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-green-600">
-    <span class="text-white">${ChoiceValueMappings[num]}</span>
+    <span class="text-white">${a}</span>
 </span>
         `);
     });
@@ -326,7 +326,7 @@ const clearChoiceEditorContainer = (choiceEditorContainer = new HTMLElement()) =
 }
 
 const populateCourses = async () => {
-    const coursePaginationMetadata = await fetchData("course", new RequestParams(null, pageSizeForCourses, paginationComponentForCourses.currentPage), MediaType.Course.WithNumbersOfQuestions);
+    const coursePaginationMetadata = await fetchData(`course?pageSize=${pageSizeForCourses}`, MediaType.Course.WithNumbersOfQuestions);
     courseGridComponent.courses = coursePaginationMetadata.data;
     courseGridComponent.connectedCallback();
     paginationComponentForCourses.totalPages = coursePaginationMetadata.paginationMetadata.totalPages;
@@ -361,14 +361,11 @@ const selectQuestionType = (event = new Event()) => {
     questionCreateDto.questionTypeId = question.questionType.id;
 }
 
-const selectQuestionLevel = (event = new Event()) => {
+const selectCourseModule = (event = new Event()) => {
     selectDropdownItem(event);
     const clicked = event.target.closest(".dropdown-item");
-    if (!clicked)
-        return;   
-    // update the question level id of questionCreateDto state
-    question.questionLevel = new QuestionLevel(Number(clicked.dataset.questionLevelId), clicked.querySelector(".dropdown-item-name").textContent);
-    questionCreateDto.questionLevelId = question.questionLevel.id;
+    if (!clicked) return;    
+    questionCreateDto.courseModuleId = Number(clicked.dataset.courseModuleId);
 }
 
 
@@ -402,20 +399,6 @@ const fetchQuestionTypes = async () => {
     return questionTypes;
 }
 
-const fetchQuestionLevels = async () => {
-    const response = await fetch(`${BASE_API_URL}/question/level`, {
-        method: "GET",
-        headers: {
-            "Accept": "application/json"
-        }
-    });
-
-    const data = await response.json();
-    const questionLevels = [new QuestionLevel()];
-    Object.assign(questionLevels, data);
-    return questionLevels;
-}
-
 const populateQuestionTypes = (dropdown = new HTMLElement(), questionTypes = [new QuestionType()]) => {
     dropdown.innerHTML = "";
     questionTypes.forEach(questionType => {
@@ -432,41 +415,49 @@ const populateQuestionTypes = (dropdown = new HTMLElement(), questionTypes = [ne
     });
 }
 
-const populateQuestionLevels = (dropdown = new HTMLElement(), questionLevels = [new QuestionLevel()]) => {
-    dropdown.innerHTML = "";
-    questionLevels.forEach(questionLevel => {
-        dropdown.insertAdjacentHTML("beforeend", `
-<li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-question-level-id="${questionLevel.id}">  
-    <span class="dropdown-item-name font-normal block truncate">${questionLevel.name}</span>   
-    <span class="text-white absolute inset-y-0 right-0 flex items-center pr-4 dropdown-item-checkmark">
-        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-        </svg>
-    </span>
-</li>
-        `);
-    });
-}
+
 
 const postQuestion = async (questionCreateDto = new QuestionCreateDto()) => {
-    const buttonText = createQuestionButton.querySelector("span");
-    showSpinnerForButton(buttonText, createQuestionButton, new SpinnerOption());
-    const endpoint = QuestionTypeIdQuestionCreationEndpointMappings[questionCreateDto.questionTypeId];
-    const response = await fetch(`${BASE_API_URL}/${endpoint}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        },
-        body: JSON.stringify(questionCreateDto)
-    });
-    hideSpinnerForButton(createQuestionButton, buttonText);
-    if (response.ok) {
-        window.location.href = "/question";
+    const spinnerOption = new SpinnerOption("fill-emerald-800", "w-5", "h-5");
+    showSpinnerForButton(createQuestionButton, spinnerOption);
+    const route = QuestionTypeIdQuestionCreationRouteMappings[questionCreateDto.questionTypeId];
+    try {
+        await postData(route, questionCreateDto);
+        hideSpinnerForButtonWithCheckmark(createQuestionButton, spinnerOption);
+        setTimeout(() => document.location.href = "/question", 1500);
+    } catch (err) {
+        hideSpinnerForButtonWithoutCheckmark(createQuestionButton, "Tạo câu hỏi", spinnerOption);
+        console.error(err);
+    }
+    
+}
+
+const clickStep2Handler = async () => {
+    const courseId = questionCreateDto.courseId;
+    try {
+        const res = await fetchData(`course-module?courseId=${courseId}`);
+        const courseModules = res.data;
+        populateCourseModuleDropdown(courseModules);
+    } catch (err) {
+        console.error(err);
     }
 }
 
-const onClickStep3Handler = () => {
+const populateCourseModuleDropdown = (courseModules = [new CourseModule()]) => {
+    courseModuleDropdown.innerHTML = "";
+    courseModules.forEach(m => courseModuleDropdown.insertAdjacentHTML("beforeend", `
+<li class="dropdown-item text-gray-900 relative select-none py-2 pl-3 pr-9" data-course-module-id="${m.id}">
+    <span class="dropdown-item-name font-normal block truncate">${m.name}</span>
+    <span class="dropdown-item-checkmark text-white absolute inset-y-0 right-0 flex items-center pr-4">
+        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+        </svg>
+    </span>
+</li>
+    `))
+}
+
+const clickStep3Handler = () => {
     // Update the question content for questionCreateDto
     const content = tinymce.get("question-content-editor").getContent();
     questionCreateDto.questionContent = content;
@@ -504,7 +495,9 @@ const onClickStep3Handler = () => {
     }
 }
 
-const onClickStep4Hanlder = () => {
+
+
+const clickStep4Hanlder = () => {
     populatePreviewInfo(question);
     // Render the preview based on questionCreateDto's question type
     switch (questionCreateDto.questionTypeId) {
@@ -536,7 +529,7 @@ const onClickCourseHandler = (course = new Course()) => {
 }
 
 const navigateCoursePageHandler = async (pageNumber = 0) => {
-    const res = await fetchData("course", new RequestParams(null, pageSizeForCourses, pageNumber), MediaType.Course.WithNumbersOfQuestions);
+    const res = await fetchData(`course?pageSize=${pageSizeForCourses}&pageNumber=${pageNumber}`, MediaType.Course.WithNumbersOfQuestions);
     const courses = res.data;
     courseGridComponent.populateCourses(courses);
 }
@@ -548,9 +541,9 @@ questionTypeDropdownButton.addEventListener("click", () => toggleDropdown(questi
 
 questionTypeDropdown.addEventListener("click", selectQuestionType);
 
-questionLevelDropdownButton.addEventListener("click", () => toggleDropdown(questionLevelDropdown));
+courseModuleDropdownButton.addEventListener("click", () => toggleDropdown(courseModuleDropdown));
 
-questionLevelDropdown.addEventListener("click", selectQuestionLevel);
+courseModuleDropdown.addEventListener("click", selectCourseModule);
 
 answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.addEventListener("click", event => {
     const clicked = event.target.closest("label");
@@ -568,7 +561,7 @@ answerEditorForMultipleChoiceQuestionWithOneCorrectAnswer.addEventListener("clic
     clicked.classList.add(..."bg-green-600 text-white hover:bg-green-700".split(" "));
 
     // update correct answer for questionCreateDto state
-    questionCreateDto.correctAnswer = Number(clicked.dataset.answer);
+    questionCreateDto.correctAnswer = clicked.dataset.answer;
 });
 
 answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers.addEventListener("click", event => {
@@ -593,7 +586,7 @@ answerEditorForMultipleChoiceQuestionWithMultipleCorrectAnswers.addEventListener
     });
 
     // update the correct answers for questionCreateDto
-    questionCreateDto.correctAnswers = correctAnswers.join("|");
+    questionCreateDto.correctAnswers = correctAnswers;
 });
 
 answerEditorForTrueFalseQuestion.addEventListener("click", event => {
@@ -616,15 +609,16 @@ answerEditorForTrueFalseQuestion.addEventListener("click", event => {
     console.log(questionCreateDto);
 });
 
-createQuestionButton.addEventListener("click", async () => {
-    await postQuestion(questionCreateDto);
+createQuestionButton.addEventListener("click", () => {
+    postQuestion(questionCreateDto);
 });
 
 // On load
 courseGridComponent.subscribe("click", onClickCourseHandler);
 stepperComponent.connectedCallback();
-stepperComponent.subscribe("clickStep3", onClickStep3Handler);
-stepperComponent.subscribe("clickStep4", onClickStep4Hanlder);
+stepperComponent.subscribe("clickStep2", clickStep2Handler);
+stepperComponent.subscribe("clickStep3", clickStep3Handler);
+stepperComponent.subscribe("clickStep4", clickStep4Hanlder);
 paginationComponentForCourses.subscribe("next", navigateCoursePageHandler);
 paginationComponentForCourses.subscribe("prev", navigateCoursePageHandler);
 
@@ -632,8 +626,6 @@ paginationComponentForCourses.subscribe("prev", navigateCoursePageHandler);
     populateCourses();
     const questionTypes = await fetchQuestionTypes();
     populateQuestionTypes(questionTypeDropdown, questionTypes);
-    const questionLevels = await fetchQuestionLevels();
-    populateQuestionLevels(questionLevelDropdown, questionLevels);
 })();
 
 tinymce.init(getTinyMCEOption("#question-content-editor", 300));

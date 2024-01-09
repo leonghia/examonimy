@@ -33,7 +33,7 @@ namespace ExamonimyWeb.Entities
         public ICollection<ExamPaperQuestion>? ExamPaperQuestions { get; set; }
       
         [ForeignKey(nameof(CourseModule))]
-        public int? CourseModuleId { get; set; } = null;
+        public required int CourseModuleId { get; set; }
         public CourseModule? CourseModule { get; set; }
     }
 }

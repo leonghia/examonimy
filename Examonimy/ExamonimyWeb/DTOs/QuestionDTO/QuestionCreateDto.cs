@@ -14,5 +14,7 @@ public class QuestionCreateDto
     public required int CourseModuleId { get; set; }
 
     [Required]
-    public required string QuestionContent { get; set; }    
+    public required string QuestionContent { get; set; }
+
+    
 }

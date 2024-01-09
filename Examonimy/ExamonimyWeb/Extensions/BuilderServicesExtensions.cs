@@ -122,6 +122,7 @@ public static class BuilderServicesExtensions
         services.AddTransient<IGenericRepository<MainClass>, GenericRepository<MainClass>>();
         services.AddTransient<IGenericRepository<ExamMainClass>, GenericRepository<ExamMainClass>>();
         services.AddTransient<IGenericRepository<Student>, GenericRepository<Student>>();
+        services.AddTransient<IGenericRepository<CourseModule>, GenericRepository<CourseModule>>();
         
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<IAuthService, AuthService>();

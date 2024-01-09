@@ -13,10 +13,6 @@ const questionTypeDropdownButton = document.querySelector("#question-type-dropdo
 const questionTypeDropdown = document.querySelector("#question-type-dropdown");
 const selectedQuestionType = document.querySelector("#selected-question-type");
 
-const questionLevelDropdownButton = document.querySelector("#question-level-dropdown-btn");
-const questionLevelDropdown = document.querySelector("#question-level-dropdown");
-const selectedQuestionLevel = document.querySelector("#selected-question-level");
-
 const courseDropdownButton = document.querySelector("#course-dropdown-btn");
 const courseDropdown = document.querySelector("#course-dropdown");
 const selectedCourse = document.querySelector("#selected-course");
@@ -79,16 +75,7 @@ questionTypeDropdown.addEventListener("click", event => {
 });
 
 ////////////////////////////////////////////////
-questionLevelDropdownButton.addEventListener("click", () => {
-    questionLevelDropdown.classList.toggle("hidden");
-});
-questionLevelDropdown.addEventListener("click", event => {
-    const clicked = event.target.closest("input");
-    if (!clicked)
-        return;
-    selectedQuestionLevel.textContent = clicked.nextElementSibling.textContent;
-    requestParams.questionLevelId = Number(clicked.value);
-});
+
 
 ////////////////////////////////////////////////
 courseDropdownButton.addEventListener("click", () => {

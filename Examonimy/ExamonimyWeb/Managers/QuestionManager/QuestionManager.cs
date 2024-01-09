@@ -140,7 +140,7 @@ public class QuestionManager : IQuestionManager
 
     public async Task<QuestionGetDto> GetFullQuestionDto(int questionTypeId, int questionId)
     {
-        var includedProps = new List<string> { "Question.Course", "Question", "Question.QuestionType", "Question.Author" };
+        var includedProps = new List<string> { "Question.Course", "Question", "Question.QuestionType", "Question.Author", "Question.CourseModule" };
         switch (questionTypeId)
         {
             case (int)QuestionTypeId.MultipleChoiceWithOneCorrectAnswer:
@@ -156,7 +156,8 @@ public class QuestionManager : IQuestionManager
                     ChoiceB = q1.ChoiceB,
                     ChoiceC = q1.ChoiceC,
                     ChoiceD = q1.ChoiceD,
-                    CorrectAnswer = _questionAnswerByteToCharMappings[q1.CorrectAnswer]
+                    CorrectAnswer = _questionAnswerByteToCharMappings[q1.CorrectAnswer],
+                    CourseModule = q1.Question!.CourseModule!.Name
                 };
             case (int)QuestionTypeId.MultipleChoiceWithMultipleCorrectAnswers:
                 var q2 = await _multipleChoiceQuestionWithMultipleCorrectAnswersRepository.GetAsync(q => q.QuestionId == questionId, includedProps) ?? throw new ArgumentException(null, nameof(questionId));
@@ -171,7 +172,8 @@ public class QuestionManager : IQuestionManager
                     ChoiceB = q2.ChoiceB,
                     ChoiceC = q2.ChoiceC,
                     ChoiceD = q2.ChoiceD,
-                    CorrectAnswers = q2.CorrectAnswers.Split('|').Select(c => _questionAnswerByteToCharMappings[Convert.ToByte(c)]).ToList()
+                    CorrectAnswers = q2.CorrectAnswers.Split('|').Select(c => _questionAnswerByteToCharMappings[Convert.ToByte(c)]).ToList(),
+                    CourseModule = q2.Question!.CourseModule!.Name
                 };
             case (int)QuestionTypeId.TrueFalse:
                 var q3 = await _trueFalseQuestionRepository.GetAsync(q => q.QuestionId == questionId, includedProps) ?? throw new ArgumentException(null, nameof(questionId));
@@ -182,7 +184,8 @@ public class QuestionManager : IQuestionManager
                     QuestionType = q3.Question!.QuestionType!.Name,
                     QuestionContent = q3.Question!.QuestionContent,
                     Author = q3.Question!.Author!.FullName,
-                    CorrectAnswer = q3.CorrectAnswer ? 'Đ' : 'S'
+                    CorrectAnswer = q3.CorrectAnswer ? 'Đ' : 'S',
+                    CourseModule = q3.Question!.CourseModule!.Name
                 };
             case (int)QuestionTypeId.ShortAnswer:
                 var q4 = await _shortAnswerQuestionRepository.GetAsync(q => q.QuestionId == questionId, includedProps) ?? throw new ArgumentException(null, nameof(questionId));
@@ -193,7 +196,8 @@ public class QuestionManager : IQuestionManager
                     QuestionType = q4.Question!.QuestionType!.Name,
                     QuestionContent = q4.Question!.QuestionContent,
                     Author = q4.Question!.Author!.FullName,
-                    CorrectAnswer = q4.CorrectAnswer
+                    CorrectAnswer = q4.CorrectAnswer,
+                    CourseModule = q4.Question!.CourseModule!.Name
                 };
             case (int)QuestionTypeId.FillInBlank:
                 var q5 = await _fillInBlankQuestionRepository.GetAsync(q => q.QuestionId == questionId, includedProps) ?? throw new ArgumentException(null, nameof(questionId));
@@ -204,7 +208,8 @@ public class QuestionManager : IQuestionManager
                     QuestionType = q5.Question!.QuestionType!.Name,
                     QuestionContent = q5.Question!.QuestionContent,
                     Author = q5.Question!.Author!.FullName,
-                    CorrectAnswers = q5.CorrectAnswers.Split('|').ToList()
+                    CorrectAnswers = q5.CorrectAnswers.Split('|').ToList(),
+                    CourseModule = q5.Question!.CourseModule!.Name
                 };
             default:
                 throw new SwitchExpressionException(questionTypeId);

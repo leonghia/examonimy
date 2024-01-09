@@ -7,6 +7,7 @@ export class StepperComponent extends BaseComponent {
     #container;
     _events = {
         click: [],
+        clickStep2: [],
         clickStep3: [],
         clickStep4: []
     }
@@ -21,6 +22,7 @@ export class StepperComponent extends BaseComponent {
     connectedCallback() {
         this.#container.innerHTML = this.#render();
 
+        const step2 = this.#container.querySelector("#step-2");
         const step3 = this.#container.querySelector("#step-3");
         const step4 = this.#container.querySelector("#step-4");
 
@@ -60,6 +62,10 @@ export class StepperComponent extends BaseComponent {
 
         step4.addEventListener("click", () => {
             this._trigger("clickStep4");
+        });
+
+        step2.addEventListener("click", () => {
+            this._trigger("clickStep2");
         });
     }
 

@@ -9,7 +9,7 @@ export const QuestionTypeIDs = {
     FillInBlank: 5
 }
 
-export const QuestionTypeIdQuestionCreationEndpointMappings = {
+export const QuestionTypeIdQuestionCreationRouteMappings = {
     1: "question/multiplechoicewithonecorrectanswer",
     2: "question/multiplechoicewithmultiplecorrectanswers",
     3: "question/truefalse",

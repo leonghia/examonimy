@@ -116,7 +116,8 @@ namespace ExamonimyWeb.Controllers
                 CourseId = dto.CourseId,
                 QuestionTypeId = dto.QuestionTypeId,
                 QuestionContent = dto.QuestionContent,
-                AuthorId = user.Id
+                AuthorId = user.Id,
+                CourseModuleId = dto.CourseModuleId
             };
             await _questionManager.CreateAsync(q);
             var qq = new MultipleChoiceQuestionWithOneCorrectAnswer
@@ -144,7 +145,8 @@ namespace ExamonimyWeb.Controllers
                 CourseId = dto.CourseId,
                 QuestionTypeId = dto.QuestionTypeId,
                 QuestionContent = dto.QuestionContent,
-                AuthorId = user.Id
+                AuthorId = user.Id,
+                CourseModuleId = dto.CourseModuleId
             };
             await _questionManager.CreateAsync(q);
             var qq = new MultipleChoiceQuestionWithMultipleCorrectAnswers
@@ -172,7 +174,8 @@ namespace ExamonimyWeb.Controllers
                 CourseId = dto.CourseId,
                 QuestionTypeId = dto.QuestionTypeId,
                 QuestionContent = dto.QuestionContent,
-                AuthorId = contextUser.Id
+                AuthorId = contextUser.Id,
+                CourseModuleId = dto.CourseModuleId
             };
             await _questionManager.CreateAsync(q);
             var qq = new TrueFalseQuestion
@@ -196,7 +199,8 @@ namespace ExamonimyWeb.Controllers
                 CourseId = dto.CourseId,
                 QuestionTypeId = dto.QuestionTypeId,
                 QuestionContent = dto.QuestionContent,
-                AuthorId = contextUser.Id
+                AuthorId = contextUser.Id,
+                CourseModuleId = dto.CourseModuleId
             };
             await _questionManager.CreateAsync(q);
             var qq = new ShortAnswerQuestion
@@ -220,7 +224,8 @@ namespace ExamonimyWeb.Controllers
                 CourseId = dto.CourseId,
                 QuestionTypeId = dto.QuestionTypeId,
                 QuestionContent = dto.QuestionContent,
-                AuthorId = contextUser.Id
+                AuthorId = contextUser.Id,
+                CourseModuleId = dto.CourseModuleId
             };
             await _questionManager.CreateAsync(q);
             var qq = new FillInBlankQuestion

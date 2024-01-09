@@ -46,7 +46,7 @@ public class ExamController : BaseController
     public async Task<IActionResult> RenderIndexView()
     {
         var (user, userToReturn) = await base.GetContextUser();
-        return View(userToReturn.Role, userToReturn);
+        return View(userToReturn.Role, new AuthorizedViewModel { User = userToReturn });
     }
 
     [CustomAuthorize(Roles = "Admin,Student")]
